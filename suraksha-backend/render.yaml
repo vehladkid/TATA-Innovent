@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: suraksha-ai
+    runtime: python
+    region: singapore
+    plan: free
+    rootDir: suraksha-backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: LOG_LEVEL
+        value: INFO
+      - key: CORS_ORIGINS
+        value: "*"
+      - key: DATABASE_URL
+        sync: false   # paste your Supabase connection string in the Render dashboard
