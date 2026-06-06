@@ -1,0 +1,206 @@
+# =============================================================================
+# Suraksha AI — Monorepo .gitignore
+# Covers: Node/Vite/Next.js (apps/dashboard, apps/pwa),
+#         Python/FastAPI (apps/backend), ML training (ml/),
+#         n8n workflows, secrets, and OS/editor noise.
+# =============================================================================
+
+# =============================================================================
+# 1. SECRETS & ENVIRONMENT — NEVER commit these
+# =============================================================================
+.env
+.env.*
+!.env.example
+!.env.test.example
+*.pem
+*.key
+*.p12
+*.pfx
+secrets/
+
+# =============================================================================
+# 2. NODE / NPM / PNPM / YARN (apps/dashboard, apps/pwa, packages/*)
+# =============================================================================
+node_modules/
+.pnpm-store/
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+
+# Lock files — keep pnpm-lock.yaml; ignore others to avoid conflicts
+package-lock.json
+yarn.lock
+
+# =============================================================================
+# 3. VITE BUILD OUTPUT (apps/dashboard)
+# =============================================================================
+dist/
+dist-ssr/
+*.local
+
+# =============================================================================
+# 4. NEXT.JS BUILD OUTPUT (apps/pwa — future)
+# =============================================================================
+.next/
+out/
+.next/cache/
+
+# =============================================================================
+# 5. VERCEL DEPLOYMENT
+# =============================================================================
+.vercel/
+
+# =============================================================================
+# 6. TYPESCRIPT
+# =============================================================================
+*.tsbuildinfo
+
+# =============================================================================
+# 7. PYTHON (apps/backend, ml/training)
+# =============================================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+.python-version
+
+# Package/distribution
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+
+# pytest / coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+nosetests.xml
+coverage.xml
+*.cover
+
+# mypy / pyright type checkers
+.mypy_cache/
+.pytype/
+.pyright/
+
+# Alembic (DB migrations — keep versions/, ignore generated env)
+apps/backend/alembic/versions/__pycache__/
+
+# WeasyPrint / PDF temp files
+*.pdf
+!docs/**/*.pdf
+
+# =============================================================================
+# 8. ML TRAINING ARTIFACTS (ml/training)
+# =============================================================================
+# Large binary model files — use Git LFS or pull from storage
+*.onnx
+*.pt
+*.pth
+*.weights
+*.pb
+*.tflite
+*.mlmodel
+
+# YOLO / Ultralytics run outputs
+runs/
+ml/training/runs/
+ml/training/datasets/
+ml/training/wandb/
+
+# Roboflow dataset downloads
+datasets/
+data/
+
+# =============================================================================
+# 9. LOGS
+# =============================================================================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+pip-log.txt
+pip-delete-this-directory.txt
+
+# =============================================================================
+# 10. OPERATING SYSTEM
+# =============================================================================
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Windows
+desktop.ini
+$RECYCLE.BIN/
+
+# =============================================================================
+# 11. EDITORS & IDES
+# =============================================================================
+# VS Code — keep extensions.json and settings.json for team consistency
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+
+# JetBrains (PyCharm, WebStorm)
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Vim / Emacs
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*~
+\#*\#
+.#*
+
+# =============================================================================
+# 12. TESTING & COVERAGE
+# =============================================================================
+coverage/
+.nyc_output/
+test-results/
+playwright-report/
+playwright/.cache/
+
+# =============================================================================
+# 13. MISC BUILD ARTIFACTS
+# =============================================================================
+*.local
+*.cache
+.cache/
+.parcel-cache/
+.turbo/
+.swc/
+
+# =============================================================================
+# 14. N8N (n8n/)
+# =============================================================================
+# Do NOT ignore workflow JSON exports — those are the source of truth
+# Ignore any local n8n data/config if accidentally added
+n8n/.n8n/
+n8n/database.sqlite
