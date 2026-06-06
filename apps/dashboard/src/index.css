@@ -1,0 +1,343 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;700;900&display=swap');
+
+:root {
+  --color-bg-deep: #030307;
+  --color-bg-navy: #070814;
+  --color-bg-glass: rgba(7, 8, 20, 0.65);
+  --color-bg-glass-bright: rgba(15, 18, 45, 0.8);
+
+  --color-cyan: #00f3ff;
+  --color-blue: #0066ff;
+  --color-purple: #b026ff;
+  --color-red: #ff003c;
+  --color-amber: #ffaa00;
+  --color-green: #00ff66;
+
+  --border-cyan: 1px solid rgba(0, 243, 255, 0.2);
+  --border-blue: 1px solid rgba(0, 102, 255, 0.2);
+  --border-purple: 1px solid rgba(176, 38, 255, 0.2);
+  --border-red: 1px solid rgba(255, 0, 60, 0.35);
+  --border-amber: 1px solid rgba(255, 170, 0, 0.35);
+
+  --glow-cyan: 0 0 10px rgba(0, 243, 255, 0.3);
+  --glow-purple: 0 0 10px rgba(176, 38, 255, 0.3);
+  --glow-red: 0 0 15px rgba(255, 0, 60, 0.5);
+  --glow-amber: 0 0 12px rgba(255, 170, 0, 0.4);
+
+  --font-hud: 'Orbitron', sans-serif;
+  --font-data: 'Inter', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--color-bg-deep);
+  color: #e2e8f0;
+  font-family: var(--font-data);
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+  user-select: none;
+}
+
+/* Futuristic Scanline and Grid Overlay */
+.hud-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background-image:
+    radial-gradient(circle at 50% 50%, rgba(10, 12, 36, 0.8) 0%, var(--color-bg-deep) 100%),
+    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+    linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  background-size: 100% 100%, 100% 4px, 6px 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Futuristic Scanline Animation */
+.hud-container::before {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  z-index: 100;
+  background-size: 100% 2px, 3px 100%;
+  pointer-events: none;
+}
+
+.hud-container::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  background: linear-gradient(0deg, transparent 0%, rgba(0, 243, 255, 0.04) 10%, transparent 100%);
+  animation: scan 8s linear infinite;
+  z-index: 101;
+  pointer-events: none;
+}
+
+@keyframes scan {
+  0% {
+    transform: translateY(-100%);
+  }
+
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+/* Glassmorphism tactical panels */
+.hud-panel {
+  background: var(--color-bg-glass);
+  border: var(--border-blue);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(0, 102, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hud-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(0, 243, 255, 0.03) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+/* Tech corners for HUD styling */
+.tech-corners::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  border-top: 2px solid var(--color-cyan);
+  border-right: 2px solid var(--color-cyan);
+  pointer-events: none;
+}
+
+.tech-corners::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 10px;
+  height: 10px;
+  border-bottom: 2px solid var(--color-cyan);
+  border-left: 2px solid var(--color-cyan);
+  pointer-events: none;
+}
+
+/* Alarm pulses */
+.critical-flash-active {
+  animation: alarm-red-flash 0.6s ease-in-out infinite alternate !important;
+}
+
+@keyframes alarm-red-flash {
+  0% {
+    box-shadow: inset 0 0 10px rgba(255, 0, 60, 0.1);
+    border-color: rgba(255, 0, 60, 0.3);
+  }
+
+  100% {
+    box-shadow: inset 0 0 40px rgba(255, 0, 60, 0.6), 0 0 20px rgba(255, 0, 60, 0.3);
+    border-color: rgba(255, 0, 60, 0.9);
+  }
+}
+
+.danger-flash-active {
+  animation: alarm-orange-flash 0.8s ease-in-out infinite alternate !important;
+}
+
+@keyframes alarm-orange-flash {
+  0% {
+    box-shadow: inset 0 0 5px rgba(255, 170, 0, 0.1);
+    border-color: rgba(255, 170, 0, 0.3);
+  }
+
+  100% {
+    box-shadow: inset 0 0 25px rgba(255, 170, 0, 0.45), 0 0 15px rgba(255, 170, 0, 0.2);
+    border-color: rgba(255, 170, 0, 0.8);
+  }
+}
+
+/* Fullscreen red alarm overlay */
+.fullscreen-alert-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 9999;
+  border: 15px solid transparent;
+  animation: border-flash-red 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes border-flash-red {
+  0% {
+    border-color: rgba(255, 0, 60, 0.05);
+    box-shadow: inset 0 0 20px rgba(255, 0, 60, 0.05);
+  }
+
+  100% {
+    border-color: rgba(255, 0, 60, 0.7);
+    box-shadow: inset 0 0 60px rgba(255, 0, 60, 0.4);
+  }
+}
+
+/* Radar Sweep Animation */
+@keyframes radar-sweep {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Scanner line sweep */
+.scanner-line {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(180deg, transparent, var(--color-cyan), transparent);
+  box-shadow: 0 0 8px var(--color-cyan);
+  opacity: 0.35;
+  animation: scanner-loop 6s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes scanner-loop {
+  0% {
+    top: 0%;
+  }
+
+  50% {
+    top: 100%;
+  }
+
+  100% {
+    top: 0%;
+  }
+}
+
+/* Glow helper classes */
+.glow-text-cyan {
+  text-shadow: 0 0 5px var(--color-cyan), 0 0 10px rgba(0, 243, 255, 0.5);
+}
+
+.glow-text-red {
+  text-shadow: 0 0 5px var(--color-red), 0 0 10px rgba(255, 0, 60, 0.5);
+}
+
+.glow-text-purple {
+  text-shadow: 0 0 5px var(--color-purple), 0 0 10px rgba(176, 38, 255, 0.5);
+}
+
+.glow-text-amber {
+  text-shadow: 0 0 5px var(--color-amber), 0 0 10px rgba(255, 170, 0, 0.5);
+}
+
+/* Custom terminal scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 102, 255, 0.3);
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-cyan);
+  box-shadow: var(--glow-cyan);
+}
+
+/* Glitch Text Effect */
+.glitch-text {
+  position: relative;
+  animation: glitch 4s infinite;
+}
+
+@keyframes glitch {
+
+  0%,
+  100% {
+    transform: none;
+  }
+
+  92% {
+    transform: skewX(-2deg);
+  }
+
+  94% {
+    transform: skewX(3deg);
+    filter: hue-rotate(90deg);
+  }
+
+  96% {
+    transform: skewX(-5deg) skewY(1deg);
+    filter: invert(0.05);
+  }
+
+  98% {
+    transform: none;
+  }
+}
+
+/* Shimmer AI effect */
+.shimmer-ai {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-ai::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(176, 38, 255, 0.25), transparent);
+  transform: skewX(-25deg);
+  animation: ai-shimmer 4s infinite;
+}
+
+@keyframes ai-shimmer {
+  0% {
+    left: -100%;
+  }
+
+  30% {
+    left: 200%;
+  }
+
+  100% {
+    left: 200%;
+  }
+}

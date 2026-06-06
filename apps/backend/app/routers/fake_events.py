@@ -1,9 +1,15 @@
-"""Fake event generator — drop this router once real PWA events are flowing.
-
-Endpoints:
-  GET  /api/fake-events/batch?n=50   → batch for LLM Copilot prompt seeding
-  WS   /ws/fake-events               → streams one RiskEvent every 2 s
-"""
+# fake_events.py — backend fake event generator
+# Run this on the FastAPI backend so Vanshika's dashboard and Samarth's LLM Copilot
+# have realistic data flowing from Day 1, before Dhruv's PWA pipeline is ready.
+#
+# Usage:
+#   1. Add to your FastAPI app:
+#        from fake_events import router as fake_events_router
+#        app.include_router(fake_events_router)
+#   2. Frontend connects to: ws://localhost:8000/ws/fake-events
+#   3. Receives a RiskEvent JSON every 2 seconds.
+#
+# Remove this route once real events from the PWA are flowing.
 
 import asyncio
 import json
@@ -18,20 +24,22 @@ router = APIRouter()
 
 ZONES = ["zone_press_A", "zone_forklift_lane", "zone_welding_bay", None]
 BANDS = ["safe", "caution", "danger", "critical"]
-BAND_WEIGHTS = [0.45, 0.30, 0.18, 0.07]
+BAND_WEIGHTS = [0.45, 0.30, 0.18, 0.07]  # mostly safe, occasional critical
 
 
 def _band_to_score(band: str) -> int:
+    """Map a band to a realistic score within its range."""
     if band == "safe":
         return random.randint(0, 30)
     if band == "caution":
         return random.randint(31, 55)
     if band == "danger":
         return random.randint(56, 80)
-    return random.randint(81, 100)
+    return random.randint(81, 100)  # critical
 
 
 def _generate_breakdown(score: int) -> dict:
+    """Generate a breakdown that roughly sums to the score."""
     remaining = score
     ppe = min(40, random.randint(0, remaining))
     remaining -= ppe
@@ -51,6 +59,7 @@ def _generate_breakdown(score: int) -> dict:
 
 
 def _predicted_entry(band: str) -> Optional[int]:
+    """Critical/danger events sometimes have a predicted entry countdown."""
     if band in ("danger", "critical") and random.random() < 0.6:
         return random.choice([800, 1200, 1800, 2400, 3000])
     return None
@@ -74,7 +83,7 @@ def generate_fake_event() -> dict:
 def generate_shift_summary() -> dict:
     return {
         "shiftId": "shift_2026_06_06_morning",
-        "startedAt": int(time.time() * 1000) - 3_600_000,
+        "startedAt": int(time.time() * 1000) - 3600_000,
         "incidentsPrevented": random.randint(3, 15),
         "criticalCount": random.randint(0, 4),
         "activeWorkers": random.randint(8, 22),
@@ -82,26 +91,33 @@ def generate_shift_summary() -> dict:
 
 
 @router.websocket("/ws/fake-events")
-async def fake_events_ws(ws: WebSocket) -> None:
-    """Streams fake events every 2 s; injects a shift_update every 10 events."""
+async def fake_events_ws(ws: WebSocket):
+    """Streams fake events every 2 seconds. Also sends a shift summary every 10 events."""
     await ws.accept()
     counter = 0
     try:
         while True:
-            await ws.send_text(json.dumps({"type": "risk_event", "data": generate_fake_event()}))
+            event_msg = {"type": "risk_event", "data": generate_fake_event()}
+            await ws.send_text(json.dumps(event_msg))
             counter += 1
+
             if counter % 10 == 0:
-                await ws.send_text(json.dumps({"type": "shift_update", "data": generate_shift_summary()}))
+                summary_msg = {"type": "shift_update", "data": generate_shift_summary()}
+                await ws.send_text(json.dumps(summary_msg))
+
             await asyncio.sleep(2)
     except WebSocketDisconnect:
         return
 
 
 @router.get("/api/fake-events/batch")
-async def fake_events_batch(n: int = 50) -> dict:
-    """Batch of fake RiskEvents for LLM Copilot prompt testing (max 200)."""
+def fake_events_batch(n: int = 50) -> dict:
+    """REST endpoint returning a batch of fake events.
+    Samarth uses this to seed his LLM Copilot context for prompt testing.
+    """
     n = max(1, min(n, 200))
+    events = [generate_fake_event() for _ in range(n)]
     return {
-        "recentEvents": [generate_fake_event() for _ in range(n)],
+        "recentEvents": events,
         "shiftSummary": generate_shift_summary(),
     }
