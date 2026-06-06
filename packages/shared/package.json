@@ -1,0 +1,7 @@
+{
+  "name": "@suraksha/shared",
+  "version": "0.0.1",
+  "private": true,
+  "main": "./contracts.ts",
+  "types": "./contracts.ts"
+}
