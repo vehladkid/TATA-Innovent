@@ -142,7 +142,8 @@ Every consumer downstream — dashboard, LLM Copilot, n8n, PDF generator — rea
 
 **Responsibilities:**
 - FastAPI app, async throughout
-- `POST /api/events` — accepts `RiskEvent` from PWAs
+- `POST /api/events` — **compatibility shim**: accepts a pre-scored `RiskEvent` from PWA builds that compute risk on-device; stores and broadcasts without re-scoring
+- `POST /api/events/raw` — **backend-scored path**: accepts `Detection[]` + optional `TrackedPerson`; the backend Risk Engine (`app/services/risk_engine.py`) computes the score and assembles a full `RiskEvent` before broadcasting
 - `WS /ws/events` — broadcasts events to dashboard subscribers
 - `WS /ws/fake-events` — fake event stream for parallel dev (remove before prod)
 - `GET /api/copilot/context` — assembles `CopilotContext` for LLM (recent events, zones, shift)
@@ -151,9 +152,20 @@ Every consumer downstream — dashboard, LLM Copilot, n8n, PDF generator — rea
 - Webhook trigger to n8n on critical events
 - Supabase Postgres for persistence, Supabase Storage for snapshots
 
+**Event ingestion — two supported flows:**
+
+```
+Flow A (on-device scoring — existing PWA path):
+  PWA Risk Engine → RiskEvent → POST /api/events → broadcast
+
+Flow B (server-side scoring — new /raw path):
+  YOLO detections → POST /api/events/raw → backend Risk Engine → RiskEvent → broadcast
+```
+
+Both flows emit identical `RiskEvent` shapes to the WebSocket; the dashboard and n8n are unaware of which flow produced an event.
+
 **Does NOT:**
-- Run ML inference
-- Compute risk scores (that's the PWA's job — backend just stores)
+- Run ML inference (YOLO/MediaPipe always on the client)
 - Hold business logic the PWA could do itself
 
 ### 3.3 Dashboard (`apps/dashboard/`)
@@ -437,5 +449,7 @@ These have already been considered and rejected. Do not reintroduce them.
 | Date | Change | Author |
 |---|---|---|
 | 2026-06-06 | Initial architecture document | Tejvir |
+| 2026-06-10 | Add 'ladder', 'gloves', 'mask' to DetectionClass (9-class YOLOv8s model); postProcessor.ts rewrite with new frameBuffer signature; flag dashboard contracts.ts duplicate | Tejvir |
+| 2026-06-09 | Add backend Risk Engine (`/api/events/raw`), dual-flow §3.2, 'excavator' DetectionClass | Tejvir |
 
 When you make a change to this document, append a row above.

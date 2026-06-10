@@ -12,7 +12,13 @@ _CAMEL = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
 # ── 1. Detection ────────────────────────────────────────────────────────────
 
-DetectionClass = Literal["person", "helmet", "vest", "no_helmet", "no_vest"]
+# ⚠️  CONTRACT CHANGE 2026-06-09: 'excavator' added — mirrors contracts.ts.
+# ⚠️  CONTRACT CHANGE 2026-06-10: 'ladder', 'gloves', 'mask' added for 9-class model.
+#     Risk Engine ignores these three (scores 0 pts); they pass through to the UI.
+DetectionClass = Literal[
+    "person", "helmet", "vest", "no_helmet", "no_vest",
+    "excavator", "ladder", "gloves", "mask",
+]
 
 
 class Detection(BaseModel):
@@ -163,3 +169,27 @@ WSMessage = Annotated[
     Union[WSRiskEvent, WSShiftUpdate, WSZoneUpdate, WSHeartbeat],
     Field(discriminator="type"),
 ]
+
+
+# ── 9. RawIngestPayload — accepted by POST /api/events/raw ───────────────────
+#
+# This is the backend-scored ingestion path.  The PWA sends raw YOLO detections
+# and optional enrichment; the Risk Engine computes the RiskScore server-side.
+# The existing POST /api/events (accepts full RiskEvent) is kept as a
+# compatibility shim for PWA builds that already compute scores on-device.
+
+class RawIngestPayload(BaseModel):
+    model_config = _CAMEL
+    track_id: int
+    detections: list[Detection]
+    tracked_person: Optional[TrackedPerson] = None
+    # Normalized [x, y, w, h] bboxes for heavy machinery in the same frame.
+    # Populated automatically once the PWA labels excavator detections with the
+    # 'excavator' DetectionClass — the risk engine extracts them from `detections`
+    # directly.  This field remains for callers that compute machinery bboxes
+    # externally (e.g. a separate object-detector).
+    machinery_bboxes: Optional[list[tuple[float, float, float, float]]] = None
+    zone_id: Optional[str] = None
+    snapshot_url: Optional[str] = None
+    predicted_entry_ms: Optional[int] = None
+    timestamp: int

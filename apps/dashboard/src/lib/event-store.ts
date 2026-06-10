@@ -24,7 +24,7 @@ export interface EventState {
   zones: Zone[];
   shiftSummary: CopilotContext['shiftSummary'];
   siteSafetyScore: number;
-  activeView: 'BOOT' | 'LIVE' | 'RISK' | 'HEATMAP' | 'EXECUTIVE';
+  activeView: 'LANDING' | 'BOOT' | 'LIVE' | 'RISK' | 'HEATMAP' | 'EXECUTIVE';
   soundMuted: boolean;
   alertVolume: number;
   lastHeartbeat: number;
@@ -34,7 +34,7 @@ export interface EventState {
   addRiskEvent: (event: RiskEvent) => void;
   updateShiftSummary: (summary: CopilotContext['shiftSummary']) => void;
   updateZone: (zone: Zone) => void;
-  setView: (view: 'BOOT' | 'LIVE' | 'RISK' | 'HEATMAP' | 'EXECUTIVE') => void;
+  setView: (view: 'LANDING' | 'BOOT' | 'LIVE' | 'RISK' | 'HEATMAP' | 'EXECUTIVE') => void;
   toggleSound: () => void;
   setAlertVolume: (vol: number) => void;
   setHeartbeat: (ts: number) => void;
@@ -81,7 +81,7 @@ export const useEventStore = create<EventState>((set) => ({
   zones: INITIAL_ZONES,
   shiftSummary: INITIAL_SHIFT,
   siteSafetyScore: 88,
-  activeView: 'BOOT',
+  activeView: 'LANDING',
   soundMuted: false,
   alertVolume: 0.2,
   lastHeartbeat: Date.now(),

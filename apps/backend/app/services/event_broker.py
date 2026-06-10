@@ -32,6 +32,11 @@ class EventBroker:
     def recent(self, n: int = 50) -> list[dict]:
         return list(self._history)[-n:]
 
+    @property
+    def subscriber_count(self) -> int:
+        """Number of active WebSocket subscribers."""
+        return len(self._subscribers)
+
 
 # Module-level singleton shared across all routers
 broker = EventBroker()
