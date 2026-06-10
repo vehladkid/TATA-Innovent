@@ -1,9 +1,9 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import {
   postProcess,
   computeIoU,
-  createSmoothingBuffer,
-  type SmoothingBuffer,
+  FRAME_BUFFER_SIZE,
+  type ProcessedDetection,
 } from '../postProcessor';
 import type { Detection } from '@suraksha/shared/contracts';
 
@@ -11,16 +11,33 @@ import type { Detection } from '@suraksha/shared/contracts';
 // Helpers
 // ---------------------------------------------------------------------------
 
-const FRAME = 1;
-const TS    = 1000;
+const TS = 1_000;
 
 function det(
   cls: Detection['class'],
   bbox: [number, number, number, number],
   confidence: number,
-  frameId = FRAME,
+  frameId = 1,
 ): Detection {
   return { class: cls, bbox, confidence, frameId, timestamp: TS };
+}
+
+/**
+ * Simulate N consecutive frames of the same detections and return the result
+ * of the final frame. Buffer accumulates correctly across calls.
+ */
+function runFrames(
+  detections: Detection[],
+  frameCount: number,
+): { result: Detection[]; buffer: Detection[][] } {
+  let buffer: Detection[][] = [];
+  let result: Detection[] = [];
+  for (let f = 1; f <= frameCount; f++) {
+    const frame = detections.map(d => ({ ...d, frameId: f }));
+    buffer = [...buffer.slice(-(FRAME_BUFFER_SIZE - 1)), frame];
+    result = postProcess(frame, buffer, f, TS);
+  }
+  return { result, buffer };
 }
 
 // ---------------------------------------------------------------------------
@@ -36,8 +53,8 @@ describe('computeIoU', () => {
     expect(computeIoU([0.0, 0.0, 0.1, 0.1], [0.9, 0.9, 0.1, 0.1])).toBe(0);
   });
 
-  it('returns ~0.33 for 50% overlap on one axis', () => {
-    // a: x 0–0.2, b: x 0.1–0.3 → overlap 0.1 wide, each 0.2 wide
+  it('returns ≈0.33 for 50 % horizontal overlap', () => {
+    // a covers [0.0–0.2], b covers [0.1–0.3], both 0.1 tall
     const iou = computeIoU([0.0, 0.0, 0.2, 0.1], [0.1, 0.0, 0.2, 0.1]);
     expect(iou).toBeCloseTo(0.333, 2);
   });
@@ -47,24 +64,45 @@ describe('computeIoU', () => {
 // Per-class threshold filtering
 // ---------------------------------------------------------------------------
 
-describe('postProcess — threshold filtering', () => {
-  it('drops detections below class threshold', () => {
-    let buf: SmoothingBuffer = createSmoothingBuffer();
-    const raw: Detection[] = [
-      det('no_helmet', [0.1, 0.1, 0.1, 0.1], 0.15),  // below 0.25 threshold
-      det('helmet',    [0.3, 0.1, 0.1, 0.1], 0.60),  // above 0.55 threshold
-    ];
-
-    // Run 3 frames to pass temporal smoothing (violation threshold = 3/5)
-    for (let f = 1; f <= 3; f++) {
-      const updated = raw.map(d => ({ ...d, frameId: f }));
-      postProcess(updated, buf, f, TS);
-    }
-    // Final call — helmet should survive (presence: 2/5 needed, seen 3 times)
-    const result = postProcess(raw.map(d => ({ ...d, frameId: 4 })), buf, 4, TS);
-
+describe('threshold filtering', () => {
+  it('drops no_helmet below the 0.25 threshold', () => {
+    const { result } = runFrames(
+      [det('no_helmet', [0.1, 0.1, 0.15, 0.15], 0.20)],
+      FRAME_BUFFER_SIZE,
+    );
     expect(result.find(d => d.class === 'no_helmet')).toBeUndefined();
+  });
+
+  it('keeps helmet at or above the 0.55 threshold after 2 frames', () => {
+    const { result } = runFrames(
+      [det('helmet', [0.1, 0.1, 0.15, 0.15], 0.60)],
+      2,
+    );
     expect(result.find(d => d.class === 'helmet')).toBeDefined();
+  });
+
+  it('keeps ladder (threshold 0.50) above threshold after 2 frames', () => {
+    const { result } = runFrames(
+      [det('ladder', [0.2, 0.2, 0.15, 0.4], 0.55)],
+      2,
+    );
+    expect(result.find(d => d.class === 'ladder')).toBeDefined();
+  });
+
+  it('keeps gloves (threshold 0.45) above threshold after 2 frames', () => {
+    const { result } = runFrames(
+      [det('gloves', [0.3, 0.3, 0.12, 0.12], 0.50)],
+      2,
+    );
+    expect(result.find(d => d.class === 'gloves')).toBeDefined();
+  });
+
+  it('keeps mask (threshold 0.40) above threshold after 2 frames', () => {
+    const { result } = runFrames(
+      [det('mask', [0.4, 0.1, 0.10, 0.10], 0.45)],
+      2,
+    );
+    expect(result.find(d => d.class === 'mask')).toBeDefined();
   });
 });
 
@@ -72,51 +110,44 @@ describe('postProcess — threshold filtering', () => {
 // False-positive suppression — area filters
 // ---------------------------------------------------------------------------
 
-describe('postProcess — false-positive suppression', () => {
-  it('drops whole-image detections (area > 0.7)', () => {
-    const buf = createSmoothingBuffer();
-    const raw: Detection[] = [
-      det('helmet', [0.0, 0.0, 1.0, 1.0], 0.90),  // area = 1.0 → dropped
-    ];
-    const result = postProcess(raw, buf, FRAME, TS);
+describe('false-positive suppression', () => {
+  it('drops whole-image bbox (area > 0.7)', () => {
+    const { result } = runFrames(
+      [det('helmet', [0.0, 0.0, 1.0, 1.0], 0.90)],
+      FRAME_BUFFER_SIZE,
+    );
     expect(result).toHaveLength(0);
   });
 
-  it('drops tiny detections (area < 0.005)', () => {
-    const buf = createSmoothingBuffer();
-    const raw: Detection[] = [
-      det('no_helmet', [0.5, 0.5, 0.03, 0.03], 0.80),  // area = 0.0009 → dropped
-    ];
-    const result = postProcess(raw, buf, FRAME, TS);
+  it('drops sub-pixel bbox (area < 0.005)', () => {
+    const { result } = runFrames(
+      [det('no_helmet', [0.5, 0.5, 0.03, 0.03], 0.80)],
+      FRAME_BUFFER_SIZE,
+    );
     expect(result).toHaveLength(0);
   });
 
-  it('keeps detections that conflict with neither area bound', () => {
-    const buf = createSmoothingBuffer();
-    // Run 2 frames so presence class passes smoothing (needed: 2/5)
-    const d = det('helmet', [0.1, 0.1, 0.2, 0.3], 0.70);  // area = 0.06 ✓
-    postProcess([d], buf, 1, TS);
-    const result = postProcess([{ ...d, frameId: 2 }], buf, 2, TS);
-    expect(result).toHaveLength(1);
-  });
-
-  it('resolves helmet/no_helmet conflict at same bbox by keeping higher confidence', () => {
-    const buf = createSmoothingBuffer();
+  it('resolves helmet/no_helmet conflict — keeps higher confidence', () => {
     const bbox: [number, number, number, number] = [0.1, 0.1, 0.15, 0.15];
-    const raw: Detection[] = [
-      det('helmet',    bbox, 0.70),
-      det('no_helmet', bbox, 0.55),
-    ];
-    // Run 3 frames so no_helmet (violation) also passes smoothing
-    for (let f = 1; f <= 3; f++) {
-      postProcess(raw.map(d => ({ ...d, frameId: f })), buf, f, TS);
-    }
-    const result = postProcess(raw.map(d => ({ ...d, frameId: 4 })), buf, 4, TS);
+    // helmet=0.70 wins over no_helmet=0.55 at same location
+    const { result } = runFrames(
+      [det('helmet', bbox, 0.70), det('no_helmet', bbox, 0.55)],
+      FRAME_BUFFER_SIZE,
+    );
+    const headDets = result.filter(d => d.class === 'helmet' || d.class === 'no_helmet');
+    expect(headDets).toHaveLength(1);
+    expect(headDets[0].class).toBe('helmet');
+  });
 
-    // Only one should survive — the higher-confidence helmet
-    const conflict = result.filter(d => d.class === 'helmet' || d.class === 'no_helmet');
-    expect(conflict).toHaveLength(1);
-    expect(conflict[0].class).toBe('helmet');
+  it('resolves helmet/no_helmet conflict — no_helmet wins when confidence is higher', () => {
+    const bbox: [number, number, number, number] = [0.2, 0.1, 0.15, 0.15];
+    const { result } = runFrames(
+      [det('helmet', bbox, 0.56), det('no_helmet', bbox, 0.80)],
+      FRAME_BUFFER_SIZE,
+    );
+    const headDets = result.filter(d => d.class === 'helmet' || d.class === 'no_helmet');
+    expect(headDets).toHaveLength(1);
+    expect(headDets[0].class).toBe('no_helmet');
   });
 });
 
@@ -124,38 +155,38 @@ describe('postProcess — false-positive suppression', () => {
 // Person + Vest inference rule
 // ---------------------------------------------------------------------------
 
-describe('postProcess — Person+Vest inference', () => {
+describe('Person+Vest inference', () => {
   it('injects synthetic no_vest when person has no overlapping vest', () => {
-    const buf = createSmoothingBuffer();
     const personBbox: [number, number, number, number] = [0.1, 0.1, 0.2, 0.5];
-    const raw: Detection[] = [
-      det('person', personBbox, 0.85),
-      // No vest detection present
-    ];
-    // Run enough frames for presence class (person: 2/5) and violation (no_vest: 3/5)
-    for (let f = 1; f <= 5; f++) {
-      postProcess(raw.map(d => ({ ...d, frameId: f })), buf, f, TS);
-    }
-    const result = postProcess(raw.map(d => ({ ...d, frameId: 6 })), buf, 6, TS);
-
-    const synth = result.find(d => d.class === 'no_vest');
+    const { result } = runFrames(
+      [det('person', personBbox, 0.85)],
+      FRAME_BUFFER_SIZE,  // violation class needs 3+ frames
+    );
+    const synth = result.find(d => d.class === 'no_vest') as ProcessedDetection | undefined;
     expect(synth).toBeDefined();
-    expect((synth as any).inferred).toBe(true);
+    expect(synth?.inferred).toBe(true);
+    expect(synth?.confidence).toBeCloseTo(0.85 * 0.65, 3);
   });
 
   it('does NOT inject no_vest when vest overlaps person (IoU > 0.3)', () => {
-    const buf = createSmoothingBuffer();
     const personBbox: [number, number, number, number] = [0.1, 0.2, 0.2, 0.5];
     const vestBbox:   [number, number, number, number] = [0.1, 0.3, 0.2, 0.3];
-    const raw: Detection[] = [
-      det('person', personBbox, 0.85),
-      det('vest',   vestBbox,   0.70),
-    ];
-    for (let f = 1; f <= 3; f++) {
-      postProcess(raw.map(d => ({ ...d, frameId: f })), buf, f, TS);
-    }
-    const result = postProcess(raw.map(d => ({ ...d, frameId: 4 })), buf, 4, TS);
+    const { result } = runFrames(
+      [det('person', personBbox, 0.85), det('vest', vestBbox, 0.72)],
+      FRAME_BUFFER_SIZE,
+    );
     expect(result.find(d => d.class === 'no_vest')).toBeUndefined();
+  });
+
+  it('does NOT inject no_vest when explicit no_vest already present', () => {
+    const personBbox:  [number, number, number, number] = [0.1, 0.1, 0.2, 0.5];
+    const noVestBbox:  [number, number, number, number] = [0.1, 0.2, 0.2, 0.3];
+    const { result } = runFrames(
+      [det('person', personBbox, 0.85), det('no_vest', noVestBbox, 0.30)],
+      FRAME_BUFFER_SIZE,
+    );
+    // Only one no_vest (the real one, not a duplicate)
+    expect(result.filter(d => d.class === 'no_vest')).toHaveLength(1);
   });
 });
 
@@ -163,51 +194,87 @@ describe('postProcess — Person+Vest inference', () => {
 // Temporal smoothing
 // ---------------------------------------------------------------------------
 
-describe('postProcess — temporal smoothing', () => {
-  it('suppresses a detection that only appears in 1 of 5 frames (presence class)', () => {
-    const buf = createSmoothingBuffer();
-    const d = det('helmet', [0.1, 0.1, 0.2, 0.2], 0.70);
-
-    // Appear only on frame 1
-    postProcess([{ ...d, frameId: 1 }], buf, 1, TS);
-    // Absent frames 2–4
-    for (let f = 2; f <= 4; f++) postProcess([], buf, f, TS);
-
-    const result = postProcess([], buf, 5, TS);
+describe('temporal smoothing', () => {
+  it('suppresses a presence class appearing only once (1/5 < 2 required)', () => {
+    const bbox: [number, number, number, number] = [0.1, 0.1, 0.2, 0.2];
+    const d = det('helmet', bbox, 0.70, 1);
+    // Frame 1: appears; frames 2-5: absent
+    let buffer: Detection[][] = [[d]];
+    for (let f = 2; f <= 5; f++) {
+      buffer = [...buffer.slice(-(FRAME_BUFFER_SIZE - 1)), []];
+    }
+    const result = postProcess([], buffer, 5, TS);
     expect(result).toHaveLength(0);
   });
 
-  it('confirms a presence class after appearing in 2 consecutive frames', () => {
-    const buf = createSmoothingBuffer();
-    const d = det('excavator', [0.5, 0.3, 0.25, 0.4], 0.65);
-
-    postProcess([{ ...d, frameId: 1 }], buf, 1, TS);
-    const result = postProcess([{ ...d, frameId: 2 }], buf, 2, TS);
-
+  it('confirms a presence class after 2 consecutive frames', () => {
+    const { result } = runFrames(
+      [det('excavator', [0.5, 0.3, 0.25, 0.4], 0.65)],
+      2,
+    );
     expect(result.find(r => r.class === 'excavator')).toBeDefined();
   });
 
-  it('confirms a violation class only after 3 frames', () => {
-    const buf = createSmoothingBuffer();
+  it('confirms violation class only at frame 3 (3/5 threshold)', () => {
     const d = det('no_helmet', [0.1, 0.1, 0.15, 0.15], 0.45);
 
-    postProcess([{ ...d, frameId: 1 }], buf, 1, TS);
-    const after2 = postProcess([{ ...d, frameId: 2 }], buf, 2, TS);
-    expect(after2.find(r => r.class === 'no_helmet')).toBeUndefined();  // 2/5 < 3 required
+    // Frame 1 + Frame 2: not yet confirmed
+    const buf1: Detection[][] = [[{ ...d, frameId: 1 }]];
+    const r1 = postProcess([{ ...d, frameId: 1 }], buf1, 1, TS);
+    expect(r1.find(x => x.class === 'no_helmet')).toBeUndefined(); // 1/5
 
-    const after3 = postProcess([{ ...d, frameId: 3 }], buf, 3, TS);
-    expect(after3.find(r => r.class === 'no_helmet')).toBeDefined();    // 3/5 ✓
+    const buf2 = [...buf1, [{ ...d, frameId: 2 }]];
+    const r2 = postProcess([{ ...d, frameId: 2 }], buf2, 2, TS);
+    expect(r2.find(x => x.class === 'no_helmet')).toBeUndefined(); // 2/5
+
+    // Frame 3: confirmed
+    const buf3 = [...buf2, [{ ...d, frameId: 3 }]];
+    const r3 = postProcess([{ ...d, frameId: 3 }], buf3, 3, TS);
+    expect(r3.find(x => x.class === 'no_helmet')).toBeDefined(); // 3/5 ✓
   });
 
-  it('drops a violation that disappears after being confirmed', () => {
-    const buf = createSmoothingBuffer();
+  it('drops a confirmed violation once it disappears for 2+ frames', () => {
     const d = det('no_vest', [0.2, 0.2, 0.15, 0.4], 0.30);
 
-    for (let f = 1; f <= 3; f++) postProcess([{ ...d, frameId: f }], buf, f, TS);
+    // Confirmed for 3 frames
+    let buffer: Detection[][] = [];
+    for (let f = 1; f <= 3; f++) {
+      buffer = [...buffer.slice(-(FRAME_BUFFER_SIZE - 1)), [{ ...d, frameId: f }]];
+    }
+
     // Absent frames 4 & 5
-    for (let f = 4; f <= 5; f++) postProcess([], buf, f, TS);
-    // Only 1 recent seen out of last 3 frames → below threshold of 3/5
-    const result = postProcess([{ ...d, frameId: 6 }], buf, 6, TS);
+    for (let f = 4; f <= 5; f++) {
+      buffer = [...buffer.slice(-(FRAME_BUFFER_SIZE - 1)), []];
+    }
+
+    // Frame 6 it appears again but only has 1/5 seen in current window → filtered
+    const frame6 = [{ ...d, frameId: 6 }];
+    buffer = [...buffer.slice(-(FRAME_BUFFER_SIZE - 1)), frame6];
+    const result = postProcess(frame6, buffer, 6, TS);
     expect(result.find(r => r.class === 'no_vest')).toBeUndefined();
+  });
+
+  it('noisy detection array: noisy detections are filtered while real ones survive', () => {
+    // Mix of:
+    //   - real person (above threshold, valid area)
+    //   - noise: whole-image helmet (area > 0.7)
+    //   - noise: tiny no_helmet (area < 0.005)
+    //   - noise: no_vest below threshold (conf 0.15 < 0.20)
+    const realPerson = det('person', [0.1, 0.1, 0.20, 0.50], 0.88);
+    const noisyHuge  = det('helmet',    [0.0, 0.0, 1.0, 1.0],   0.80);
+    const noisyTiny  = det('no_helmet', [0.5, 0.5, 0.03, 0.03], 0.60);
+    const noisyConf  = det('no_vest',   [0.3, 0.3, 0.10, 0.10], 0.15);
+
+    const allNoise = [realPerson, noisyHuge, noisyTiny, noisyConf];
+    const { result } = runFrames(allNoise, FRAME_BUFFER_SIZE);
+
+    // Real person (presence: 2/5 needed — satisfied after 2+ frames) should appear
+    expect(result.find(d => d.class === 'person')).toBeDefined();
+    // Person+Vest rule also fires → synthetic no_vest should appear after 3 frames
+    expect(result.find(d => d.class === 'no_vest')).toBeDefined();
+    // All noise entries should be gone
+    expect(result.filter(d => d.class === 'helmet')).toHaveLength(0);
+    // noisyTiny no_helmet was too small, noisyConf was below threshold → no_helmet absent
+    expect(result.filter(d => d.class === 'no_helmet')).toHaveLength(0);
   });
 });

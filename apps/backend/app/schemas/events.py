@@ -12,8 +12,13 @@ _CAMEL = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
 # ── 1. Detection ────────────────────────────────────────────────────────────
 
-# ⚠️  CONTRACT CHANGE 2026-06-09: 'excavator' added — mirrors contracts.ts update.
-DetectionClass = Literal["person", "helmet", "vest", "no_helmet", "no_vest", "excavator"]
+# ⚠️  CONTRACT CHANGE 2026-06-09: 'excavator' added — mirrors contracts.ts.
+# ⚠️  CONTRACT CHANGE 2026-06-10: 'ladder', 'gloves', 'mask' added for 9-class model.
+#     Risk Engine ignores these three (scores 0 pts); they pass through to the UI.
+DetectionClass = Literal[
+    "person", "helmet", "vest", "no_helmet", "no_vest",
+    "excavator", "ladder", "gloves", "mask",
+]
 
 
 class Detection(BaseModel):

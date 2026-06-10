@@ -6,21 +6,16 @@
 // ARCHITECTURE.md §5: keep this file, do not delete. Toggle via env flag.
 
 import type { Detection, DetectionClass } from '@suraksha/shared/contracts';
-import {
-  postProcess,
-  createSmoothingBuffer,
-  type ProcessedDetection,
-  type SmoothingBuffer,
-} from './postProcessor';
+import { postProcess, FRAME_BUFFER_SIZE } from './postProcessor';
 
-// Persistent smoothing state — lives for the lifetime of the detector instance.
-// Each call to mockDetect() advances this buffer by one frame.
-let _buffer: SmoothingBuffer = createSmoothingBuffer();
+// Caller-managed frame buffer — lives for the lifetime of the detector instance.
+// Each call to mockDetect() appends the current raw frame and trims to FRAME_BUFFER_SIZE.
+let _frameBuffer: Detection[][] = [];
 let _frameCounter = 0;
 
 /** Reset detector state (useful in tests or when switching camera sources). */
 export function resetMockDetector(): void {
-  _buffer = createSmoothingBuffer();
+  _frameBuffer = [];
   _frameCounter = 0;
 }
 
@@ -53,7 +48,7 @@ function jitter(v: number, magnitude = 0.008): number {
  * Produce a mock Detection[] for the given frame, then run it through postProcess().
  * Output matches what the real ONNX pipeline will emit after post-processing.
  */
-export function mockDetect(frameId?: number, timestamp?: number): ProcessedDetection[] {
+export function mockDetect(frameId?: number, timestamp?: number): Detection[] {
   _frameCounter++;
   const fid = frameId ?? _frameCounter;
   const ts  = timestamp ?? Date.now();
@@ -82,5 +77,7 @@ export function mockDetect(frameId?: number, timestamp?: number): ProcessedDetec
     });
   }
 
-  return postProcess(raw, _buffer, fid, ts);
+  // Append current frame, keep last FRAME_BUFFER_SIZE entries
+  _frameBuffer = [..._frameBuffer.slice(-(FRAME_BUFFER_SIZE - 1)), raw];
+  return postProcess(raw, _frameBuffer, fid, ts);
 }

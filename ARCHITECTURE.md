@@ -449,6 +449,7 @@ These have already been considered and rejected. Do not reintroduce them.
 | Date | Change | Author |
 |---|---|---|
 | 2026-06-06 | Initial architecture document | Tejvir |
+| 2026-06-10 | Add 'ladder', 'gloves', 'mask' to DetectionClass (9-class YOLOv8s model); postProcessor.ts rewrite with new frameBuffer signature; flag dashboard contracts.ts duplicate | Tejvir |
 | 2026-06-09 | Add backend Risk Engine (`/api/events/raw`), dual-flow §3.2, 'excavator' DetectionClass | Tejvir |
 
 When you make a change to this document, append a row above.

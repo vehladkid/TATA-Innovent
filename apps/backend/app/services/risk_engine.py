@@ -19,9 +19,8 @@ FORMULA
 
   [2] Proximity       (0 – 30 pts)
         Person bbox IoU > 0.05 with any machinery bbox → +30 × machinery_conf.
-        'machinery_bboxes' is a separate parameter because 'excavator' is not yet
-        in DetectionClass (contracts.ts). Once the class is added via PR, update
-        _extract_machinery() to pull directly from the Detection list.
+        Excavator bboxes are extracted from the Detection list automatically in
+        events.py (POST /api/events/raw) and passed here as machinery_bboxes.
 
   [3] Velocity Toward (0 – 20 pts)
         Requires TrackedPerson.velocity = [vx, vy] (normalized units/s).
@@ -204,8 +203,8 @@ def compute_risk(
         SORT tracker output for the subject; supplies velocity and pose keypoints.
     machinery_bboxes:
         Normalized [x, y, w, h] bboxes for heavy machinery (excavator, crane, etc.)
-        in the same frame.  Separate parameter because 'excavator' is not yet in
-        DetectionClass — add via a contracts.ts PR to wire this automatically.
+        in the same frame.  The router extracts excavator detections automatically
+        and merges them with any explicit machinery_bboxes from the payload.
     """
     if machinery_bboxes is None:
         machinery_bboxes = []

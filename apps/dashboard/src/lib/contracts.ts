@@ -1,6 +1,12 @@
 // contracts.ts — Suraksha AI shared data contracts
 // This is the single source of truth. Every team member codes against these types.
 // Do not change without telling the team. Push changes via PR with review.
+//
+// ⚠️  ARCHITECTURE VIOLATION — this file is a local duplicate of
+//    packages/shared/contracts.ts.  ARCHITECTURE.md §6 forbids duplicating
+//    contract types across apps.  TODO (Vanshika): wire @suraksha/shared as a
+//    workspace dependency (vite alias + package.json) and delete this file.
+//    Until then, keep this file manually in sync with packages/shared/contracts.ts.
 
 // ============================================================
 // 1. DETECTION — what the ML model emits per frame
@@ -10,7 +16,11 @@ export type DetectionClass =
   | 'helmet'
   | 'vest'
   | 'no_helmet'
-  | 'no_vest';
+  | 'no_vest'
+  | 'excavator'   // added 2026-06-09
+  | 'ladder'      // added 2026-06-10
+  | 'gloves'      // added 2026-06-10
+  | 'mask';       // added 2026-06-10
 
 export type Detection = {
   class: DetectionClass;
