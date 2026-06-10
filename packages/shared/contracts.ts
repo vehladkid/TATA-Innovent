@@ -5,12 +5,19 @@
 // ============================================================
 // 1. DETECTION — what the ML model emits per frame
 // ============================================================
+// ⚠️  CONTRACT CHANGE 2026-06-09 (tejvir/dev): 'excavator' added to enable
+//    machinery-proximity scoring in the backend Risk Engine.
+//    Pydantic mirror in apps/backend/app/schemas/events.py updated in the same commit.
+//    Dashboard, n8n, and LLM Copilot consumers are read-only on DetectionClass — no
+//    action required on their side.  PWA must label excavator detections with this class
+//    once the fine-tuned ONNX model includes the excavator head.
 export type DetectionClass =
   | 'person'
   | 'helmet'
   | 'vest'
   | 'no_helmet'
-  | 'no_vest';
+  | 'no_vest'
+  | 'excavator';
 
 export type Detection = {
   class: DetectionClass;

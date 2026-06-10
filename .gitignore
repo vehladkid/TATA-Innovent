@@ -74,7 +74,6 @@ ENV/
 # Package/distribution
 *.egg-info/
 *.egg
-dist/
 build/
 .eggs/
 
@@ -104,14 +103,18 @@ apps/backend/alembic/versions/__pycache__/
 # =============================================================================
 # 8. ML TRAINING ARTIFACTS (ml/training)
 # =============================================================================
-# Large binary model files — use Git LFS or pull from storage
-*.onnx
-*.pt
-*.pth
-*.weights
-*.pb
-*.tflite
-*.mlmodel
+# Raw model weight files in training — not project artefacts, pull from storage
+ml/training/*.onnx
+ml/training/*.pt
+ml/training/*.pth
+ml/training/*.weights
+ml/training/*.pb
+ml/training/*.tflite
+ml/training/*.mlmodel
+
+# Exception: exported models under apps/pwa/public/models/ ARE committed
+# (43 MB, under GitHub's 100 MB hard limit; used directly by the PWA at runtime)
+!apps/pwa/public/models/
 
 # YOLO / Ultralytics run outputs
 runs/
