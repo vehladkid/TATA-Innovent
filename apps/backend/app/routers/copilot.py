@@ -1,17 +1,20 @@
-"""LLM Copilot context endpoint.
+"""LLM Copilot endpoints.
 
-Samarth's Copilot queries GET /api/copilot/context before answering any
-user question.  The response is assembled from:
+  GET  /api/copilot/context  - assembles the context envelope for the LLM
+  POST /api/copilot/chat     - answers a user question over that context
+
+The context is assembled from:
   - Last 10 RiskEvents (Supabase if available, broker ring buffer otherwise)
   - All active zones
   - Current shift summary (or a default if no shift is active)
   - Safety index (100 - avg risk score across recent events)
 
-Response shape is a superset of contracts.ts CopilotContext, adding
+Response shape of /context is a superset of contracts.ts CopilotContext, adding
 criticalCount and safetyIndex for richer LLM context.
 
-Endpoints:
-  GET /api/copilot/context
+/chat returns a CopilotResponse superset: {answer, citedEventIds,
+suggestedActions, provider}.  The LLM provider cascades Groq -> Claude ->
+rule-based fallback, so /chat works with no API key configured.
 """
 
 from __future__ import annotations
@@ -19,15 +22,40 @@ from __future__ import annotations
 import time
 
 from fastapi import APIRouter
+from pydantic import BaseModel
 
 router = APIRouter()
 
 _RECENT_EVENTS_FOR_COPILOT = 10
 
 
+class ChatRequest(BaseModel):
+    question: str
+
+
 @router.get("/api/copilot/context")
 async def get_copilot_context() -> dict:
-    """Assemble and return the full context for the LLM Copilot.
+    """Assemble and return the full context for the LLM Copilot."""
+    return await assemble_context()
+
+
+@router.post("/api/copilot/chat")
+async def copilot_chat(body: ChatRequest) -> dict:
+    """Answer a supervisor's question over the live safety context.
+
+    Assembles the same context as /context, then calls the LLM service
+    (Groq -> Claude -> rule-based fallback).  Always returns an answer.
+    """
+    context = await assemble_context()
+    context["userQuestion"] = body.question
+
+    from app.services.llm import answer_question
+
+    return await answer_question(context, body.question)
+
+
+async def assemble_context() -> dict:
+    """Build the Copilot context envelope.
 
     All fields are optional sources — if Supabase is down or no shift is active,
     the response still contains useful data from the in-memory broker.

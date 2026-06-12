@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.db.session import init_db
-from app.routers import events, fake_events, health, shifts, zones, copilot
+from app.routers import events, fake_events, health, shifts, zones, copilot, reports
 
 logging.basicConfig(level=settings.log_level.upper())
 _log = logging.getLogger(__name__)
@@ -55,3 +55,4 @@ app.include_router(events.router)
 app.include_router(shifts.router)
 app.include_router(zones.router)
 app.include_router(copilot.router)
+app.include_router(reports.router)

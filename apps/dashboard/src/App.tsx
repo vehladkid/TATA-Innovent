@@ -8,6 +8,7 @@ import { RiskPanel } from './app/risk-panel/RiskPanel';
 import { HazardHeatmap } from './app/heatmap/HazardHeatmap';
 import { ExecutiveView } from './app/executive-view/ExecutiveView';
 import { LandingPage } from './app/landing/LandingPage';
+import { CopilotPanel } from './components/copilot/CopilotPanel'; // samarth/dev: LLM Safety Copilot
 
 function App() {
   const activeView = useEventStore((state) => state.activeView);
@@ -56,6 +57,9 @@ function App() {
         {activeView === 'HEATMAP' && <HazardHeatmap />}
         {activeView === 'EXECUTIVE' && <ExecutiveView />}
       </div>
+
+      {/* samarth/dev: floating LLM Safety Copilot (self-contained) */}
+      <CopilotPanel />
     </div>
   );
 }
