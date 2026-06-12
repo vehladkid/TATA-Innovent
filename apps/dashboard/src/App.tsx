@@ -7,6 +7,7 @@ import { LiveOps } from './app/live-ops/LiveOps';
 import { RiskPanel } from './app/risk-panel/RiskPanel';
 import { HazardHeatmap } from './app/heatmap/HazardHeatmap';
 import { ExecutiveView } from './app/executive-view/ExecutiveView';
+import { LandingPage } from './app/landing/LandingPage';
 
 function App() {
   const activeView = useEventStore((state) => state.activeView);
@@ -28,6 +29,11 @@ function App() {
 
     return () => clearInterval(interval);
   }, [tickWorkerPositions]);
+
+  // If Landing Page view, render fullscreen landing
+  if (activeView === 'LANDING') {
+    return <LandingPage />;
+  }
 
   // If in Boot Screen mode, render fullscreen overlay
   if (activeView === 'BOOT') {
