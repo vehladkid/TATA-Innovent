@@ -10,4 +10,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Ping health endpoint
-        run: curl -fsS https://suraksha-backend-fams.onrender.com/health
+        run: curl -fsS https://suraksha-ai.onrender.com/health

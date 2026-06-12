@@ -1,7 +1,7 @@
 import os, shutil, random
 from pathlib import Path
 
-SRC = Path("datasets/sh17_full")
+SRC = Path("datasets/sh17")
 DST = Path("datasets/sh17_ready")
 
 img_dir = SRC / "images"

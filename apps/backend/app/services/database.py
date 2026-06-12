@@ -147,6 +147,31 @@ async def get_events_by_zone(zone_id: str, limit: int = 20) -> list:
         return []
 
 
+async def get_events_since(since_ms: int, limit: int = 1000) -> list:
+    """Return up to `limit` RiskEvents with timestamp >= `since_ms`, newest first.
+
+    Falls back to filtering the in-memory broker ring buffer when Supabase is
+    unavailable, so incident reports always have data even without a DB connection.
+    """
+    if _client is None:
+        from app.services.event_broker import broker
+        cutoff = since_ms
+        return [e for e in broker.recent(limit) if e.get("timestamp", 0) >= cutoff][:limit]
+    try:
+        result = (
+            await _client.table("events")
+            .select("*")
+            .gte("timestamp", since_ms)
+            .order("timestamp", desc=True)
+            .limit(limit)
+            .execute()
+        )
+        return _rows_to_risk_events(result.data or [])
+    except Exception as exc:
+        _log.warning("get_events_since(since=%d) failed: %s", since_ms, exc)
+        return []
+
+
 async def get_critical_events(since_ms: int) -> list:
     """Return all critical-band RiskEvents after `since_ms` (epoch ms)."""
     if _client is None:

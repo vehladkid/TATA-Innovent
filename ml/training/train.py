@@ -31,6 +31,9 @@ results = model.train(
     copy_paste=0.1,
 )
 
+def _fmt(v):
+    return f"{v:.3f}" if isinstance(v, float) else str(v)
+
 print("\n=== Training Complete ===")
-print(f"Best mAP50:    {results.results_dict.get('metrics/mAP50(B)', 'N/A'):.3f}")
-print(f"Best mAP50-95: {results.results_dict.get('metrics/mAP50-95(B)', 'N/A'):.3f}")
+print(f"Best mAP50:    {_fmt(results.results_dict.get('metrics/mAP50(B)', 'N/A'))}")
+print(f"Best mAP50-95: {_fmt(results.results_dict.get('metrics/mAP50-95(B)', 'N/A'))}")

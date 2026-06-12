@@ -275,8 +275,8 @@ Everything downstream is unchanged because both sides emit `Detection[]` matchin
 ```
 suraksha-ai/
 ├── packages/shared/           # contracts.ts + shared utilities (SORT tracker lives here)
-├── apps/pwa/                  # Next.js PWA, Dhruv + Amber
-├── apps/dashboard/            # Next.js dashboard, Vanshika
+├── apps/pwa/                  # Vite PWA, Dhruv + Amber
+├── apps/dashboard/            # Vite dashboard, Vanshika
 ├── apps/backend/              # FastAPI backend, Tejvir + Samarth
 ├── ml/training/               # YOLOv8 training scripts, Tejvir
 ├── n8n/                       # workflow JSON exports, Dhruv
@@ -287,7 +287,7 @@ suraksha-ai/
 
 - `main` — protected, deploys automatically to production
 - `staging` — protected, used for demo rehearsal
-- `feat/<owner>-<short-name>` — feature branches (e.g. `feat/vanshika-heatmap`)
+- `<name>/dev` — per-owner dev branches (e.g. `vanshika/dev`, `samarth/dev`)
 - All merges to `main` require Tejvir's review
 
 ### Commit Style
@@ -388,10 +388,10 @@ The three planned merge points (each is a 2–4 hour pair-programming session wi
 | `TELEGRAM_BOT_TOKEN` | n8n | Week 3 | `123:ABC...` |
 | `RESEND_API_KEY` | n8n | Week 3 | `re_...` |
 | `CORS_ORIGINS` | backend | always | `https://suraksha-ai.vercel.app,https://suraksha-pwa.vercel.app` |
-| `NEXT_PUBLIC_BACKEND_URL` | pwa, dashboard | always | `https://suraksha-backend.onrender.com` |
-| `NEXT_PUBLIC_WS_URL` | pwa, dashboard | always | `wss://suraksha-backend.onrender.com` |
+| `VITE_BACKEND_URL` | pwa, dashboard | always | `https://suraksha-ai.onrender.com` |
+| `VITE_WS_URL` | pwa, dashboard | always | `wss://suraksha-ai.onrender.com` |
 
-`NEXT_PUBLIC_*` are safe to expose to the browser. Anything else **must not** appear in any frontend code.
+`VITE_*` are safe to expose to the browser. Anything else **must not** appear in any frontend code.
 
 ---
 
@@ -451,5 +451,6 @@ These have already been considered and rejected. Do not reintroduce them.
 | 2026-06-06 | Initial architecture document | Tejvir |
 | 2026-06-10 | Add 'ladder', 'gloves', 'mask' to DetectionClass (9-class YOLOv8s model); postProcessor.ts rewrite with new frameBuffer signature; flag dashboard contracts.ts duplicate | Tejvir |
 | 2026-06-09 | Add backend Risk Engine (`/api/events/raw`), dual-flow §3.2, 'excavator' DetectionClass | Tejvir |
+| 2026-06-11 | Fix stale "Next.js"→"Vite", "NEXT_PUBLIC_*"→"VITE_*", "feat/<owner>"→"<name>/dev"; update backend hostname to suraksha-ai.onrender.com; add PROTOCOL_VERSION to contracts.ts; add provider? to CopilotResponse | Tejvir |
 
 When you make a change to this document, append a row above.

@@ -5,7 +5,12 @@ Swap this for a Redis Streams implementation when you need multi-instance fanout
 """
 
 import asyncio
+import logging
 from collections import deque
+
+_log = logging.getLogger(__name__)
+
+_QUEUE_MAXSIZE = 256
 
 
 class EventBroker:
@@ -14,7 +19,7 @@ class EventBroker:
         self._history: deque[dict] = deque(maxlen=max_history)
 
     def subscribe(self) -> asyncio.Queue:
-        q: asyncio.Queue = asyncio.Queue()
+        q: asyncio.Queue = asyncio.Queue(maxsize=_QUEUE_MAXSIZE)
         self._subscribers.append(q)
         return q
 
@@ -27,7 +32,22 @@ class EventBroker:
     async def publish(self, message: dict) -> None:
         self._history.append(message)
         for q in self._subscribers:
-            await q.put(message)
+            try:
+                q.put_nowait(message)
+            except asyncio.QueueFull:
+                # Slow/frozen subscriber: drop oldest item to make room, then re-try.
+                try:
+                    q.get_nowait()
+                except asyncio.QueueEmpty:
+                    pass
+                _log.warning(
+                    "EventBroker: subscriber queue full (maxsize=%d) — oldest item dropped.",
+                    _QUEUE_MAXSIZE,
+                )
+                try:
+                    q.put_nowait(message)
+                except asyncio.QueueFull:
+                    _log.warning("EventBroker: subscriber queue still full after drop — message lost.")
 
     def recent(self, n: int = 50) -> list[dict]:
         return list(self._history)[-n:]

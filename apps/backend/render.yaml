@@ -17,3 +17,13 @@ services:
         value: "*"
       - key: DATABASE_URL
         sync: false   # paste your Supabase connection string in the Render dashboard
+      - key: SUPABASE_URL
+        sync: false   # https://<project-id>.supabase.co
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false   # service_role secret — never expose to client
+      - key: GROQ_API_KEY
+        sync: false   # gsk_... from console.groq.com (enables Llama 3.3 Copilot)
+      - key: ANTHROPIC_API_KEY
+        sync: false   # sk-ant-... (Claude fallback when Groq is unavailable)
+      - key: N8N_WEBHOOK_URL
+        sync: false   # https://<n8n-host>/webhook/critical-event

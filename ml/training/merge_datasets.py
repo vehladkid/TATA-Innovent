@@ -79,8 +79,12 @@ def merge():
 
     for split_name, samples in [("train", train_s), ("valid", val_s)]:
         for img, lines in samples:
-            shutil.copy2(img, OUTPUT_DIR / split_name / "images" / img.name)
-            with open(OUTPUT_DIR / split_name / "labels" / (img.stem + ".txt"), "w") as f:
+            # Prefix with source dataset name to prevent silent overwrites when two
+            # datasets contain same-named files (e.g. img_001.jpg in both sh17 and helmet_vest).
+            dataset_name = img.parent.parent.parent.name
+            dest_stem = f"{dataset_name}_{img.stem}"
+            shutil.copy2(img, OUTPUT_DIR / split_name / "images" / f"{dest_stem}{img.suffix}")
+            with open(OUTPUT_DIR / split_name / "labels" / f"{dest_stem}.txt", "w") as f:
                 f.write("\n".join(lines))
 
     yaml = f"path: {OUTPUT_DIR.absolute()}\ntrain: train/images\nval: valid/images\nnc: {len(UNIFIED_CLASSES)}\nnames:\n"

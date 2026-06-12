@@ -35,8 +35,9 @@ def augment_image(img, seed):
     rng = random.Random(seed)
     h, w = img.shape[:2]
 
-    # Random horizontal flip
-    if rng.random() > 0.5:
+    # Random horizontal flip — record the decision so callers can mirror bboxes
+    did_flip = rng.random() > 0.5
+    if did_flip:
         img = cv2.flip(img, 1)
 
     # Random brightness
@@ -55,7 +56,7 @@ def augment_image(img, seed):
     hsv[:,:,2] = np.clip(hsv[:,:,2] * rng.uniform(0.8, 1.2), 0, 255)
     img = cv2.cvtColor(hsv.astype(np.uint8), cv2.COLOR_HSV2BGR)
 
-    return img, angle
+    return img, angle, did_flip
 
 def flip_bbox(bbox, flipped):
     """Adjust bbox x-center for horizontal flip."""
@@ -119,8 +120,7 @@ for target_cls in TARGET_CLASSES:
                 iteration += 1
                 continue
 
-            aug_img, angle = augment_image(img, seed)
-            flipped = (seed % 2 == 0)
+            aug_img, angle, flipped = augment_image(img, seed)
 
             # Parse and adjust bboxes
             new_lines = []

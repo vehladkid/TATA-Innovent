@@ -2,6 +2,8 @@
 // This is the single source of truth. Every team member codes against these types.
 // Do not change without telling the team. Push changes via PR with review.
 
+export const PROTOCOL_VERSION = "1.0.0";
+
 // ============================================================
 // 1. DETECTION — what the ML model emits per frame
 // ============================================================
@@ -122,6 +124,7 @@ export type CopilotResponse = {
   answer: string;
   citedEventIds: string[];     // events the answer references
   suggestedActions?: string[];
+  provider?: string;           // LLM provider used: e.g. "groq-llama3.3", "claude", "offline-rule-based"
 };
 
 // ============================================================

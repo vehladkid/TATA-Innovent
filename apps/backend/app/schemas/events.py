@@ -128,6 +128,7 @@ class CopilotResponse(BaseModel):
     answer: str
     cited_event_ids: list[str]
     suggested_actions: Optional[list[str]] = None
+    provider: Optional[str] = None  # e.g. "groq-llama3.3", "claude", "offline-rule-based"
 
 
 # ── 7. AlertPayload ───────────────────────────────────────────────────────────
