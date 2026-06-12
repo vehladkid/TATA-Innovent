@@ -14,9 +14,8 @@ services:
       - key: LOG_LEVEL
         value: INFO
       - key: CORS_ORIGINS
-        # Dashboard (Vercel) + local Vite dev server.
-        # TODO: add PWA deployed origin (https://suraksha-pwa.vercel.app) once Dhruv ships it.
-        value: "https://suraksha-ai.vercel.app,http://localhost:5173"
+        # TODO: add dashboard Vercel URL and PWA Vercel URL once deployed
+        value: "http://localhost:5173"
       - key: DATABASE_URL
         sync: false   # paste your Supabase connection string in the Render dashboard
       - key: SUPABASE_URL

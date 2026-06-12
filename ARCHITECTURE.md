@@ -388,8 +388,8 @@ The three planned merge points (each is a 2–4 hour pair-programming session wi
 | `TELEGRAM_BOT_TOKEN` | n8n | Week 3 | `123:ABC...` |
 | `RESEND_API_KEY` | n8n | Week 3 | `re_...` |
 | `CORS_ORIGINS` | backend | always | `https://suraksha-ai.vercel.app,https://suraksha-pwa.vercel.app` |
-| `VITE_BACKEND_URL` | pwa, dashboard | always | `https://suraksha-ai.onrender.com` |
-| `VITE_WS_URL` | pwa, dashboard | always | `wss://suraksha-ai.onrender.com` |
+| `VITE_BACKEND_URL` | pwa, dashboard | always | `https://suraksha-backend-fams.onrender.com` |
+| `VITE_WS_URL` | pwa, dashboard | always | `wss://suraksha-backend-fams.onrender.com` |
 
 `VITE_*` are safe to expose to the browser. Anything else **must not** appear in any frontend code.
 
