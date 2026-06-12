@@ -3,187 +3,189 @@ import { useEventStore } from '../../lib/event-store';
 import { getRiskColor } from '../../lib/risk-utils';
 import { Activity, Zap, Layers } from 'lucide-react';
 
+// Vigil Edge - Incident Stream Console
 export const LiveEventFeed: React.FC = () => {
   const recentEvents = useEventStore((state) => state.recentEvents);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll list to top when new events arrive
   useEffect(() => {
     if (containerRef.current) {
-      containerRef.current.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-      });
+      containerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }, [recentEvents]);
 
   const formatTime = (ts: number) => {
     const d = new Date(ts);
-    const hrs = String(d.getHours()).padStart(2, '0');
-    const mins = String(d.getMinutes()).padStart(2, '0');
-    const secs = String(d.getSeconds()).padStart(2, '0');
+    const pad = (n: number) => String(n).padStart(2, '0');
     const ms = String(d.getMilliseconds()).padStart(3, '0').slice(0, 2);
-    return `${hrs}:${mins}:${secs}.${ms}`;
+    return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}.${ms}`;
   };
 
   return (
     <div
-      className="hud-panel tech-corners"
+      className="hud-panel"
       style={{
         width: '100%',
         height: '100%',
-        background: 'rgba(4, 5, 12, 0.85)',
-        border: '1px solid rgba(0, 243, 255, 0.2)',
+        background: '#141414',
+        border: '1px solid rgba(255,255,255,0.08)',
         display: 'flex',
         flexDirection: 'column',
       }}
     >
-      {/* Panel Title */}
+      {/* Header */}
       <div
         style={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          padding: '10px 12px',
-          background: 'rgba(0, 0, 0, 0.5)',
-          borderBottom: '1px solid rgba(0, 243, 255, 0.15)',
-          fontFamily: "'Orbitron', sans-serif",
-          fontSize: '11px',
-          fontWeight: 'bold',
-          letterSpacing: '1px',
+          padding: '9px 12px',
+          borderBottom: '1px solid rgba(255,255,255,0.06)',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <Activity size={12} className="glow-text-cyan" style={{ color: '#00f3ff' }} />
-          <span style={{ color: '#00f3ff' }}>REAL-TIME INCIDENT STREAM</span>
+          <Activity size={12} style={{ color: '#00B8D9' }} />
+          <span style={{
+            fontFamily: "'Sora', sans-serif",
+            fontSize: '11px',
+            fontWeight: 600,
+            color: 'rgba(255,255,255,0.55)',
+            letterSpacing: '0.05em',
+          }}>
+            INCIDENT STREAM
+          </span>
         </div>
         <div
           style={{
-            background: 'rgba(0, 243, 255, 0.1)',
-            border: '1px solid rgba(0, 243, 255, 0.3)',
-            borderRadius: '2px',
-            padding: '2px 6px',
+            background: 'rgba(0,184,217,0.08)',
+            border: '1px solid rgba(0,184,217,0.2)',
+            borderRadius: '3px',
+            padding: '2px 7px',
+            fontFamily: "'Poppins', sans-serif",
             fontSize: '9px',
-            color: '#00f3ff',
+            fontWeight: 500,
+            color: '#00B8D9',
           }}
         >
-          LIVE FEED
+          LIVE
         </div>
       </div>
 
-      {/* Events Terminal Log */}
+      {/* Events list */}
       <div
         ref={containerRef}
         style={{
           flex: 1,
-          padding: '10px',
+          padding: '8px',
           overflowY: 'auto',
           display: 'flex',
           flexDirection: 'column',
-          gap: '8px',
+          gap: '6px',
         }}
       >
         {recentEvents.map((evt, idx) => {
           const theme = getRiskColor(evt.band);
           const isPredictive = evt.predictedEntryMs !== null;
-          const zoneName = evt.zoneId === 'zone_press_A' ? 'PRESS MACHINE A' :
-                           evt.zoneId === 'zone_forklift_lane' ? 'FORKLIFT LANE' :
-                           evt.zoneId === 'zone_welding_bay' ? 'WELDING BAY C' : 'PLANT FLOOR';
+          const zoneName =
+            evt.zoneId === 'zone_press_A'       ? 'Press A' :
+            evt.zoneId === 'zone_forklift_lane' ? 'Forklift Lane' :
+            evt.zoneId === 'zone_welding_bay'   ? 'Welding Bay C' : 'Plant Floor';
 
-          // Visual effect for fresh events
+          // Color mappings to new token system
+          const accentColor =
+            isPredictive       ? '#8B5CF6' :
+            evt.band === 'critical' ? '#EF4444' :
+            evt.band === 'danger'   ? '#F59E0B' :
+            evt.band === 'caution'  ? '#F59E0B' : '#22C55E';
+
           const isFresh = idx === 0;
 
           return (
             <div
               key={evt.eventId}
-              className={`live-feed-card ${isFresh ? 'fresh-event-glow' : ''}`}
+              className="live-feed-card"
               style={{
-                background: 'rgba(10, 12, 28, 0.4)',
-                borderLeft: `3px solid ${isPredictive ? '#b026ff' : theme.hex}`,
-                borderRight: '1px solid rgba(255, 255, 255, 0.05)',
-                borderTop: '1px solid rgba(255, 255, 255, 0.05)',
-                borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+                background: isFresh ? 'rgba(255,255,255,0.035)' : 'rgba(255,255,255,0.018)',
+                borderLeft: `2px solid ${accentColor}`,
+                borderRight: '1px solid rgba(255,255,255,0.04)',
+                borderTop: '1px solid rgba(255,255,255,0.04)',
+                borderBottom: '1px solid rgba(255,255,255,0.04)',
                 padding: '8px 10px',
-                fontFamily: "'Courier New', Courier, monospace",
-                fontSize: '11px',
                 borderRadius: '0 4px 4px 0',
-                transition: 'all 0.3s ease',
-                position: 'relative',
-                boxShadow: isFresh ? `0 0 10px ${theme.hex}22` : 'none',
+                transition: 'background 0.2s ease',
               }}
             >
-              {/* Header Telemetry Row */}
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  marginBottom: '4px',
-                  fontFamily: "'Orbitron', sans-serif",
-                  fontSize: '10px',
-                  fontWeight: 'bold',
-                }}
-              >
-                <span style={{ color: 'rgba(255,255,255,0.4)' }}>
-                  [{formatTime(evt.timestamp)}]
+              {/* Header row */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
+                <span style={{
+                  fontFamily: "'Poppins', sans-serif",
+                  fontSize: '9.5px',
+                  fontWeight: 500,
+                  color: 'rgba(255,255,255,0.3)',
+                }}>
+                  {formatTime(evt.timestamp)}
                 </span>
-                
-                <span
-                  style={{
-                    color: isPredictive ? '#b026ff' : theme.hex,
-                    textShadow: `0 0 5px ${isPredictive ? '#b026ff' : theme.hex}44`,
-                  }}
-                >
+                <span style={{
+                  fontFamily: "'Sora', sans-serif",
+                  fontSize: '9.5px',
+                  fontWeight: 600,
+                  color: accentColor,
+                }}>
                   {isPredictive ? 'PREDICTIVE' : theme.name}
                 </span>
               </div>
 
-              {/* Data Row */}
-              <div style={{ color: '#fff', fontSize: '11px', marginBottom: '2px' }}>
-                TARGET: <span style={{ color: '#00f3ff', fontWeight: 'bold' }}>TRACK_0{evt.trackId}</span>
-              </div>
-              
-              <div style={{ color: 'rgba(255,255,255,0.85)', fontSize: '11px' }}>
-                LOCATION: <span style={{ color: '#ffffff' }}>{zoneName}</span>
-              </div>
-
-              {/* Breakdown metrics summary */}
-              <div
-                style={{
-                  marginTop: '4px',
-                  display: 'flex',
-                  gap: '8px',
-                  fontSize: '9px',
-                  color: 'rgba(255,255,255,0.5)',
-                  borderTop: '1px dashed rgba(255, 255, 255, 0.1)',
-                  paddingTop: '4px',
-                }}
-              >
-                <span>SCORE: <strong style={{ color: '#fff' }}>{evt.riskScore}</strong></span>
-                {evt.breakdown.ppeViolation > 0 && <span style={{ color: '#ff003c' }}>PPE_VIOLATION</span>}
-                {evt.breakdown.fallDetected > 0 && <span style={{ color: '#ff003c' }}>FALL_DET</span>}
+              {/* Data */}
+              <div style={{
+                fontFamily: "'Sora', sans-serif",
+                fontSize: '11px',
+                fontWeight: 600,
+                color: '#fff',
+                marginBottom: '2px',
+              }}>
+                W-00{evt.trackId}
+                <span style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 400, color: 'rgba(255,255,255,0.45)', fontSize: '10px', marginLeft: '6px' }}>
+                  {zoneName}
+                </span>
               </div>
 
-              {/* Predictive Entry alert inside Feed card */}
+              {/* Score row */}
+              <div style={{
+                display: 'flex',
+                gap: '8px',
+                fontFamily: "'Poppins', sans-serif",
+                fontSize: '9px',
+                color: 'rgba(255,255,255,0.35)',
+                borderTop: '1px solid rgba(255,255,255,0.05)',
+                paddingTop: '4px',
+                marginTop: '4px',
+              }}>
+                <span>Score: <strong style={{ color: 'rgba(255,255,255,0.7)' }}>{evt.riskScore}</strong></span>
+                {evt.breakdown.ppeViolation > 0 && <span style={{ color: '#EF4444' }}>PPE VIOLATION</span>}
+                {evt.breakdown.fallDetected > 0 && <span style={{ color: '#EF4444' }}>FALL DET.</span>}
+              </div>
+
+              {/* Predictive countdown */}
               {isPredictive && evt.predictedEntryMs && (
                 <div
                   style={{
                     marginTop: '6px',
-                    background: 'rgba(176, 38, 255, 0.15)',
-                    border: '1px solid rgba(176, 38, 255, 0.4)',
-                    color: '#e2d0ff',
-                    padding: '2px 6px',
-                    borderRadius: '2px',
+                    background: 'rgba(139,92,246,0.12)',
+                    border: '1px solid rgba(139,92,246,0.3)',
+                    color: 'rgba(200,185,255,0.9)',
+                    padding: '3px 7px',
+                    borderRadius: '3px',
+                    fontFamily: "'Poppins', sans-serif",
                     fontSize: '9.5px',
-                    fontWeight: 'bold',
+                    fontWeight: 500,
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '4px',
-                    fontFamily: "'Orbitron', sans-serif",
+                    gap: '5px',
                     animation: 'pulse-predictive 1.5s infinite alternate',
                   }}
                 >
-                  <Zap size={10} style={{ color: '#b026ff' }} />
-                  <span>PREDICTED ENTRY IN {(evt.predictedEntryMs / 1000).toFixed(1)}s</span>
+                  <Zap size={10} style={{ color: '#8B5CF6' }} />
+                  Entry predicted in {(evt.predictedEntryMs / 1000).toFixed(1)}s
                 </div>
               )}
             </div>
@@ -198,26 +200,21 @@ export const LiveEventFeed: React.FC = () => {
               alignItems: 'center',
               justifyContent: 'center',
               height: '100%',
-              color: 'rgba(255,255,255,0.35)',
-              gap: '8px',
-              fontStyle: 'italic',
+              color: 'rgba(255,255,255,0.2)',
+              gap: '10px',
+              fontFamily: "'Poppins', sans-serif",
               fontSize: '12px',
             }}
           >
-            <Layers size={20} />
-            Awaiting WebSocket broadcast feed...
+            <Layers size={18} />
+            Awaiting event stream...
           </div>
         )}
       </div>
 
       <style>{`
         .live-feed-card:hover {
-          background: rgba(20, 24, 50, 0.6) !important;
-          transform: translateX(4px);
-        }
-        @keyframes pulse-predictive {
-          0% { border-color: rgba(176, 38, 255, 0.3); }
-          100% { border-color: rgba(176, 38, 255, 0.9); }
+          background: rgba(255,255,255,0.04) !important;
         }
       `}</style>
     </div>

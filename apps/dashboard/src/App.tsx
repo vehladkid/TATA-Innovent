@@ -37,9 +37,6 @@ function App() {
   // Render the core command center
   return (
     <div className="hud-container" style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw' }}>
-      {/* Laser scanners HUD line */}
-      <div className="scanner-line" />
-
       {/* Main command navbar header */}
       <CommandOverlay />
 

@@ -115,35 +115,34 @@ export const HazardHeatmap: React.FC = () => {
     >
       {/* Tactical Blueprint Stage */}
       <div
-        className="hud-panel tech-corners"
+        className="hud-panel"
         style={{
-          background: 'rgba(5, 7, 24, 0.75)',
-          border: '1px solid rgba(0, 243, 255, 0.25)',
+          background: '#141414',
+          border: '1px solid rgba(255,255,255,0.08)',
           display: 'flex',
           flexDirection: 'column',
           minHeight: 0,
         }}
       >
-        {/* Sub Header Controls */}
+        {/* Header */}
         <div
           style={{
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            padding: '10px 16px',
-            background: 'rgba(0, 0, 0, 0.5)',
-            borderBottom: '1px solid rgba(0, 243, 255, 0.15)',
-            fontFamily: "'Orbitron', sans-serif",
-            fontSize: '11px',
+            padding: '9px 14px',
+            borderBottom: '1px solid rgba(255,255,255,0.06)',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <Layers size={13} className="glow-text-cyan" style={{ color: '#00f3ff' }} />
-            <span style={{ color: '#00f3ff', fontWeight: 'bold' }}>RISK DISTRIBUTION HEATMAP (DIGITAL TWIN)</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+            <Layers size={12} style={{ color: '#00B8D9' }} />
+            <span style={{ fontFamily: "'Sora', sans-serif", fontSize: '11px', fontWeight: 600, color: 'rgba(255,255,255,0.55)', letterSpacing: '0.05em' }}>
+              HAZARD DENSITY MAP
+            </span>
           </div>
-          <div style={{ color: '#ffaa00', display: 'flex', alignItems: 'center', gap: '4px' }}>
-            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#ffaa00', animation: 'reactor-pulse 1s infinite alternate' }} />
-            <span>ACCUMULATING HISTORICAL INCIDENT DATA</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#F59E0B' }} />
+            <span style={{ fontFamily: "'Poppins', sans-serif", fontSize: '10px', fontWeight: 500, color: 'rgba(255,255,255,0.35)' }}>Accumulating incident data</span>
           </div>
         </div>
 
@@ -174,7 +173,7 @@ export const HazardHeatmap: React.FC = () => {
             <rect width="1000" height="1000" fill="url(#grid-heatmap)" />
 
             {/* Static outlines */}
-            <rect x="20" y="20" width="960" height="960" fill="none" stroke="rgba(0, 243, 255, 0.1)" strokeWidth="2" strokeDasharray="5,5" />
+            <rect x="20" y="20" width="960" height="960" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="1.5" strokeDasharray="6,6" />
             
             {/* Zones Boundaries */}
             {zones.map((zone) => {
@@ -208,83 +207,65 @@ export const HazardHeatmap: React.FC = () => {
               />
             ))}
 
-            {/* Grid references text */}
-            <text x="35" y="55" fill="rgba(0,243,255,0.25)" fontFamily="'Orbitron', sans-serif" fontSize="12">SEC: A-1</text>
-            <text x="920" y="55" fill="rgba(0,243,255,0.25)" fontFamily="'Orbitron', sans-serif" fontSize="12">SEC: B-2</text>
-            <text x="35" y="960" fill="rgba(0,243,255,0.25)" fontFamily="'Orbitron', sans-serif" fontSize="12">SEC: C-3</text>
-            <text x="920" y="960" fill="rgba(0,243,255,0.25)" fontFamily="'Orbitron', sans-serif" fontSize="12">SEC: D-4</text>
+            {/* Grid reference labels */}
+            <text x="35" y="55" fill="rgba(255,255,255,0.1)" fontFamily="'Poppins', sans-serif" fontSize="11">A-1</text>
+            <text x="920" y="55" fill="rgba(255,255,255,0.1)" fontFamily="'Poppins', sans-serif" fontSize="11">B-2</text>
+            <text x="35" y="960" fill="rgba(255,255,255,0.1)" fontFamily="'Poppins', sans-serif" fontSize="11">C-3</text>
+            <text x="920" y="960" fill="rgba(255,255,255,0.1)" fontFamily="'Poppins', sans-serif" fontSize="11">D-4</text>
           </svg>
         </div>
 
         {/* Playback Controls Footer */}
         <div
           style={{
-            padding: '16px',
-            background: 'rgba(5, 7, 20, 0.9)',
-            borderTop: '1px solid rgba(0, 243, 255, 0.2)',
+            padding: '10px 14px',
+            borderTop: '1px solid rgba(255,255,255,0.06)',
             display: 'flex',
             alignItems: 'center',
-            gap: '16px',
+            gap: '14px',
           }}
         >
-          {/* Play/Pause Button */}
+          {/* Play/Pause */}
           <button
             onClick={() => setIsPlaying(!isPlaying)}
             style={{
-              background: isPlaying ? 'rgba(255, 0, 60, 0.15)' : 'rgba(0, 243, 255, 0.15)',
-              border: `1px solid ${isPlaying ? '#ff003c' : '#00f3ff'}`,
-              color: isPlaying ? '#ff003c' : '#00f3ff',
+              background: isPlaying ? 'rgba(239,68,68,0.12)' : 'rgba(0,184,217,0.1)',
+              border: `1px solid ${isPlaying ? 'rgba(239,68,68,0.4)' : 'rgba(0,184,217,0.3)'}`,
+              color: isPlaying ? '#EF4444' : '#00B8D9',
               borderRadius: '4px',
-              width: '40px',
-              height: '40px',
+              width: '34px',
+              height: '34px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               cursor: 'pointer',
-              transition: 'all 0.2s ease',
+              transition: 'all 0.15s ease',
+              flexShrink: 0,
             }}
           >
-            {isPlaying ? <Pause size={18} /> : <Play size={18} />}
+            {isPlaying ? <Pause size={15} /> : <Play size={15} />}
           </button>
 
-          {/* Timeline slider */}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                fontFamily: "'Orbitron', sans-serif",
-                fontSize: '10px',
-                color: 'rgba(255,255,255,0.5)',
-              }}
-            >
-              <span>TIMELINE PLAYBACK PLAYHEAD</span>
-              <span style={{ color: '#00f3ff', fontWeight: 'bold' }}>
-                CURRENT FRAME: {getTimelineLabel(timelineStep)}
-              </span>
-            </div>
-            
+          {/* Timeline scrubber */}
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '5px' }}>
+            <span style={{ fontFamily: "'Poppins', sans-serif", fontSize: '10px', fontWeight: 500, color: 'rgba(255,255,255,0.3)' }}>
+              {getTimelineLabel(timelineStep)}
+            </span>
             <div style={{ display: 'flex', gap: '2px' }}>
               {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((step) => {
                 const isActive = step === timelineStep;
                 return (
                   <button
                     key={step}
-                    onClick={() => {
-                      setTimelineStep(step);
-                      setIsPlaying(false);
-                    }}
+                    onClick={() => { setTimelineStep(step); setIsPlaying(false); }}
                     style={{
                       flex: 1,
-                      height: '8px',
-                      background: isActive
-                        ? 'linear-gradient(90deg, #ffaa00, #ff003c)'
-                        : 'rgba(255, 255, 255, 0.08)',
+                      height: '6px',
+                      background: isActive ? '#00B8D9' : 'rgba(255,255,255,0.07)',
                       border: 'none',
-                      borderRadius: '1px',
+                      borderRadius: '2px',
                       cursor: 'pointer',
-                      boxShadow: isActive ? '0 0 10px #ff003c' : 'none',
-                      transition: 'all 0.2s ease',
+                      transition: 'background 0.15s ease',
                     }}
                   />
                 );
@@ -296,33 +277,33 @@ export const HazardHeatmap: React.FC = () => {
 
       {/* Right Controls Panel */}
       <div
-        className="hud-panel tech-corners"
+        className="hud-panel"
         style={{
-          background: 'rgba(4, 5, 12, 0.85)',
-          border: '1px solid rgba(0, 243, 255, 0.2)',
+          background: '#141414',
+          border: '1px solid rgba(255,255,255,0.08)',
           padding: '16px',
           display: 'flex',
           flexDirection: 'column',
-          gap: '16px',
+          gap: '14px',
           minHeight: 0,
         }}
       >
         <div
           style={{
-            fontFamily: "'Orbitron', sans-serif",
-            fontSize: '13px',
-            color: '#00f3ff',
-            fontWeight: 'bold',
-            letterSpacing: '1px',
-            borderBottom: '1px solid rgba(0,243,255,0.2)',
-            paddingBottom: '8px',
+            fontFamily: "'Sora', sans-serif",
+            fontSize: '11px',
+            fontWeight: 600,
+            color: 'rgba(255,255,255,0.5)',
+            letterSpacing: '0.06em',
+            borderBottom: '1px solid rgba(255,255,255,0.07)',
+            paddingBottom: '10px',
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
           }}
         >
-          <Calendar size={15} style={{ color: '#00f3ff' }} />
-          <span>TIME FILTER</span>
+          <Calendar size={13} style={{ color: '#00B8D9' }} />
+          TIME FILTER
         </div>
 
         {/* Filter buttons */}
@@ -334,28 +315,24 @@ export const HazardHeatmap: React.FC = () => {
           <FilterBtn active={filter === '7d'} onClick={() => setFilter('7d')} label="7 Days Cumulative Log" />
         </div>
 
-        {/* Heatmap Legend */}
+        {/* Legend */}
         <div
           style={{
-            marginTop: '20px',
-            background: 'rgba(0,0,0,0.4)',
-            padding: '16px',
+            background: 'rgba(255,255,255,0.02)',
+            padding: '14px',
             borderRadius: '4px',
             border: '1px solid rgba(255,255,255,0.05)',
             display: 'flex',
             flexDirection: 'column',
-            gap: '12px',
-            fontFamily: "'Inter', sans-serif",
-            fontSize: '11px',
+            gap: '10px',
           }}
         >
-          <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '10px', color: 'rgba(255,255,255,0.5)', fontWeight: 'bold' }}>
-            ACCUMULATION LEGEND
+          <div style={{ fontFamily: "'Sora', sans-serif", fontSize: '10px', fontWeight: 600, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.06em' }}>
+            DENSITY LEGEND
           </div>
-
-          <LegendRow color="rgba(255, 0, 60, 0.8)" level="CRITICAL DENSITY (+10 incidents)" desc="Immediate risk zone. Multiple boundary breaches and PPE failures." />
-          <LegendRow color="rgba(255, 170, 0, 0.6)" level="HIGH RISK (4-9 incidents)" desc="High transit lane activity. Forklift crossing collision factors." />
-          <LegendRow color="rgba(255, 234, 0, 0.35)" level="MODERATE ACTION (1-3 incidents)" desc="Occasional PPE alerts or awkward postures recorded." />
+          <LegendRow color="rgba(239,68,68,0.75)"   level="CRITICAL (+10 incidents)"       desc="Immediate risk zone. Multiple PPE failures and boundary breaches." />
+          <LegendRow color="rgba(245,158,11,0.6)"  level="HIGH RISK (4-9 incidents)"       desc="High activity. Forklift crossing and collision factors." />
+          <LegendRow color="rgba(245,235,0,0.3)"   level="MODERATE (1-3 incidents)"        desc="Occasional PPE alerts or awkward postures recorded." />
         </div>
       </div>
     </div>
@@ -373,18 +350,19 @@ const FilterBtn: React.FC<FilterBtnProps> = ({ active, onClick, label }) => {
     <button
       onClick={onClick}
       style={{
-        background: active ? 'rgba(0, 243, 255, 0.12)' : 'rgba(255,255,255,0.02)',
-        border: active ? '1px solid #00f3ff' : '1px solid rgba(255,255,255,0.08)',
-        color: active ? '#ffffff' : 'rgba(255,255,255,0.7)',
-        borderRadius: '3px',
-        padding: '10px 14px',
-        fontFamily: "'Orbitron', sans-serif",
-        fontSize: '10.5px',
-        fontWeight: 'bold',
+        background: 'transparent',
+        border: 'none',
+        borderBottom: active ? '2px solid #00B8D9' : '2px solid transparent',
+        borderTop: '2px solid transparent',
+        color: active ? '#ffffff' : 'rgba(255,255,255,0.5)',
+        padding: '8px 0',
+        fontFamily: "'Poppins', sans-serif",
+        fontSize: '11px',
+        fontWeight: active ? 600 : 400,
         textAlign: 'left',
         cursor: 'pointer',
-        boxShadow: active ? '0 0 10px rgba(0, 243, 255, 0.15)' : 'none',
-        transition: 'all 0.2s ease',
+        transition: 'all 0.15s ease',
+        width: '100%',
       }}
     >
       {label}
@@ -400,11 +378,11 @@ interface LegendRowProps {
 
 const LegendRow: React.FC<LegendRowProps> = ({ color, level, desc }) => {
   return (
-    <div style={{ display: 'flex', gap: '8px' }}>
-      <div style={{ width: '12px', height: '12px', background: color, borderRadius: '2px', flexShrink: 0, boxShadow: `0 0 8px ${color}` }} />
+    <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+      <div style={{ width: '10px', height: '10px', background: color, borderRadius: '2px', flexShrink: 0, marginTop: '2px' }} />
       <div>
-        <div style={{ fontWeight: 'bold', color: '#fff' }}>{level}</div>
-        <div style={{ color: 'rgba(255,255,255,0.5)', marginTop: '2px', lineHeight: '1.3' }}>{desc}</div>
+        <div style={{ fontFamily: "'Sora', sans-serif", fontSize: '10.5px', fontWeight: 600, color: 'rgba(255,255,255,0.7)' }}>{level}</div>
+        <div style={{ fontFamily: "'Poppins', sans-serif", fontSize: '10px', color: 'rgba(255,255,255,0.35)', marginTop: '2px', lineHeight: '1.4' }}>{desc}</div>
       </div>
     </div>
   );

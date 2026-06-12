@@ -1,33 +1,48 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;700;900&display=swap');
+/* ============================================================
+   VIGIL EDGE — Design System v3.0
+   Typography: Sora (headings/metrics) + Poppins (body/labels)
+   Palette: Industrial Charcoal — premium, operational, serious
+   ============================================================ */
 
 :root {
-  --color-bg-deep: #030307;
-  --color-bg-navy: #070814;
-  --color-bg-glass: rgba(7, 8, 20, 0.65);
-  --color-bg-glass-bright: rgba(15, 18, 45, 0.8);
+  /* Backgrounds */
+  --color-bg-deep:    #0A0A0A;
+  --color-bg-panel:   #141414;
+  --color-bg-card:    #1A1A1A;
+  --color-bg-overlay: rgba(20, 20, 20, 0.92);
 
-  --color-cyan: #00f3ff;
-  --color-blue: #0066ff;
-  --color-purple: #b026ff;
-  --color-red: #ff003c;
-  --color-amber: #ffaa00;
-  --color-green: #00ff66;
+  /* Brand accent */
+  --color-accent:     #00B8D9;
+  --color-accent-dim: rgba(0, 184, 217, 0.12);
+  --color-accent-mid: rgba(0, 184, 217, 0.25);
 
-  --border-cyan: 1px solid rgba(0, 243, 255, 0.2);
-  --border-blue: 1px solid rgba(0, 102, 255, 0.2);
-  --border-purple: 1px solid rgba(176, 38, 255, 0.2);
-  --border-red: 1px solid rgba(255, 0, 60, 0.35);
-  --border-amber: 1px solid rgba(255, 170, 0, 0.35);
+  /* Semantic colors */
+  --color-success:    #22C55E;
+  --color-warning:    #F59E0B;
+  --color-danger:     #EF4444;
+  --color-violet:     #8B5CF6;
+  --color-neutral:    #94A3B8;
 
-  --glow-cyan: 0 0 10px rgba(0, 243, 255, 0.3);
-  --glow-purple: 0 0 10px rgba(176, 38, 255, 0.3);
-  --glow-red: 0 0 15px rgba(255, 0, 60, 0.5);
-  --glow-amber: 0 0 12px rgba(255, 170, 0, 0.4);
+  /* Semantic dim variants */
+  --color-success-dim: rgba(34, 197, 94, 0.12);
+  --color-warning-dim: rgba(245, 158, 11, 0.12);
+  --color-danger-dim:  rgba(239, 68, 68, 0.12);
 
-  --font-hud: 'Orbitron', sans-serif;
-  --font-data: 'Inter', sans-serif;
+  /* Borders */
+  --border-subtle: 1px solid rgba(255, 255, 255, 0.07);
+  --border-panel:  1px solid rgba(255, 255, 255, 0.10);
+  --border-accent: 1px solid rgba(0, 184, 217, 0.18);
+  --border-danger: 1px solid rgba(239, 68, 68, 0.35);
+  --border-warn:   1px solid rgba(245, 158, 11, 0.35);
+
+  /* Typography */
+  --font-heading: 'Sora', system-ui, sans-serif;
+  --font-body:    'Poppins', system-ui, sans-serif;
 }
 
+/* ============================================================
+   Reset
+   ============================================================ */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -36,129 +51,89 @@
 
 body {
   background-color: var(--color-bg-deep);
-  color: #e2e8f0;
-  font-family: var(--font-data);
+  color: #E2E8F0;
+  font-family: var(--font-body);
   overflow: hidden;
   height: 100vh;
   width: 100vw;
   user-select: none;
 }
 
-/* Futuristic Scanline and Grid Overlay */
+/* ============================================================
+   Core Container — clean dark with subtle dot grid
+   ============================================================ */
 .hud-container {
   position: relative;
   width: 100vw;
   height: 100vh;
+  background-color: var(--color-bg-deep);
   background-image:
-    radial-gradient(circle at 50% 50%, rgba(10, 12, 36, 0.8) 0%, var(--color-bg-deep) 100%),
-    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
-    linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-  background-size: 100% 100%, 100% 4px, 6px 100%;
+    radial-gradient(circle at 50% 0%, rgba(0, 184, 217, 0.04) 0%, transparent 60%),
+    radial-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+  background-size: 100% 100%, 28px 28px;
   display: flex;
   flex-direction: column;
 }
 
-/* Futuristic Scanline Animation */
-.hud-container::before {
-  content: " ";
-  display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-  z-index: 100;
-  background-size: 100% 2px, 3px 100%;
-  pointer-events: none;
-}
-
-.hud-container::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 100%;
-  background: linear-gradient(0deg, transparent 0%, rgba(0, 243, 255, 0.04) 10%, transparent 100%);
-  animation: scan 8s linear infinite;
-  z-index: 101;
-  pointer-events: none;
-}
-
-@keyframes scan {
-  0% {
-    transform: translateY(-100%);
-  }
-
-  100% {
-    transform: translateY(100%);
-  }
-}
-
-/* Glassmorphism tactical panels */
+/* ============================================================
+   Panels — flat dark, no neon
+   ============================================================ */
 .hud-panel {
-  background: var(--color-bg-glass);
-  border: var(--border-blue);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(0, 102, 255, 0.05);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-radius: 4px;
+  background: var(--color-bg-panel);
+  border: var(--border-panel);
+  border-radius: 6px;
   position: relative;
   overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: border-color 0.2s ease;
 }
 
-.hud-panel::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, rgba(0, 243, 255, 0.03) 0%, transparent 100%);
-  pointer-events: none;
+.hud-panel:hover {
+  border-color: rgba(255, 255, 255, 0.14);
 }
 
-/* Tech corners for HUD styling */
-.tech-corners::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 10px;
-  height: 10px;
-  border-top: 2px solid var(--color-cyan);
-  border-right: 2px solid var(--color-cyan);
-  pointer-events: none;
+/* ============================================================
+   Typography utilities
+   ============================================================ */
+.panel-header {
+  font-family: var(--font-heading);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
 }
 
-.tech-corners::before {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 10px;
-  height: 10px;
-  border-bottom: 2px solid var(--color-cyan);
-  border-left: 2px solid var(--color-cyan);
-  pointer-events: none;
+.data-label {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 0.02em;
 }
 
-/* Alarm pulses */
+.data-value {
+  font-family: var(--font-heading);
+  font-size: 28px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1;
+}
+
+/* ============================================================
+   Critical alarm animations — these must remain functional
+   ============================================================ */
 .critical-flash-active {
   animation: alarm-red-flash 0.6s ease-in-out infinite alternate !important;
 }
 
 @keyframes alarm-red-flash {
   0% {
-    box-shadow: inset 0 0 10px rgba(255, 0, 60, 0.1);
-    border-color: rgba(255, 0, 60, 0.3);
+    box-shadow: inset 0 0 8px rgba(239, 68, 68, 0.08);
+    border-color: rgba(239, 68, 68, 0.25);
   }
-
   100% {
-    box-shadow: inset 0 0 40px rgba(255, 0, 60, 0.6), 0 0 20px rgba(255, 0, 60, 0.3);
-    border-color: rgba(255, 0, 60, 0.9);
+    box-shadow: inset 0 0 30px rgba(239, 68, 68, 0.45), 0 0 12px rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.8);
   }
 }
 
@@ -168,17 +143,16 @@ body {
 
 @keyframes alarm-orange-flash {
   0% {
-    box-shadow: inset 0 0 5px rgba(255, 170, 0, 0.1);
-    border-color: rgba(255, 170, 0, 0.3);
+    box-shadow: inset 0 0 5px rgba(245, 158, 11, 0.08);
+    border-color: rgba(245, 158, 11, 0.25);
   }
-
   100% {
-    box-shadow: inset 0 0 25px rgba(255, 170, 0, 0.45), 0 0 15px rgba(255, 170, 0, 0.2);
-    border-color: rgba(255, 170, 0, 0.8);
+    box-shadow: inset 0 0 20px rgba(245, 158, 11, 0.35), 0 0 10px rgba(245, 158, 11, 0.15);
+    border-color: rgba(245, 158, 11, 0.7);
   }
 }
 
-/* Fullscreen red alarm overlay */
+/* Fullscreen critical border frame — still operational */
 .fullscreen-alert-overlay {
   position: fixed;
   top: 0;
@@ -187,157 +161,48 @@ body {
   bottom: 0;
   pointer-events: none;
   z-index: 9999;
-  border: 15px solid transparent;
+  border: 12px solid transparent;
   animation: border-flash-red 0.5s ease-in-out infinite alternate;
 }
 
 @keyframes border-flash-red {
-  0% {
-    border-color: rgba(255, 0, 60, 0.05);
-    box-shadow: inset 0 0 20px rgba(255, 0, 60, 0.05);
-  }
-
-  100% {
-    border-color: rgba(255, 0, 60, 0.7);
-    box-shadow: inset 0 0 60px rgba(255, 0, 60, 0.4);
-  }
+  0%   { border-color: rgba(239, 68, 68, 0.04); box-shadow: inset 0 0 16px rgba(239, 68, 68, 0.04); }
+  100% { border-color: rgba(239, 68, 68, 0.6);  box-shadow: inset 0 0 50px rgba(239, 68, 68, 0.3); }
 }
 
-/* Radar Sweep Animation */
+/* ============================================================
+   Radar grid (used in SortTrackerMap SVG backdrop)
+   ============================================================ */
 @keyframes radar-sweep {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  100% {
-    transform: rotate(360deg);
-  }
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
-/* Scanner line sweep */
-.scanner-line {
-  position: absolute;
-  left: 0;
-  width: 100%;
-  height: 4px;
-  background: linear-gradient(180deg, transparent, var(--color-cyan), transparent);
-  box-shadow: 0 0 8px var(--color-cyan);
-  opacity: 0.35;
-  animation: scanner-loop 6s linear infinite;
-  pointer-events: none;
-}
-
-@keyframes scanner-loop {
-  0% {
-    top: 0%;
-  }
-
-  50% {
-    top: 100%;
-  }
-
-  100% {
-    top: 0%;
-  }
-}
-
-/* Glow helper classes */
-.glow-text-cyan {
-  text-shadow: 0 0 5px var(--color-cyan), 0 0 10px rgba(0, 243, 255, 0.5);
-}
-
-.glow-text-red {
-  text-shadow: 0 0 5px var(--color-red), 0 0 10px rgba(255, 0, 60, 0.5);
-}
-
-.glow-text-purple {
-  text-shadow: 0 0 5px var(--color-purple), 0 0 10px rgba(176, 38, 255, 0.5);
-}
-
-.glow-text-amber {
-  text-shadow: 0 0 5px var(--color-amber), 0 0 10px rgba(255, 170, 0, 0.5);
-}
-
-/* Custom terminal scrollbar */
+/* ============================================================
+   Scrollbar — minimal industrial
+   ============================================================ */
 ::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
+  width: 3px;
+  height: 3px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 102, 255, 0.3);
+  background: rgba(0, 184, 217, 0.2);
   border-radius: 2px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-cyan);
-  box-shadow: var(--glow-cyan);
+  background: rgba(0, 184, 217, 0.4);
 }
 
-/* Glitch Text Effect */
-.glitch-text {
-  position: relative;
-  animation: glitch 4s infinite;
-}
-
-@keyframes glitch {
-
-  0%,
-  100% {
-    transform: none;
-  }
-
-  92% {
-    transform: skewX(-2deg);
-  }
-
-  94% {
-    transform: skewX(3deg);
-    filter: hue-rotate(90deg);
-  }
-
-  96% {
-    transform: skewX(-5deg) skewY(1deg);
-    filter: invert(0.05);
-  }
-
-  98% {
-    transform: none;
-  }
-}
-
-/* Shimmer AI effect */
-.shimmer-ai {
-  position: relative;
-  overflow: hidden;
-}
-
-.shimmer-ai::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(176, 38, 255, 0.25), transparent);
-  transform: skewX(-25deg);
-  animation: ai-shimmer 4s infinite;
-}
-
-@keyframes ai-shimmer {
-  0% {
-    left: -100%;
-  }
-
-  30% {
-    left: 200%;
-  }
-
-  100% {
-    left: 200%;
-  }
+/* ============================================================
+   Predictive badge pulse — live ops feed
+   ============================================================ */
+@keyframes pulse-predictive {
+  0%   { border-color: rgba(139, 92, 246, 0.25); }
+  100% { border-color: rgba(139, 92, 246, 0.75); }
 }

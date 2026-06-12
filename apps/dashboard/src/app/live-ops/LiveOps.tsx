@@ -8,11 +8,10 @@ import { ShieldAlert } from 'lucide-react';
 
 export const LiveOps: React.FC = () => {
   const recentEvents = useEventStore((state) => state.recentEvents);
-  
-  // Check if a critical event arrived in the last 4 seconds
+
   const latestEvent = recentEvents[0];
-  const isCriticalActive = latestEvent && 
-                           latestEvent.band === 'critical' && 
+  const isCriticalActive = latestEvent &&
+                           latestEvent.band === 'critical' &&
                            (Date.now() - latestEvent.timestamp < 4000);
 
   return (
@@ -26,99 +25,93 @@ export const LiveOps: React.FC = () => {
         height: '100%',
       }}
     >
-      {/* Fullscreen Alert flashing overlay for critical status */}
-      {isCriticalActive && (
-        <div className="fullscreen-alert-overlay" />
-      )}
-
       {/* Top Banner Ticker */}
       <AlertTicker />
 
-      {/* Grid Layout Operations Room */}
+      {/* Grid Layout */}
       <div
         style={{
           flex: 1,
           display: 'grid',
           gridTemplateColumns: '22% 56% 22%',
           gridTemplateRows: 'calc(100% - 130px) 130px',
-          gap: '12px',
-          padding: '12px',
+          gap: '10px',
+          padding: '10px',
           overflow: 'hidden',
         }}
       >
-        {/* LEFT PANEL: SORT Tracker Overview Map */}
+        {/* LEFT PANEL: SORT Tracker minimap */}
         <div style={{ minHeight: 0 }}>
           <SortTrackerMap mode="minimap" />
         </div>
 
-        {/* CENTER PANEL: Digital Twin Hologram Stage */}
+        {/* CENTER PANEL: Main hologram stage */}
         <div
           style={{
             position: 'relative',
             display: 'flex',
             flexDirection: 'column',
-            gap: '12px',
+            gap: '10px',
             minHeight: 0,
           }}
         >
-          {/* Main Map hologram */}
           <div style={{ flex: 1, minHeight: 0 }}>
             <SortTrackerMap mode="hologram" />
           </div>
 
-          {/* Critical Popup HUD Warning Overlay */}
+          {/* Critical incident popup */}
           {isCriticalActive && (
             <div
               className="hud-panel critical-flash-active"
               style={{
                 position: 'absolute',
-                bottom: '20px',
+                bottom: '16px',
                 left: '50%',
                 transform: 'translateX(-50%)',
-                width: '420px',
-                background: 'rgba(12, 2, 4, 0.95)',
-                border: '2px solid #ff003c',
-                padding: '12px 18px',
-                borderRadius: '4px',
+                width: '400px',
+                background: 'rgba(10,2,2,0.97)',
+                border: '2px solid #EF4444',
+                padding: '12px 16px',
+                borderRadius: '6px',
                 zIndex: 100,
                 display: 'flex',
                 alignItems: 'center',
                 gap: '14px',
-                boxShadow: '0 10px 30px rgba(255, 0, 60, 0.5)',
               }}
             >
               <div
                 style={{
-                  background: '#ff003c',
+                  background: '#EF4444',
                   borderRadius: '50%',
-                  width: '32px',
-                  height: '32px',
+                  width: '30px',
+                  height: '30px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   color: '#ffffff',
+                  flexShrink: 0,
                 }}
               >
-                <ShieldAlert size={20} className="critical-flash-active" />
+                <ShieldAlert size={17} />
               </div>
-              <div style={{ fontFamily: "'Orbitron', sans-serif" }}>
-                <div style={{ color: '#ff003c', fontSize: '12px', fontWeight: 'bold', letterSpacing: '1px' }}>
+              <div>
+                <div style={{ fontFamily: "'Sora', sans-serif", color: '#EF4444', fontSize: '11px', fontWeight: 700, letterSpacing: '0.05em' }}>
                   CRITICAL INCIDENT DETECTED
                 </div>
-                <div style={{ color: '#ffffff', fontSize: '11px', marginTop: '2px' }}>
-                  Track ID 0{latestEvent.trackId} has breached restricted zone {latestEvent.zoneId}!
+                <div style={{ fontFamily: "'Poppins', sans-serif", color: 'rgba(255,255,255,0.75)', fontSize: '11px', marginTop: '3px' }}>
+                  Track ID 0{latestEvent.trackId} has breached restricted zone {latestEvent.zoneId}
                 </div>
               </div>
             </div>
           )}
         </div>
 
-        {/* RIGHT PANEL: Live Log Ticker Feed */}
+        {/* RIGHT PANEL: Live event feed */}
         <div style={{ minHeight: 0 }}>
           <LiveEventFeed />
         </div>
 
-        {/* BOTTOM PANEL: Temporal Predictions Timeline (full width beneath maps/feed) */}
+        {/* BOTTOM PANEL: Threat timeline */}
         <div style={{ gridColumn: '1 / span 3', minHeight: 0 }}>
           <ThreatTimeline />
         </div>

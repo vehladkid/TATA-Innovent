@@ -18,42 +18,40 @@ export const SortTrackerMap: React.FC<SortTrackerMapProps> = ({ mode }) => {
   return (
     <div
       ref={containerRef}
-      className={`hud-panel tech-corners ${mode === 'hologram' ? 'shimmer-ai' : ''}`}
+      className="hud-panel"
       style={{
         width: '100%',
         height: '100%',
         position: 'relative',
         display: 'flex',
         flexDirection: 'column',
-        background: mode === 'hologram' ? 'rgba(6, 8, 24, 0.7)' : 'rgba(4, 5, 12, 0.8)',
-        border: mode === 'hologram' ? '1px solid rgba(0, 102, 255, 0.35)' : '1px solid rgba(0, 243, 255, 0.2)',
-        boxShadow: mode === 'hologram' ? 'inset 0 0 25px rgba(0, 102, 255, 0.15)' : 'none',
+        background: '#141414',
+        border: '1px solid rgba(255,255,255,0.08)',
       }}
     >
-      {/* HUD Header Bar */}
+      {/* Panel Header */}
       <div
         style={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           padding: '8px 12px',
-          background: 'rgba(0, 0, 0, 0.4)',
-          borderBottom: '1px solid rgba(0, 243, 255, 0.15)',
-          fontFamily: "'Orbitron', sans-serif",
-          fontSize: '11px',
-          letterSpacing: '1px',
+          borderBottom: '1px solid rgba(255,255,255,0.06)',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <Cpu size={12} className="glow-text-cyan" style={{ color: '#00f3ff' }} />
-          <span style={{ color: '#00f3ff', fontWeight: 'bold' }}>
-            {mode === 'hologram' ? 'LIVE COMMAND CENTER (3D HOLOGRAM)' : 'SORT TRACKER TELEMETRY'}
+          <Cpu size={12} style={{ color: '#00B8D9' }} />
+          <span style={{
+            fontFamily: "'Sora', sans-serif",
+            fontSize: '11px',
+            fontWeight: 600,
+            color: 'rgba(255,255,255,0.55)',
+            letterSpacing: '0.05em',
+          }}>
+            {mode === 'hologram' ? 'FACILITY MAP — LIVE' : 'SORT TRACKER OVERVIEW'}
           </span>
         </div>
-        <div style={{ color: 'rgba(255, 255, 255, 0.5)', display: 'flex', gap: '8px' }}>
-          <span>SCALE: 1:50</span>
-          <span>FPS: 60.00</span>
-        </div>
+        <WorkerCount count={workersArray.length} />
       </div>
 
       {/* Blueprint Area */}
@@ -70,32 +68,16 @@ export const SortTrackerMap: React.FC<SortTrackerMapProps> = ({ mode }) => {
           perspective: mode === 'hologram' ? '1000px' : 'none',
         }}
       >
-        {/* Radar Sweep Effect */}
-        <div
-          style={{
-            position: 'absolute',
-            width: '180%',
-            height: '180%',
-            top: '-40%',
-            left: '-40%',
-            background: 'conic-gradient(from 0deg, rgba(0, 243, 255, 0.05) 0deg, transparent 90deg, transparent 360deg)',
-            pointerEvents: 'none',
-            zIndex: 1,
-            borderRadius: '50%',
-            animation: 'radar-sweep 8s linear infinite',
-          }}
-        />
-
-        {/* Diagonal Scanning Grid Lines */}
+        {/* Subtle blueprint grid */}
         <div
           style={{
             position: 'absolute',
             top: 0, left: 0, right: 0, bottom: 0,
             backgroundImage: `
-              linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px)
+              linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)
             `,
-            backgroundSize: '30px 30px',
+            backgroundSize: '40px 40px',
             pointerEvents: 'none',
           }}
         />
@@ -142,7 +124,7 @@ export const SortTrackerMap: React.FC<SortTrackerMapProps> = ({ mode }) => {
             <rect width="1000" height="1000" fill="url(#grid)" />
 
             {/* Factory Floor Outline Walls */}
-            <rect x="20" y="20" width="960" height="960" fill="none" stroke="rgba(0, 243, 255, 0.2)" strokeWidth="2" strokeDasharray="5,5" />
+            <rect x="20" y="20" width="960" height="960" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1.5" strokeDasharray="6,6" />
 
             {/* Static structural pillars representing plants */}
             <g opacity="0.4">
@@ -194,25 +176,24 @@ export const SortTrackerMap: React.FC<SortTrackerMapProps> = ({ mode }) => {
                     y={cy - 10}
                     textAnchor="middle"
                     fill={strokeColor}
-                    fontFamily="'Orbitron', sans-serif"
-                    fontSize="16"
-                    fontWeight="bold"
+                    fontFamily="'Sora', sans-serif"
+                    fontSize="14"
+                    fontWeight="600"
                     letterSpacing="1"
-                    opacity="0.9"
-                    style={{ textShadow: `0 0 6px ${strokeColor}` }}
+                    opacity="0.85"
                   >
                     {zone.name.toUpperCase()}
                   </text>
                   <text
                     x={cx}
-                    y={cy + 12}
+                    y={cy + 14}
                     textAnchor="middle"
-                    fill="rgba(255,255,255,0.6)"
-                    fontFamily="'Inter', sans-serif"
+                    fill="rgba(255,255,255,0.45)"
+                    fontFamily="'Poppins', sans-serif"
                     fontSize="11"
                     fontWeight="500"
                   >
-                    REQ: {zone.requiredPPE.map(p => p.toUpperCase()).join(' + ')}
+                    {zone.requiredPPE.map(p => p.toUpperCase()).join(' · ')}
                   </text>
                 </g>
               );
@@ -234,8 +215,7 @@ export const SortTrackerMap: React.FC<SortTrackerMapProps> = ({ mode }) => {
               let riskColor = getRiskColor(worker.band);
 
               if (worker.predictedEntryMs) {
-                // Purple predictive theme
-                riskColor = { hex: '#b026ff', glow: '0 0 15px #b026ff', name: 'PREDICTIVE THREAT' };
+                riskColor = { hex: '#8B5CF6', glow: '0 0 6px rgba(139,92,246,0.5)', name: 'PREDICTIVE' };
               }
 
               // Trailing motion history
@@ -300,9 +280,9 @@ export const SortTrackerMap: React.FC<SortTrackerMapProps> = ({ mode }) => {
                       cy={wy}
                       r="40"
                       fill="none"
-                      stroke="#ff003c"
+                      stroke="#EF4444"
                       strokeWidth="1"
-                      opacity="0.5"
+                      opacity="0.4"
                       style={{
                         transformOrigin: `${wx}px ${wy}px`,
                         animation: 'ping 1.2s ease-out infinite',
@@ -324,110 +304,97 @@ export const SortTrackerMap: React.FC<SortTrackerMapProps> = ({ mode }) => {
 
                   {/* 6. Label Card Overlay */}
                   {mode === 'hologram' ? (
-                    // Comprehensive HUD details card for central view
                     <g transform={`translate(${wx + 15}, ${wy - 15})`} style={{ pointerEvents: 'none' }}>
                       <rect
-                        width="150"
-                        height="64"
+                        width="148"
+                        height="58"
                         rx="4"
-                        fill="rgba(5, 7, 20, 0.9)"
+                        fill="rgba(12,12,12,0.95)"
                         stroke={riskColor.hex}
-                        strokeWidth="1.5"
-                        style={{ filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.5))' }}
+                        strokeWidth="1"
                       />
-                      {/* Corner decorative indicators */}
-                      <line x1="0" y1="0" x2="8" y2="0" stroke={riskColor.hex} strokeWidth="2" />
-                      <line x1="0" y1="0" x2="0" y2="8" stroke={riskColor.hex} strokeWidth="2" />
-
-                      {/* Content text */}
                       <text
                         x="10"
-                        y="18"
-                        fill="#ffffff"
-                        fontFamily="'Orbitron', sans-serif"
+                        y="17"
+                        fill="rgba(255,255,255,0.9)"
+                        fontFamily="'Sora', sans-serif"
                         fontSize="11"
-                        fontWeight="bold"
-                      >
-                        WORKER W-00{worker.trackId}
-                      </text>
-                      <text
-                        x="10"
-                        y="34"
-                        fill={riskColor.hex}
-                        fontFamily="'Orbitron', sans-serif"
-                        fontSize="10"
-                        fontWeight="bold"
-                      >
-                        SCORE: {worker.riskScore} | {riskColor.name}
-                      </text>
-
-                      {/* PPE details */}
-                      <text
-                        x="10"
-                        y="50"
-                        fill={worker.helmet ? '#00ff66' : '#ff003c'}
-                        fontFamily="'Inter', sans-serif"
-                        fontSize="9.5"
                         fontWeight="600"
                       >
-                        {worker.helmet ? '✔ HELMET' : '❌ NO HELMET'}
+                        Worker W-00{worker.trackId}
+                      </text>
+                      <text
+                        x="10"
+                        y="31"
+                        fill={riskColor.hex}
+                        fontFamily="'Poppins', sans-serif"
+                        fontSize="10"
+                        fontWeight="500"
+                      >
+                        Score: {worker.riskScore} · {riskColor.name}
+                      </text>
+                      <text
+                        x="10"
+                        y="47"
+                        fill={worker.helmet ? '#22C55E' : '#EF4444'}
+                        fontFamily="'Poppins', sans-serif"
+                        fontSize="9.5"
+                        fontWeight="500"
+                      >
+                        {worker.helmet ? '✔ Helmet' : '✕ No Helmet'}
                       </text>
                       <text
                         x="76"
-                        y="50"
-                        fill={worker.vest ? '#00ff66' : '#ff003c'}
-                        fontFamily="'Inter', sans-serif"
+                        y="47"
+                        fill={worker.vest ? '#22C55E' : '#EF4444'}
+                        fontFamily="'Poppins', sans-serif"
                         fontSize="9.5"
-                        fontWeight="600"
+                        fontWeight="500"
                       >
-                        {worker.vest ? '✔ VEST' : '❌ NO VEST'}
+                        {worker.vest ? '✔ Vest' : '✕ No Vest'}
                       </text>
-
-                      {/* Predictive Purple Countdown Badge */}
                       {worker.predictedEntryMs && (
-                        <g transform="translate(0, -25)">
+                        <g transform="translate(0, -22)">
                           <rect
-                            width="150"
-                            height="20"
+                            width="148"
+                            height="18"
                             rx="3"
-                            fill="rgba(176, 38, 255, 0.25)"
-                            stroke="#b026ff"
+                            fill="rgba(139,92,246,0.2)"
+                            stroke="#8B5CF6"
                             strokeWidth="1"
                           />
                           <text
-                            x="75"
-                            y="14"
+                            x="74"
+                            y="13"
                             textAnchor="middle"
-                            fill="#ffffff"
-                            fontFamily="'Orbitron', sans-serif"
+                            fill="rgba(255,255,255,0.85)"
+                            fontFamily="'Poppins', sans-serif"
                             fontSize="9.5"
-                            fontWeight="bold"
-                            style={{ fill: '#ffffff', textShadow: '0 0 5px #b026ff' }}
+                            fontWeight="500"
                           >
-                            ⚡ ENTRY IN {(worker.predictedEntryMs / 1000).toFixed(1)}s
+                            ⚡ Entry in {(worker.predictedEntryMs / 1000).toFixed(1)}s
                           </text>
                         </g>
                       )}
                     </g>
                   ) : (
-                    // Minimal radar identifier for left side panel
                     <g transform={`translate(${wx + 10}, ${wy - 10})`}>
                       <rect
-                        width="54"
-                        height="18"
-                        rx="2"
-                        fill="rgba(0,0,0,0.8)"
+                        width="52"
+                        height="17"
+                        rx="3"
+                        fill="rgba(10,10,10,0.9)"
                         stroke={riskColor.hex}
                         strokeWidth="1"
                       />
                       <text
-                        x="27"
-                        y="13"
+                        x="26"
+                        y="12"
                         textAnchor="middle"
-                        fill="#fff"
-                        fontFamily="'Orbitron', sans-serif"
+                        fill="rgba(255,255,255,0.85)"
+                        fontFamily="'Sora', sans-serif"
                         fontSize="10"
-                        fontWeight="bold"
+                        fontWeight="600"
                       >
                         W-00{worker.trackId}
                       </text>
@@ -457,16 +424,19 @@ export const SortTrackerMap: React.FC<SortTrackerMapProps> = ({ mode }) => {
 
       <style>{`
         @keyframes ping {
-          0% {
-            transform: scale(0.3);
-            opacity: 1;
-          }
-          100% {
-            transform: scale(2.2);
-            opacity: 0;
-          }
+          0%   { transform: scale(0.3); opacity: 1; }
+          100% { transform: scale(2.2); opacity: 0; }
         }
       `}</style>
     </div>
   );
 };
+
+const WorkerCount: React.FC<{ count: number }> = ({ count }) => (
+  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+    <span style={{ fontFamily: "'Poppins', sans-serif", fontSize: '10px', color: 'rgba(255,255,255,0.35)', fontWeight: 500 }}>
+      {count} worker{count !== 1 ? 's' : ''} tracked
+    </span>
+    <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#22C55E' }} />
+  </div>
+);

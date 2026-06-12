@@ -125,15 +125,15 @@ export const ThreatTimeline: React.FC = () => {
 
   return (
     <div
-      className="hud-panel tech-corners"
+      className="hud-panel"
       style={{
         width: '100%',
-        padding: '12px 16px',
+        padding: '10px 14px',
         display: 'flex',
         flexDirection: 'column',
-        gap: '12px',
-        background: 'rgba(5, 7, 18, 0.85)',
-        border: '1px solid rgba(0, 243, 255, 0.2)',
+        gap: '10px',
+        background: '#141414',
+        border: '1px solid rgba(255,255,255,0.08)',
       }}
     >
       {/* Title block */}
@@ -142,27 +142,26 @@ export const ThreatTimeline: React.FC = () => {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          fontFamily: "'Orbitron', sans-serif",
-          fontSize: '11px',
-          letterSpacing: '1px',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <Zap size={13} className="glow-text-purple" style={{ color: '#b026ff' }} />
-          <span style={{ color: '#b026ff', fontWeight: 'bold' }}>TEMPORAL THREAT TIMELINE (NEXT 5.0s PREDICTIONS)</span>
+          <Zap size={12} style={{ color: '#8B5CF6' }} />
+          <span style={{ fontFamily: "'Sora', sans-serif", fontSize: '11px', fontWeight: 600, color: 'rgba(255,255,255,0.55)', letterSpacing: '0.05em' }}>
+            PREDICTIVE TIMELINE — NEXT 5s
+          </span>
         </div>
-        <div style={{ color: '#00f3ff', opacity: 0.8 }}>PREDICTIVE MODE: ACTIVE</div>
+        <span style={{ fontFamily: "'Poppins', sans-serif", fontSize: '10px', fontWeight: 500, color: '#22C55E' }}>PREDICTIVE: ACTIVE</span>
       </div>
 
       {/* The Timeline Track */}
       <div
         style={{
           position: 'relative',
-          height: '60px',
-          background: 'rgba(0, 0, 0, 0.5)',
-          border: '1px solid rgba(0, 102, 255, 0.15)',
+          height: '56px',
+          background: 'rgba(255,255,255,0.025)',
+          border: '1px solid rgba(255,255,255,0.06)',
           borderRadius: '4px',
-          margin: '10px 0 5px 0',
+          margin: '4px 0',
         }}
       >
         {/* Timeline grid scale ticks */}
@@ -175,7 +174,7 @@ export const ThreatTimeline: React.FC = () => {
               bottom: 0,
               top: 0,
               width: '1px',
-              borderLeft: tick === 0 ? '2px solid #ff003c' : '1px dashed rgba(255, 255, 255, 0.1)',
+              borderLeft: tick === 0 ? '2px solid #EF4444' : '1px dashed rgba(255,255,255,0.07)',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'flex-end',
@@ -184,11 +183,11 @@ export const ThreatTimeline: React.FC = () => {
           >
             <span
               style={{
-                fontFamily: "'Orbitron', sans-serif",
+                fontFamily: "'Poppins', sans-serif",
                 fontSize: '9px',
-                color: tick === 0 ? '#ff003c' : 'rgba(255, 255, 255, 0.4)',
+                fontWeight: 500,
+                color: tick === 0 ? '#EF4444' : 'rgba(255,255,255,0.3)',
                 transform: 'translateY(16px)',
-                fontWeight: 'bold',
               }}
             >
               {tick === 0 ? 'NOW' : `+${tick}s`}
@@ -201,20 +200,20 @@ export const ThreatTimeline: React.FC = () => {
           const positionPercent = (marker.timeRemainingSec / 5.0) * 100;
           
           let icon = <AlertCircle size={10} />;
-          let color = '#ffaa00';
-          let glow = '0 0 8px #ffaa00';
-          
+          let color = '#F59E0B';
+          let shadowStr = '0 0 4px rgba(245,158,11,0.5)';
+
           if (marker.severity === 'critical') {
-            color = '#ff003c';
-            glow = '0 0 15px #ff003c';
+            color = '#EF4444';
+            shadowStr = '0 0 6px rgba(239,68,68,0.6)';
             icon = <ShieldAlert size={10} className="critical-flash-active" />;
           } else if (marker.type === 'zone_entry') {
-            color = '#b026ff';
-            glow = '0 0 12px #b026ff';
+            color = '#8B5CF6';
+            shadowStr = '0 0 5px rgba(139,92,246,0.5)';
             icon = <Flame size={10} />;
           } else if (marker.type === 'collision') {
-            color = '#ff4400';
-            glow = '0 0 12px #ff4400';
+            color = '#EF4444';
+            shadowStr = '0 0 5px rgba(239,68,68,0.5)';
             icon = <Truck size={10} />;
           }
 
@@ -238,22 +237,22 @@ export const ThreatTimeline: React.FC = () => {
               <div
                 style={{
                   width: '1px',
-                  height: '14px',
+                  height: '12px',
                   background: color,
                   marginBottom: '2px',
-                  boxShadow: `0 0 4px ${color}`,
+                  opacity: 0.6,
                 }}
               />
 
-              {/* Pulsing indicator node */}
+              {/* Marker node */}
               <div
                 style={{
                   width: '18px',
                   height: '18px',
                   borderRadius: '50%',
-                  background: '#040510',
-                  border: `2px solid ${color}`,
-                  boxShadow: glow,
+                  background: '#1A1A1A',
+                  border: `1.5px solid ${color}`,
+                  boxShadow: shadowStr,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -263,29 +262,28 @@ export const ThreatTimeline: React.FC = () => {
                 {icon}
               </div>
 
-              {/* Float-up card label */}
+              {/* Float-up label card */}
               <div
                 style={{
                   position: 'absolute',
-                  top: '-36px',
-                  background: 'rgba(5, 7, 20, 0.95)',
-                  border: `1px solid ${color}`,
-                  boxShadow: `inset 0 0 5px ${color}33`,
-                  borderRadius: '2px',
-                  padding: '2px 6px',
+                  top: '-34px',
+                  background: 'rgba(18,18,18,0.97)',
+                  border: `1px solid rgba(255,255,255,0.1)`,
+                  borderRadius: '3px',
+                  padding: '2px 7px',
                   whiteSpace: 'nowrap',
-                  fontFamily: "'Orbitron', sans-serif",
+                  fontFamily: "'Poppins', sans-serif",
                   fontSize: '9px',
-                  fontWeight: 'bold',
-                  color: '#ffffff',
+                  fontWeight: 500,
+                  color: 'rgba(255,255,255,0.75)',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '4px',
                   pointerEvents: 'none',
                 }}
               >
-                <span style={{ color }}>{marker.timeRemainingSec.toFixed(1)}s</span>
-                <span>→</span>
+                <span style={{ color, fontWeight: 600 }}>{marker.timeRemainingSec.toFixed(1)}s</span>
+                <span style={{ color: 'rgba(255,255,255,0.3)' }}>·</span>
                 <span>{marker.label}</span>
               </div>
             </div>

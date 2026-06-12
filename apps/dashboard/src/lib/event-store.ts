@@ -28,6 +28,8 @@ export interface EventState {
   soundMuted: boolean;
   alertVolume: number;
   lastHeartbeat: number;
+  selectedTrackId: number | null;
+  setSelectedTrackId: (id: number | null) => void;
 
   // Actions
   setWebsocketStatus: (status: 'CONNECTED' | 'RECONNECTING' | 'OFFLINE') => void;
@@ -85,6 +87,8 @@ export const useEventStore = create<EventState>((set) => ({
   soundMuted: false,
   alertVolume: 0.2,
   lastHeartbeat: Date.now(),
+  selectedTrackId: null,
+  setSelectedTrackId: (id) => set({ selectedTrackId: id }),
 
   setWebsocketStatus: (status) => set({ websocketStatus: status }),
 

@@ -1,4 +1,4 @@
-// contracts.ts — Suraksha AI shared data contracts
+// contracts.ts — Vigil Edge shared data contracts
 // This is the single source of truth. Every team member codes against these types.
 // Do not change without telling the team. Push changes via PR with review.
 

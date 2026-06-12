@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useEventStore } from '../../lib/event-store';
-import { Shield, Cpu, Activity, Server, Radio, Database, CheckCircle2 } from 'lucide-react';
+import { VigilEdgeLogo } from '../../components/VigilEdgeLogo';
 
 export const BootScreen: React.FC = () => {
   const setView = useEventStore((state) => state.setView);
@@ -9,14 +9,13 @@ export const BootScreen: React.FC = () => {
   const [progress, setProgress] = useState(0);
   const [bootFinished, setBootFinished] = useState(false);
 
+  // Cleaner enterprise-grade log sequence (no duplicate entries or visual clutter)
   const logsSequence = [
-    { text: 'SYSTEM: Initializing Suraksha AI bootloader...', delay: 200, icon: <Cpu size={12} /> },
-    { text: 'MODELS: Loading Edge YOLOv8 & MediaPipe PoseLandmarkers...', delay: 600, icon: <Server size={12} /> },
-    { text: 'TRACKER: Initializing SORT multi-object tracking kernel...', delay: 1100, icon: <Activity size={12} /> },
-    { text: 'WEBSOCKET: Connecting to FastAPI telemetry endpoint (port 8000)...', delay: 1700, icon: <Radio size={12} /> },
-    { text: 'HAZARD: Compiling factory floor zones polygons database...', delay: 2300, icon: <Database size={12} /> },
-    { text: 'PREDICTOR: Calibrating trajectory extrapolation matrix (t + 5.0s)...', delay: 2800, icon: <Shield size={12} /> },
-    { text: 'DATA: Fetching active shift logs and incident thresholds...', delay: 3300, icon: <CheckCircle2 size={12} /> },
+    { text: 'SYSTEM — Initializing Vigil Edge Runtime', delay: 400 },
+    { text: 'MODEL — Loading YOLOv8 Inference Engine', delay: 1200 },
+    { text: 'TRACKER — Registering SORT Tracking Layer', delay: 2000 },
+    { text: 'EDGE — Connecting Telemetry Pipeline', delay: 2800 },
+    { text: 'AI — Risk Engine Synchronization Complete', delay: 3500 },
   ];
 
   // Synthesize booting sound
@@ -79,27 +78,27 @@ export const BootScreen: React.FC = () => {
       }, log.delay);
     });
 
-    // Animate progress bar (total duration ~4 seconds)
+    // Animate progress bar (total duration ~3.6 seconds to match the logs)
     const interval = setInterval(() => {
       setProgress((prev) => {
-        const next = prev + Math.floor(Math.random() * 8) + 2;
+        const next = prev + Math.floor(Math.random() * 6) + 2;
         if (next >= 100) {
           clearInterval(interval);
           setBootFinished(true);
           playBootSound(100, true);
           return 100;
         }
-        if (Math.random() > 0.4) {
+        if (Math.random() > 0.45) {
           playBootSound(next, false);
         }
         return next;
       });
-    }, 120);
+    }, 180);
 
     return () => clearInterval(interval);
   }, []);
 
-  // When boot finishes, wait 1.2s then transition to live view
+  // When boot finishes, wait 1.5s then transition to live view
   useEffect(() => {
     if (bootFinished) {
       const timer = setTimeout(() => {
@@ -109,9 +108,12 @@ export const BootScreen: React.FC = () => {
     }
   }, [bootFinished, setView]);
 
+  // Segmented progress parameters (20 segments total)
+  const totalSegments = 20;
+  const activeSegments = Math.floor((progress / 100) * totalSegments);
+
   return (
     <div
-      className="hud-container"
       style={{
         display: 'flex',
         flexDirection: 'column',
@@ -120,144 +122,78 @@ export const BootScreen: React.FC = () => {
         height: '100vh',
         width: '100vw',
         padding: '20px',
-        fontFamily: "'Orbitron', sans-serif",
+        backgroundColor: '#050505',
       }}
     >
       <div
-        className="hud-panel tech-corners shimmer-ai"
         style={{
-          width: '640px',
+          width: '560px',
           padding: '40px',
-          background: 'rgba(5, 7, 24, 0.9)',
-          border: '1px solid rgba(0, 243, 255, 0.3)',
+          background: '#0F0F10', // Surface color
+          border: '1px solid rgba(255, 255, 255, 0.08)', // Thin border
+          borderRadius: '6px',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          boxShadow: '0 0 50px rgba(0, 243, 255, 0.15)',
+          boxShadow: '0 24px 60px rgba(0, 0, 0, 0.8)', // Depth shadow
         }}
       >
-        {/* Animated Cyber Shield Grid */}
-        <div
-          style={{
-            position: 'relative',
-            width: '80px',
-            height: '80px',
-            marginBottom: '24px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          {/* Animated concentric rings */}
-          <div
-            style={{
-              position: 'absolute',
-              width: '100%',
-              height: '100%',
-              border: '2px dashed #00f3ff',
-              borderRadius: '50%',
-              animation: 'reactor-spin-right 10s linear infinite',
-              opacity: 0.6,
-            }}
-          />
-          <div
-            style={{
-              position: 'absolute',
-              width: '75%',
-              height: '75%',
-              border: '1px dashed #b026ff',
-              borderRadius: '50%',
-              animation: 'reactor-spin-left 6s linear infinite',
-              opacity: 0.4,
-            }}
-          />
-          <Shield
-            size={36}
-            style={{
-              color: '#00f3ff',
-              filter: 'drop-shadow(0 0 10px #00f3ff)',
-              zIndex: 5,
-            }}
-          />
+        {/* Unified brand mark logo containing the animated title & subtitle */}
+        <div style={{ marginBottom: '32px' }}>
+          <VigilEdgeLogo size={115} progress={progress} showText={true} />
         </div>
 
-        {/* Title and tagline */}
-        <h1
-          style={{
-            fontSize: '28px',
-            fontWeight: '900',
-            letterSpacing: '5px',
-            color: '#ffffff',
-            textShadow: '0 0 15px rgba(0, 243, 255, 0.6)',
-            marginBottom: '4px',
-            textAlign: 'center',
-          }}
-        >
-          SURAKSHA AI
-        </h1>
-        <p
-          style={{
-            fontSize: '11px',
-            letterSpacing: '2px',
-            color: 'rgba(0, 243, 255, 0.8)',
-            marginBottom: '32px',
-            textAlign: 'center',
-            fontWeight: 500,
-          }}
-        >
-          PREDICTIVE SAFETY COMMAND CENTER
-        </p>
-
-        {/* Terminal Logs Window */}
+        {/* Terminal Logs Window - reduced height by ~30% for improved visual hierarchy */}
         <div
           style={{
             width: '100%',
-            height: '150px',
-            background: 'rgba(0,0,0,0.6)',
-            border: '1px solid rgba(0, 243, 255, 0.1)',
+            height: '100px',
+            background: '#161616', // Elevated Surface
+            border: '1px solid rgba(255, 255, 255, 0.08)',
             borderRadius: '4px',
-            padding: '16px',
+            padding: '12px 16px',
             display: 'flex',
             flexDirection: 'column',
-            gap: '8px',
+            gap: '6px',
             overflow: 'hidden',
-            fontFamily: "'Courier New', Courier, monospace",
+            fontFamily: "'Poppins', sans-serif", // Poppins Regular (Body)
             fontSize: '11px',
-            color: 'rgba(255, 255, 255, 0.85)',
-            marginBottom: '30px',
+            color: '#E5E7EB',
+            marginBottom: '24px',
             textAlign: 'left',
           }}
         >
           {logs.map((log, idx) => (
             <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ color: '#00f3ff' }}>▸</span>
-              <span>{log}</span>
+              <span style={{ color: '#00B8D9' }}>▸</span>
+              <span style={{ fontWeight: 400 }}>{log}</span>
             </div>
           ))}
-          {!bootFinished && <span style={{ animation: 'blink 0.8s infinite', color: '#b026ff' }}>█</span>}
+          {!bootFinished && <span className="boot-terminal-cursor">█</span>}
         </div>
 
-        {/* System Nominal Display */}
+        {/* System Nominal Display - Replaced big green headline with subtle operational status */}
         {bootFinished ? (
           <div
             style={{
-              fontSize: '14px',
-              color: '#00ff66',
-              fontWeight: 'bold',
-              letterSpacing: '2px',
-              textAlign: 'center',
+              fontFamily: "'Poppins', sans-serif",
+              fontSize: '11px',
+              fontWeight: 500, // Poppins Medium
+              color: '#E5E7EB', // Silver Text
               display: 'flex',
-              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
               gap: '6px',
-              animation: 'hud-pulse 1s ease-in-out infinite alternate',
+              height: '17px',
               marginBottom: '20px',
+              letterSpacing: '0.5px',
             }}
           >
-            <div>RISK ENGINE ONLINE</div>
-            <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.6)' }}>ALL SYSTEMS NOMINAL. REDIRECTING...</div>
+            <span style={{ color: '#22C55E', animation: 'boot-dot-pulse 1.2s infinite alternate', fontSize: '12px' }}>●</span>
+            Risk Engine Online
           </div>
         ) : (
-          <div style={{ height: '38px', marginBottom: '20px' }} />
+          <div style={{ height: '17px', marginBottom: '20px' }} />
         )}
 
         {/* Progress Bar Container */}
@@ -266,38 +202,62 @@ export const BootScreen: React.FC = () => {
             style={{
               display: 'flex',
               justifyContent: 'space-between',
+              fontFamily: "'Poppins', sans-serif",
               fontSize: '10px',
-              color: 'rgba(255,255,255,0.5)',
+              color: '#9CA3AF', // Secondary Text
               marginBottom: '6px',
             }}
           >
-            <span>BOOT LOAD SEQUENCE</span>
-            <span>{progress}%</span>
+            <span style={{ fontWeight: 300, letterSpacing: '0.5px' }}>RUNTIME INITIALIZATION</span> {/* Poppins Light */}
+            <span style={{ fontFamily: "'Sora', sans-serif", fontWeight: 700, color: '#E5E7EB' }}>{progress}%</span> {/* Sora Bold */}
           </div>
           
+          {/* Industrial Segmented Progress Bar */}
           <div
             style={{
               width: '100%',
-              height: '8px',
-              background: 'rgba(255,255,255,0.05)',
-              border: '1px solid rgba(0, 243, 255, 0.2)',
+              display: 'flex',
+              gap: '3px',
+              background: '#111111', // Matte charcoal track
+              border: '1px solid rgba(255, 255, 255, 0.08)', // Thin silver border
               borderRadius: '4px',
-              overflow: 'hidden',
+              padding: '3px',
             }}
           >
-            <div
-              style={{
-                height: '100%',
-                width: `${progress}%`,
-                background: 'linear-gradient(90deg, #00f3ff, #b026ff)',
-                boxShadow: '0 0 10px #00f3ff',
-                borderRadius: '4px',
-                transition: 'width 0.1s linear',
-              }}
-            />
+            {Array.from({ length: totalSegments }).map((_, i) => {
+              const isActive = i < activeSegments;
+              return (
+                <div
+                  key={i}
+                  style={{
+                    flex: 1,
+                    height: '6px',
+                    background: isActive ? '#00B8D9' : '#161616', // Cyan progress or elevated surface
+                    borderRadius: '1px',
+                    transition: 'background-color 0.15s ease',
+                  }}
+                />
+              );
+            })}
           </div>
         </div>
       </div>
+      
+      <style>{`
+        @keyframes boot-cursor-blink {
+          0% { opacity: 0; }
+          50% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+        .boot-terminal-cursor {
+          color: #00B8D9;
+          animation: boot-cursor-blink 0.8s infinite;
+        }
+        @keyframes boot-dot-pulse {
+          0% { opacity: 0.35; }
+          100% { opacity: 1; }
+        }
+      `}</style>
     </div>
   );
 };
