@@ -27,8 +27,7 @@ import { postProcess, computeIoU, FRAME_BUFFER_SIZE } from './postProcessor';
 
 const MODEL_URL = '/models/ppe_model.onnx';
 const INPUT_SIZE = 640;
-const NUM_CLASSES = 25;   // raw model classes
-const NUM_ANCHORS = 8400;
+const NUM_ANCHORS = 8400; // raw model emits 25 class scores per anchor
 /** Pre-NMS gate. postProcess() applies the real per-class thresholds afterwards. */
 const CONF_THRESHOLD = 0.2;
 /** IoU above which the lower-confidence box of the same class is suppressed. */

@@ -51,7 +51,7 @@ export class SyncEngine {
   private draining = false;
 
   constructor(opts: SyncEngineOptions = {}) {
-    this.url = opts.url ?? process.env.NEXT_PUBLIC_WS_URL ?? '';
+    this.url = opts.url ?? import.meta.env.VITE_WS_URL ?? '';
     this.onStatus = opts.onStatus;
   }
 

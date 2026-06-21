@@ -330,11 +330,11 @@ function fusePPE(
 // ============================================================
 
 /**
- * Build the detect fn based on NEXT_PUBLIC_USE_MOCK_DETECTOR.
+ * Build the detect fn based on the VITE_USE_MOCK_DETECTOR env flag.
  * Real path lazy-loads + inits the ONNX session on first use.
  */
 export function createDefaultDetect(): DetectFn {
-  const useMock = process.env.NEXT_PUBLIC_USE_MOCK_DETECTOR === 'true';
+  const useMock = import.meta.env.VITE_USE_MOCK_DETECTOR === 'true';
 
   if (useMock) {
     // Static import kept out of the onnx path to avoid bundling the runtime in mock mode.
