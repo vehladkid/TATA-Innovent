@@ -52,23 +52,35 @@ const AnimatedCounter: React.FC<{
 };
 
 // Premium Sparkline Component
-const Sparkline: React.FC<{ color?: string }> = ({ color = '#22C55E' }) => (
-  <svg 
-    width="48" 
-    height="12" 
-    viewBox="0 0 48 12" 
-    style={{ display: 'inline-block', verticalAlign: 'middle' }}
-  >
-    <path
-      d="M 2 10 L 10 9 L 18 11 L 26 4 L 34 6 L 46 2"
-      fill="none"
-      stroke={color}
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
+const Sparkline: React.FC<{ data: number[]; color?: string; width?: number; height?: number }> = ({ 
+  data, 
+  color = '#3DD9FF', 
+  width = 80, 
+  height = 16 
+}) => {
+  if (data.length < 2) return null;
+  const max = Math.max(...data);
+  const min = Math.min(...data);
+  const range = max - min || 1;
+  const points = data.map((val, index) => {
+    const x = (index / (data.length - 1)) * width;
+    const y = height - ((val - min) / range) * height;
+    return `${x},${y}`;
+  }).join(' ');
+
+  return (
+    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} style={{ display: 'inline-block', verticalAlign: 'middle', overflow: 'visible' }}>
+      <polyline
+        fill="none"
+        stroke={color}
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        points={points}
+      />
+    </svg>
+  );
+};
 
 export const ExecutiveView: React.FC = () => {
   const shiftSummary = useEventStore((state) => state.shiftSummary);
@@ -100,7 +112,8 @@ export const ExecutiveView: React.FC = () => {
     ? Math.round((compliantCount / workers.length) * 100)
     : 94;
 
-  const safetyLabel = siteSafetyScore >= 85 ? 'SECURE' : 'ELEVATED RISK';
+  const isSafeState = siteSafetyScore >= 85;
+  const safetyLabel = isSafeState ? 'SECURE' : 'ELEVATED RISK';
   const alertIncidents = recentEvents.filter(e => e.band !== 'safe');
 
   return (
@@ -108,418 +121,386 @@ export const ExecutiveView: React.FC = () => {
       style={{
         flex: 1,
         display: 'grid',
-        gridTemplateColumns: '34% 66%',
+        gridTemplateColumns: '30% 70%',
         gap: '16px',
         padding: '16px',
         overflow: 'hidden',
         height: '100%',
-        background: '#0D0D0D', // Matte Black background
+        background: 'var(--color-bg-deep)',
       }}
     >
-      {/* Left Column: Unified Safety Index Panel */}
+      <style dangerouslySetInnerHTML={{__html: `
+        @keyframes wave-move-back {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        @keyframes wave-move-front {
+          0% { transform: translateX(-50%); }
+          100% { transform: translateX(0); }
+        }
+      `}} />
+
+      {/* Left Column: Full-height Safety Reservoir */}
       <div
         className="hud-panel"
         style={{
-          background: '#161616', // Charcoal panel
-          border: '1px solid rgba(255,255,255,0.045)', // Soft border visibility
-          borderRadius: '6px',
-          padding: '24px 20px',
+          background: 'var(--color-bg-card)',
+          border: '1px solid var(--border-color)',
+          borderRadius: '2px',
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'center',
           justifyContent: 'space-between',
-          gap: '20px',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.45)',
           height: '100%',
+          position: 'relative',
+          overflow: 'hidden',
           boxSizing: 'border-box',
         }}
       >
-        <style dangerouslySetInnerHTML={{__html: `
-          @keyframes wave-move-back {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-          }
-          @keyframes wave-move-front {
-            0% { transform: translateX(-50%); }
-            100% { transform: translateX(0); }
-          }
-        `}} />
-
-        {/* Safety Index Reservoir Visualization */}
+        {/* Charcoal Gradient fluid with surface line */}
         <div
           style={{
-            width: '100%',
-            flex: 1,
-            background: 'linear-gradient(180deg, rgba(24, 24, 27, 0.8) 0%, rgba(14, 14, 16, 0.95) 100%)',
-            border: '1px solid rgba(161, 161, 170, 0.15)', // matte silver/graphite border
-            borderRadius: '8px',
-            position: 'relative',
-            overflow: 'hidden',
-            boxShadow: 'inset 0 4px 24px rgba(0, 0, 0, 0.9), 0 4px 20px rgba(0, 0, 0, 0.45)',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: `${fillProgress}%`,
+            background: 'linear-gradient(to top, #050505 0%, #1A1A1A 100%)',
+            transition: 'height 1.5s cubic-bezier(0.16, 1, 0.3, 1)',
+            zIndex: 1,
           }}
         >
-          {/* Glass glare effect for depth */}
+          {/* Active surface line */}
           <div
             style={{
               position: 'absolute',
               top: 0,
               left: 0,
               right: 0,
-              height: '50%',
-              background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0) 100%)',
-              pointerEvents: 'none',
+              height: '1.5px',
+              background: '#3DD9FF',
               zIndex: 3,
             }}
           />
 
-          {/* Liquid Fill column */}
-          <div
+          {/* Waves */}
+          <svg
+            viewBox="0 0 120 12"
+            preserveAspectRatio="none"
             style={{
               position: 'absolute',
-              bottom: 0,
+              top: '-7px',
               left: 0,
-              right: 0,
-              height: `${fillProgress}%`,
-              background: 'linear-gradient(to top, #141416 0%, #2A2A2E 45%, #4C4C54 75%, #63636B 95%)',
-              transition: 'height 1.5s cubic-bezier(0.16, 1, 0.3, 1)',
-              zIndex: 1,
+              width: '200%',
+              height: '8px',
+              fill: 'rgba(61, 217, 255, 0.03)',
+              animation: 'wave-move-back 24s linear infinite',
+              zIndex: 2,
             }}
           >
-            {/* Active Cyan Fill Indicator Line (top border of liquid) */}
-            <div
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                height: '2px',
-                background: '#00B8D9',
-                boxShadow: '0 0 8px rgba(0, 184, 217, 0.4)',
-                zIndex: 4,
-              }}
-            />
-
-            {/* Subtle slow waves */}
-            <svg
-              viewBox="0 0 120 12"
-              preserveAspectRatio="none"
-              style={{
-                position: 'absolute',
-                top: '-7px',
-                left: 0,
-                width: '200%',
-                height: '8px',
-                fill: 'rgba(0, 184, 217, 0.15)',
-                animation: 'wave-move-back 24s linear infinite',
-                zIndex: 2,
-              }}
-            >
-              <path d="M 0 6 Q 30 4, 60 6 T 120 6 T 180 6 T 240 6 L 240 12 L 0 12 Z" />
-            </svg>
-            <svg
-              viewBox="0 0 120 12"
-              preserveAspectRatio="none"
-              style={{
-                position: 'absolute',
-                top: '-5px',
-                left: 0,
-                width: '200%',
-                height: '6px',
-                fill: 'rgba(0, 184, 217, 0.35)',
-                animation: 'wave-move-front 16s linear infinite',
-                zIndex: 3,
-              }}
-            >
-              <path d="M 0 6 Q 30 5, 60 6 T 120 6 T 180 6 T 240 6 L 240 12 L 0 12 Z" />
-            </svg>
-          </div>
-
-          {/* Silver Measurement Scale ticks & labels */}
-          <div
+            <path d="M 0 6 Q 30 4, 60 6 T 120 6 T 180 6 T 240 6 L 240 12 L 0 12 Z" />
+          </svg>
+          <svg
+            viewBox="0 0 120 12"
+            preserveAspectRatio="none"
             style={{
               position: 'absolute',
-              right: '16px',
-              top: '24px',
-              bottom: '24px',
-              width: '32px',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-              alignItems: 'flex-end',
-              zIndex: 4,
-              pointerEvents: 'none',
-            }}
-          >
-            {[100, 75, 50, 25, 0].map((tick) => (
-              <div
-                key={tick}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  fontFamily: "'Sora', sans-serif",
-                  fontSize: '9px',
-                  fontWeight: 500,
-                  color: 'rgba(255, 255, 255, 0.3)',
-                }}
-              >
-                <span>{tick}</span>
-                <div
-                  style={{
-                    width: '6px',
-                    height: '1px',
-                    background: 'rgba(255, 255, 255, 0.2)',
-                  }}
-                />
-              </div>
-            ))}
-          </div>
-
-          {/* Vertical scale track line */}
-          <div
-            style={{
-              position: 'absolute',
-              right: '16px',
-              top: '24px',
-              bottom: '24px',
-              width: '1px',
-              background: 'rgba(255, 255, 255, 0.08)',
+              top: '-5px',
+              left: 0,
+              width: '200%',
+              height: '6px',
+              fill: 'rgba(61, 217, 255, 0.07)',
+              animation: 'wave-move-front 16s linear infinite',
               zIndex: 3,
             }}
-          />
-
-          {/* Central Score and Label Text Overlay */}
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 5,
-              pointerEvents: 'none',
-              textAlign: 'center',
-            }}
           >
-            <span
-              style={{
-                fontFamily: "'Poppins', sans-serif",
-                fontSize: '11px',
-                fontWeight: 600,
-                color: 'rgba(255, 255, 255, 0.45)',
-                letterSpacing: '0.12em',
-                textTransform: 'uppercase',
-                textShadow: '0 2px 4px rgba(0,0,0,0.8)',
-              }}
-            >
-              Safety Index
-            </span>
-            <span
-              style={{
-                fontFamily: "'Sora', sans-serif",
-                fontSize: '96px',
-                fontWeight: 700,
-                color: '#ffffff',
-                lineHeight: 1,
-                letterSpacing: '-0.02em',
-                margin: '8px 0',
-                textShadow: '0 4px 16px rgba(0,0,0,0.85), 0 1px 3px rgba(0,0,0,0.9)',
-              }}
-            >
-              {siteSafetyScore}
-            </span>
+            <path d="M 0 6 Q 30 5, 60 6 T 120 6 T 180 6 T 240 6 L 240 12 L 0 12 Z" />
+          </svg>
+        </div>
+
+        {/* Subdued scale ticks overlay */}
+        <div
+          style={{
+            position: 'absolute',
+            left: '16px',
+            top: '24px',
+            bottom: '80px',
+            width: '24px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
+            zIndex: 4,
+            pointerEvents: 'none',
+          }}
+        >
+          {[100, 75, 50, 25, 0].map((tick) => (
             <div
+              key={tick}
               style={{
-                fontFamily: "'Sora', sans-serif",
-                fontSize: '12px',
-                fontWeight: 700,
-                color: siteSafetyScore >= 85 ? '#22C55E' : '#EF4444',
-                letterSpacing: '0.15em',
-                textTransform: 'uppercase',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '6px',
-                textShadow: '0 2px 8px rgba(0,0,0,0.9)',
-                background: 'rgba(0, 0, 0, 0.45)',
-                padding: '4px 12px',
-                borderRadius: '20px',
-                border: '1px solid rgba(255, 255, 255, 0.05)',
-                backdropFilter: 'blur(8px)',
+                gap: '5px',
+                fontFamily: "var(--font-label)", // Bierika
+                fontSize: '9px',
+                color: 'rgba(216, 216, 216, 0.22)',
               }}
             >
-              <span
-                style={{
-                  width: '6px',
-                  height: '6px',
-                  borderRadius: '50%',
-                  background: siteSafetyScore >= 85 ? '#22C55E' : '#EF4444',
-                  display: 'inline-block',
-                }}
-              />
-              {safetyLabel}
+              <div style={{ width: '4px', height: '1px', background: 'rgba(255, 255, 255, 0.1)' }} />
+              <span>{tick}</span>
             </div>
+          ))}
+        </div>
+
+        {/* Specular Glare overlay */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.015) 0%, rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0.1) 100%)',
+            pointerEvents: 'none',
+            zIndex: 3,
+          }}
+        />
+
+        {/* Centered card (Equinox and Osiris) */}
+        <div
+          style={{
+            position: 'absolute',
+            top: '40%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            background: 'rgba(13, 13, 13, 0.75)',
+            border: '1px solid var(--border-color)',
+            borderRadius: '2px',
+            padding: '24px 28px',
+            textAlign: 'center',
+            backdropFilter: 'blur(20px)',
+            zIndex: 5,
+            pointerEvents: 'none',
+            width: '82%',
+          }}
+        >
+          <span
+            style={{
+              fontFamily: "var(--font-body)", // Sora
+              fontSize: '11px',
+              fontWeight: 600,
+              color: 'var(--color-silver)',
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+            }}
+          >
+            Safety Index
+          </span>
+          <span
+            style={{
+              display: 'block',
+              fontFamily: "var(--font-body)", // Sora
+              fontSize: '84px',
+              fontWeight: 700,
+              color: 'var(--color-silver)',
+              lineHeight: 1,
+              margin: '6px 0',
+              letterSpacing: '-1px',
+            }}
+          >
+            {siteSafetyScore}
+          </span>
+          <div
+            style={{
+              fontFamily: "var(--font-label)", // Bierika
+              fontSize: '11px',
+              fontWeight: 700,
+              color: isSafeState ? '#00D084' : '#FF5C5C',
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '5px',
+            }}
+          >
+            <span
+              style={{
+                width: '5px',
+                height: '5px',
+                borderRadius: '50%',
+                background: isSafeState ? '#00D084' : '#FF5C5C',
+                display: 'inline-block',
+              }}
+            />
+            {safetyLabel}
           </div>
         </div>
 
-        {/* Tabular Metadata Parameters */}
+        {/* Translucent bottom parameters */}
         <div
           style={{
-            width: '100%',
-            borderTop: '1px solid rgba(255, 255, 255, 0.05)',
-            paddingTop: '16px',
+            background: 'rgba(5, 5, 5, 0.85)',
+            borderTop: '1px solid var(--border-color)',
+            padding: '16px 20px',
             display: 'flex',
             flexDirection: 'column',
             gap: '10px',
+            backdropFilter: 'blur(12px)',
+            zIndex: 5,
           }}
         >
           {[
-            { label: 'AI Confidence', value: '99.2%', color: '#E5E7EB' },
+            { label: 'Inference Confidence', value: '99.2%', color: 'var(--color-silver)' },
             { 
-              label: 'Last Incident', 
+              label: 'Last Logged Trigger', 
               value: alertIncidents.length > 0 
                 ? new Date(alertIncidents[0].timestamp).toLocaleTimeString() 
                 : 'None (Nominal)', 
-              color: alertIncidents.length > 0 ? '#EF4444' : '#22C55E' 
+              color: alertIncidents.length > 0 ? '#FF5C5C' : '#3DD9FF' 
             },
-            { label: 'Safety Trend (24h)', value: '+1.4% (Nominal)', color: '#22C55E' },
-            { label: 'Current Shift', value: 'Morning Shift A', color: '#E5E7EB' },
+            { label: 'Uptime SLA Metrics', value: '+1.4% (Nominal)', color: '#3DD9FF' },
+            { label: 'Calibration Shift', value: 'Morning Shift A', color: 'var(--color-silver)' },
           ].map(({ label, value, color }) => (
-            <div key={label} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontFamily: "'Poppins', sans-serif" }}>
-              <span style={{ color: 'rgba(255,255,255,0.4)', fontWeight: 400 }}>{label}</span>
-              <span style={{ color, fontWeight: 600 }}>{value}</span>
+            <div key={label} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontFamily: "var(--font-label)" }}>
+              <span style={{ color: 'var(--color-neutral)' }}>{label}</span>
+              <span style={{ color, fontFamily: "var(--font-metric)", fontWeight: 600 }}>{value}</span>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Right Column: KPI Hierarchy Grid */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', minHeight: 0 }}>
+      {/* Right Column: KPI Dashboard Grid */}
+      <div style={{ display: 'grid', gridTemplateRows: '1fr 1.3fr 1.1fr', gap: '16px', height: '100%', minHeight: 0 }}>
 
-        {/* Row 1: Largest Card — Estimated Risk Cost Avoided */}
+        {/* Row 1: Hero Card — Estimated Risk Cost Avoided */}
         <div
           className="hud-panel"
           style={{
-            background: '#161616',
-            border: '1px solid rgba(255, 255, 255, 0.045)',
-            borderRadius: '6px',
-            padding: '24px 28px',
+            background: 'var(--color-bg-card)',
+            border: '1px solid var(--border-color)',
+            borderRadius: '2px',
+            padding: '32px 36px', // Increased padding for prominent centerpiece
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            transition: 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, box-shadow 0.25s ease',
             cursor: 'pointer',
-            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.35)',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'translateY(-2px)';
-            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.12)';
-            e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.45)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.045)';
-            e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.35)';
           }}
         >
           <div>
-            <div style={{ fontFamily: "'Poppins', sans-serif", fontSize: '11px', fontWeight: 500, color: 'rgba(255, 255, 255, 0.4)', letterSpacing: '0.06em', marginBottom: '6px', textTransform: 'uppercase' }}>
+            <div style={{ fontFamily: "var(--font-body)", fontSize: '11px', fontWeight: 600, color: 'var(--color-neutral)', letterSpacing: '0.06em', marginBottom: '6px', textTransform: 'uppercase' }}>
               Estimated Risk Cost Avoided
             </div>
-            <div style={{ fontFamily: "'Sora', sans-serif", fontSize: '40px', fontWeight: 700, color: '#ffffff', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+            <div style={{ fontFamily: "var(--font-body)", fontSize: '42px', fontWeight: 700, color: 'var(--color-silver)', letterSpacing: '-1px', lineHeight: 1.1 }}>
               <AnimatedCounter value={costAvoided} isCurrency={true} />
             </div>
-            <div style={{ fontFamily: "'Poppins', sans-serif", fontSize: '11px', color: '#22C55E', fontWeight: 500, marginTop: '6px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <span>↑ 18% improvement from previous shift</span>
+            
+            {/* Callouts and labels */}
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginTop: '8px' }}>
+              <span style={{ fontFamily: "var(--font-label)", fontSize: '11px', color: '#00D084', fontWeight: 500 }}>
+                ↑ 18% vs prev shift
+              </span>
+              <span style={{ color: 'var(--border-color)' }}>|</span>
+              <span style={{ fontFamily: "var(--font-label)", fontSize: '10px', color: 'var(--color-neutral)' }}>
+                SLA Compliance: 100%
+              </span>
+              <span style={{ color: 'var(--border-color)' }}>|</span>
+              <span style={{ fontFamily: "var(--font-label)", fontSize: '10px', color: 'var(--color-neutral)' }}>
+                Ref Rate: 1.2s
+              </span>
             </div>
           </div>
-          <div
-            style={{
-              background: 'rgba(255, 255, 255, 0.03)',
-              border: '1px solid rgba(255, 255, 255, 0.06)',
-              borderRadius: '50%',
-              width: '52px',
-              height: '52px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#00B8D9',
-            }}
-          >
-            <TrendingUp size={24} />
+
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px' }}>
+            <div
+              style={{
+                background: '#000000',
+                border: '1px solid var(--border-color)',
+                borderRadius: '2px',
+                width: '44px',
+                height: '44px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#3DD9FF',
+              }}
+            >
+              <TrendingUp size={18} />
+            </div>
+            {/* Tiny Trend Sparkline inside Hero card */}
+            <div style={{ paddingRight: '4px' }}>
+              <Sparkline data={[210, 215, 220, 218, 224, 230, 235, 240]} color="#3E6AE0" width={80} height={14} />
+            </div>
           </div>
         </div>
 
-        {/* Row 2: Medium Cards — Incidents Prevented & Incidents Prevented */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+        {/* Row 2: Medium Cards — Incidents Prevented & Risk Paths Averted */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
           <MetricBox
             title="INCIDENTS PREVENTED"
             value={<AnimatedCounter value={shiftSummary.incidentsPrevented} />}
-            subtitle="AI interventions active"
+            subtitle="Active AI safety interventions"
             detail={
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
-                <span style={{ color: '#22C55E', fontWeight: 600 }}>+4 vs previous shift</span>
-                <Sparkline />
+              <div style={{ display: 'flex', justifySelf: 'stretch', justifyContent: 'space-between', width: '100%', alignItems: 'center', marginTop: '2px' }}>
+                <span style={{ color: '#00D084', fontWeight: 600 }}>+4 vs prev shift</span>
+                <Sparkline data={[2, 3, 5, 4, 6, 7, 9]} color="#3E6AE0" />
               </div>
             }
-            icon={<ShieldCheck size={20} style={{ color: '#22C55E' }} />}
+            extraInfo="Target Threshold: 0 incidents"
+            icon={<ShieldCheck size={16} style={{ color: '#3DD9FF' }} />}
             size="medium"
           />
           <MetricBox
-            title="INCIDENTS PREVENTED"
+            title="PREDICTIVE PATHS AVERTED"
             value={<AnimatedCounter value={shiftSummary.incidentsPrevented * 2 + 3} />}
-            subtitle="Predictive paths averted"
+            subtitle="Collisions & breaches avoided"
             detail={
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
-                <span style={{ color: '#22C55E', fontWeight: 600 }}>+2% this week</span>
-                <Sparkline />
+              <div style={{ display: 'flex', justifySelf: 'stretch', justifyContent: 'space-between', width: '100%', alignItems: 'center', marginTop: '2px' }}>
+                <span style={{ color: '#3DD9FF', fontWeight: 600 }}>+12% tracking accuracy</span>
+                <Sparkline data={[10, 12, 14, 13, 17, 18, 21]} color="#3E6AE0" />
               </div>
             }
-            icon={<Shield size={20} style={{ color: '#00B8D9' }} />}
+            extraInfo="Risk avoidance SLA: 99.9%"
+            icon={<Shield size={16} style={{ color: '#3DD9FF' }} />}
             size="medium"
           />
         </div>
 
-        {/* Row 3: Smaller Cards — PPE Compliance, Edge AI Latency, Workers Monitored, Network Health */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', flex: 1 }}>
+        {/* Row 3: Smaller Cards */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
           <MetricBox
             title="PPE COMPLIANCE"
             value={`${ppeComplianceRate}%`}
-            subtitle="Gear verified active"
+            subtitle="SLA Target: 98%"
             detail={
-              <span style={{ color: '#22C55E', fontWeight: 600 }}>+2% this week</span>
+              <span style={{ color: '#00D084', fontWeight: 600 }}>● OPTIMAL (98.2%)</span>
             }
-            icon={<UserCheck size={14} style={{ color: '#00B8D9' }} />}
+            extraInfo="Vision Model: v8.2"
+            icon={<UserCheck size={12} style={{ color: '#3DD9FF' }} />}
             size="small"
           />
           <MetricBox
             title="EDGE AI LATENCY"
             value="14.2ms"
-            subtitle="Camera telemetry delay"
-            detail="Within threshold"
-            icon={<Clock size={14} style={{ color: '#22C55E' }} />}
+            subtitle="SLA Threshold: 30ms"
+            detail="System Nominal"
+            extraInfo="SORT Tracker Link"
+            icon={<Clock size={12} style={{ color: '#3DD9FF' }} />}
             size="small"
           />
           <MetricBox
-            title="WORKERS MONITORED"
+            title="WORKERS TRACKED"
             value={workers.length > 0 ? workers.length : shiftSummary.activeWorkers}
-            subtitle="ID tags registered"
-            detail="Active trajectories"
-            icon={<UserCheck size={14} style={{ color: 'rgba(255, 255, 255, 0.4)' }} />}
+            subtitle="ID tags active"
+            detail="Uptime: 100%"
+            extraInfo="Tx Rate: 4.8 Mb/s"
+            icon={<UserCheck size={12} style={{ color: 'var(--color-silver)' }} />}
             size="small"
           />
           <MetricBox
-            title="SYSTEM HEALTH"
-            value="98.7%"
-            subtitle="Secure Telemetry Link"
+            title="SYSTEM STATUS"
+            value="99.9%"
+            subtitle="Calibrated Link"
             detail={
-              <span style={{ color: '#22C55E', fontWeight: 600 }}>● OPTIMAL</span>
+              <span style={{ color: '#00D084', fontWeight: 600 }}>● ONLINE</span>
             }
-            icon={<Wifi size={14} style={{ color: '#22C55E' }} />}
+            extraInfo="ScyllaDB stable"
+            icon={<Wifi size={12} style={{ color: '#3DD9FF' }} />}
             size="small"
           />
         </div>
@@ -534,59 +515,55 @@ interface MetricBoxProps {
   value: React.ReactNode;
   subtitle: string;
   detail?: React.ReactNode;
+  extraInfo?: string;
   icon: React.ReactNode;
   size: 'medium' | 'small';
   flash?: boolean;
 }
 
-const MetricBox: React.FC<MetricBoxProps> = ({ title, value, subtitle, detail, icon, size, flash }) => {
+const MetricBox: React.FC<MetricBoxProps> = ({ title, value, subtitle, detail, extraInfo, icon, size, flash }) => {
   const isSmall = size === 'small';
 
   return (
     <div
       className={`hud-panel ${flash ? 'critical-flash-active' : ''}`}
       style={{
-        background: '#161616',
-        border: '1px solid rgba(255, 255, 255, 0.045)',
-        borderRadius: '6px',
-        padding: isSmall ? '14px 16px' : '20px 24px',
+        background: 'var(--color-bg-card)',
+        border: '1px solid var(--border-color)',
+        borderRadius: '2px',
+        padding: isSmall ? '16px' : '22px',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        transition: 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, box-shadow 0.25s ease',
         cursor: 'pointer',
-        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.35)',
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = 'translateY(-2px)';
-        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.12)';
-        e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.45)';
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = 'translateY(0)';
-        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.045)';
-        e.currentTarget.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.35)';
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', width: '100%' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: isSmall ? '2px' : '4px' }}>
-          <span style={{ fontFamily: "'Poppins', sans-serif", fontSize: isSmall ? '8.5px' : '10px', fontWeight: 500, color: 'rgba(255,255,255,0.35)', letterSpacing: '0.06em' }}>
+          <span style={{ fontFamily: "var(--font-body)", fontSize: isSmall ? '9px' : '10.5px', fontWeight: 600, color: 'var(--color-silver)', letterSpacing: '0.06em' }}>
             {title}
           </span>
-          <span style={{ fontFamily: "'Sora', sans-serif", fontSize: isSmall ? '20px' : '28px', fontWeight: 700, color: '#ffffff', lineHeight: 1.1 }}>
+          <span style={{ 
+            fontFamily: isSmall ? "var(--font-metric)" : "var(--font-body)", 
+            fontSize: isSmall ? '22px' : '33px', 
+            fontWeight: 700, 
+            color: 'var(--color-silver)', 
+            lineHeight: 1.1,
+            letterSpacing: isSmall ? 'normal' : '-1px'
+          }}>
             {value}
           </span>
         </div>
         <div
           style={{
-            background: 'rgba(255, 255, 255, 0.03)',
-            borderRadius: '4px',
-            width: isSmall ? '26px' : '36px',
-            height: isSmall ? '26px' : '36px',
+            background: '#000000',
+            borderRadius: '2px',
+            width: isSmall ? '24px' : '32px',
+            height: isSmall ? '24px' : '32px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            border: '1px solid rgba(255, 255, 255, 0.06)',
+            border: '1px solid var(--border-color)',
             flexShrink: 0,
           }}
         >
@@ -594,14 +571,19 @@ const MetricBox: React.FC<MetricBoxProps> = ({ title, value, subtitle, detail, i
         </div>
       </div>
       
-      {/* Subtitle and Dynamic details below the values */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', marginTop: isSmall ? '6px' : '12px' }}>
-        <div style={{ fontFamily: "'Poppins', sans-serif", fontSize: isSmall ? '8.5px' : '10px', fontWeight: 400, color: 'rgba(255, 255, 255, 0.28)' }}>
+      {/* Subtitles and information overlays */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginTop: isSmall ? '8px' : '14px' }}>
+        <div style={{ fontFamily: "var(--font-label)", fontSize: isSmall ? '9px' : '10px', color: 'var(--color-neutral)', opacity: 0.8 }}>
           {subtitle}
         </div>
         {detail && (
-          <div style={{ fontFamily: "'Poppins', sans-serif", fontSize: isSmall ? '8.5px' : '10px', fontWeight: 400, color: 'rgba(255, 255, 255, 0.45)' }}>
+          <div style={{ fontFamily: "var(--font-label)", fontSize: isSmall ? '9px' : '10px', color: 'var(--color-silver)' }}>
             {detail}
+          </div>
+        )}
+        {extraInfo && (
+          <div style={{ fontFamily: "var(--font-label)", fontSize: isSmall ? '8px' : '9px', color: 'var(--color-neutral)', opacity: 0.5, marginTop: '2px' }}>
+            {extraInfo}
           </div>
         )}
       </div>

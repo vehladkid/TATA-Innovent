@@ -23,14 +23,12 @@ export const CommandOverlay: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
-
-
   return (
     <div
       style={{
         width: '100%',
-        background: '#0D0D0D',
-        borderBottom: '1px solid rgba(255,255,255,0.04)',
+        background: '#0D0D0D', // Matte-black secondary surface
+        borderBottom: '1px solid #252525', // Border color
         padding: '0 20px',
         height: '52px',
         display: 'flex',
@@ -42,30 +40,31 @@ export const CommandOverlay: React.FC = () => {
     >
       {/* Brand */}
       <div
-        style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
+        style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}
         onClick={() => setView('BOOT')}
       >
-        <VigilEdgeLogo size={35} />
+        <VigilEdgeLogo size={36} staticMode={true} />
         <div>
           <div
             style={{
-              fontFamily: "'Sora', sans-serif",
-              fontSize: '15px',
+              fontFamily: "var(--font-logo)",
+              fontSize: '17.5px',
               fontWeight: 700,
-              letterSpacing: '0.04em',
-              color: '#ffffff',
-              lineHeight: 1,
+              letterSpacing: '0.18em',
+              textTransform: 'uppercase',
+              color: 'var(--color-silver)',
+              lineHeight: 1.05,
             }}
           >
             VIGIL EDGE
           </div>
           <div
             style={{
-              fontFamily: "'Poppins', sans-serif",
-              fontSize: '9px',
-              fontWeight: 500,
-              color: 'rgba(255,255,255,0.35)',
-              letterSpacing: '0.08em',
+              fontFamily: "var(--font-header)",
+              fontSize: '8px',
+              fontWeight: 600,
+              color: 'var(--color-neutral)',
+              letterSpacing: '0.1em',
               marginTop: '2px',
             }}
           >
@@ -98,10 +97,10 @@ export const CommandOverlay: React.FC = () => {
               padding: '4px 0',
             }}
           >
-            <span style={{ fontFamily: "'Poppins', sans-serif", fontSize: '10px', color: 'rgba(255,255,255,0.35)', fontWeight: 500, letterSpacing: '0.05em' }}>
+            <span style={{ fontFamily: "var(--font-label)", fontSize: '10px', color: '#9A9A9A', fontWeight: 500, letterSpacing: '0.05em' }}>
               SAFETY INDEX
             </span>
-            <span style={{ fontFamily: "'Sora', sans-serif", fontSize: '13px', fontWeight: 700, color: '#ffffff' }}>
+            <span style={{ fontFamily: "var(--font-metric)", fontSize: '14px', fontWeight: 700, color: '#EAEAEA' }}>
               {siteSafetyScore}
             </span>
           </div>
@@ -110,25 +109,27 @@ export const CommandOverlay: React.FC = () => {
         {/* System status */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           <div
+            className="active-indicator-pulse"
             style={{
-              width: '5px',
-              height: '5px',
+              width: '6px',
+              height: '6px',
               borderRadius: '50%',
-              background: '#22C55E',
+              background: '#3DD9FF', // Nominal Cyan
             }}
           />
-          <span style={{ fontFamily: "'Poppins', sans-serif", fontSize: '10px', color: 'rgba(255,255,255,0.35)', fontWeight: 500, letterSpacing: '0.05em' }}>
-            SYSTEM STATUS: <span style={{ color: '#22C55E', fontWeight: 600 }}>ONLINE</span>
+          <span style={{ fontFamily: "var(--font-label)", fontSize: '9.5px', color: '#9A9A9A', fontWeight: 500, letterSpacing: '0.05em' }}>
+            SYSTEM: <span style={{ color: '#3DD9FF', fontWeight: 600 }}>ONLINE</span>
           </span>
         </div>
 
         {/* Clock - secondary and smaller */}
         <span
           style={{
-            fontFamily: "'Poppins', sans-serif",
+            fontFamily: "var(--font-body)",
             fontSize: '9.5px',
             fontWeight: 400,
-            color: 'rgba(255,255,255,0.22)',
+            color: '#9A9A9A',
+            opacity: 0.8,
             letterSpacing: '0.04em',
           }}
         >
@@ -140,14 +141,14 @@ export const CommandOverlay: React.FC = () => {
           onClick={toggleSound}
           style={{
             background: 'transparent',
-            border: '1px solid rgba(255,255,255,0.05)',
-            borderRadius: '4px',
+            border: '1px solid #252525',
+            borderRadius: '3px',
             width: '28px',
             height: '28px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: soundMuted ? '#EF4444' : 'rgba(255,255,255,0.35)',
+            color: soundMuted ? '#FF5C5C' : '#9A9A9A', // Critical red for mute warning
             cursor: 'pointer',
             transition: 'all 0.15s ease',
           }}
@@ -156,13 +157,6 @@ export const CommandOverlay: React.FC = () => {
           {soundMuted ? <VolumeX size={12} /> : <Volume2 size={12} />}
         </button>
       </div>
-
-      <style>{`
-        @keyframes ws-blink {
-          0%   { opacity: 0.3; }
-          100% { opacity: 1; }
-        }
-      `}</style>
     </div>
   );
 };
@@ -178,32 +172,40 @@ const NavButton: React.FC<NavButtonProps> = ({ active, onClick, icon, label }) =
   <button
     onClick={onClick}
     style={{
-      background: active ? 'rgba(0, 184, 217, 0.08)' : 'transparent',
+      background: active ? '#101010' : 'transparent',
       border: 'none',
-      borderBottom: active ? '2px solid #00B8D9' : '2px solid transparent',
+      borderBottom: active ? '2px solid #3DD9FF' : '2px solid transparent',
       borderTop: '2px solid transparent',
-      color: active ? '#ffffff' : 'rgba(255,255,255,0.45)',
+      color: active ? '#EAEAEA' : '#9A9A9A',
       borderRadius: 0,
       padding: '0 14px',
       height: '52px',
       display: 'flex',
       alignItems: 'center',
       gap: '7px',
-      fontFamily: "'Poppins', sans-serif",
-      fontSize: '12px',
+      fontFamily: "var(--font-header)", // Osiris
+      fontSize: '11px',
       fontWeight: 500,
+      letterSpacing: '-0.03em',
       cursor: 'pointer',
       transition: 'all 0.15s ease',
       whiteSpace: 'nowrap',
+      boxShadow: active ? '0 1px 6px rgba(61, 217, 255, 0.15)' : 'none',
     }}
     onMouseEnter={(e) => {
-      if (!active) (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.75)';
+      if (!active) {
+        (e.currentTarget as HTMLButtonElement).style.color = '#EAEAEA';
+        (e.currentTarget as HTMLButtonElement).style.background = '#151515';
+      }
     }}
     onMouseLeave={(e) => {
-      if (!active) (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.45)';
+      if (!active) {
+        (e.currentTarget as HTMLButtonElement).style.color = '#9A9A9A';
+        (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
+      }
     }}
   >
-    <span style={{ color: active ? '#00B8D9' : 'inherit' }}>{icon}</span>
+    <span style={{ color: active ? '#3DD9FF' : '#9A9A9A' }}>{icon}</span>
     <span>{label}</span>
   </button>
 );

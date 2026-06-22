@@ -1,0 +1,28 @@
+@font-face {
+  font-family: "Equinox";
+  src: url("../assets/fonts/Equinox Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Equinox";
+  src: url("../assets/fonts/Equinox Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Osiris";
+  src: url("../assets/fonts/Osiris.woff2") format("woff2"),
+       url("../assets/fonts/Osiris.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Deltha";
+  src: url("../assets/fonts/Deltha.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}

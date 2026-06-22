@@ -15,14 +15,14 @@ export const AlertTicker: React.FC = () => {
     if (recentEvents.length === 0) return;
 
     const newAlerts = recentEvents.slice(0, 8).map((evt) => {
-      const workerLabel = `Worker W-00${evt.trackId}`;
+      const workerLabel = `Worker W-0${evt.trackId}`;
       const zoneName =
         evt.zoneId === 'zone_press_A'       ? 'Press Machine A' :
         evt.zoneId === 'zone_forklift_lane' ? 'Forklift Transit Lane' :
         evt.zoneId === 'zone_welding_bay'   ? 'Welding Bay C' : 'Hazard Area';
 
       if (evt.band === 'critical') {
-        if (evt.breakdown.fallDetected > 0) return `CRITICAL — Fall detected for ${workerLabel}. Emergency response dispatched.`;
+        if (evt.breakdown.fallDetected > 0) return `CRITICAL — Fall detected for ${workerLabel}. Emergency responders dispatched.`;
         return `CRITICAL — ${workerLabel} entered restricted ${zoneName} without required PPE.`;
       }
       if (evt.predictedEntryMs) {
@@ -56,8 +56,8 @@ export const AlertTicker: React.FC = () => {
       style={{
         width: '100%',
         height: '30px',
-        background: hasRecentCritical ? 'rgba(239,68,68,0.12)' : 'rgba(255,255,255,0.025)',
-        borderBottom: hasRecentCritical ? '1px solid rgba(239,68,68,0.4)' : '1px solid rgba(255,255,255,0.06)',
+        background: hasRecentCritical ? 'rgba(255, 92, 92, 0.08)' : 'rgba(13, 13, 13, 0.4)',
+        borderBottom: hasRecentCritical ? '1px solid rgba(255, 92, 92, 0.35)' : '1px solid #252525',
         display: 'flex',
         alignItems: 'center',
         overflow: 'hidden',
@@ -70,9 +70,9 @@ export const AlertTicker: React.FC = () => {
       {/* Label badge */}
       <div
         style={{
-          background: hasRecentCritical ? '#EF4444' : 'rgba(0,184,217,0.15)',
-          color: hasRecentCritical ? '#fff' : '#00B8D9',
-          fontFamily: "'Sora', sans-serif",
+          background: hasRecentCritical ? '#FF5C5C' : 'rgba(61, 217, 255, 0.12)', // Red override or nominal cyan
+          color: hasRecentCritical ? '#000000' : '#3DD9FF', // High contrast text or primary cyan
+          fontFamily: "var(--font-header)", // Osiris
           fontSize: '10px',
           fontWeight: 600,
           letterSpacing: '0.06em',
@@ -81,7 +81,7 @@ export const AlertTicker: React.FC = () => {
           display: 'flex',
           alignItems: 'center',
           gap: '6px',
-          borderRight: '1px solid rgba(255,255,255,0.07)',
+          borderRight: '1px solid #252525',
           whiteSpace: 'nowrap',
           flexShrink: 0,
         }}
@@ -100,23 +100,24 @@ export const AlertTicker: React.FC = () => {
           display: 'flex',
           whiteSpace: 'nowrap',
           willChange: 'transform',
-          animation: 'ticker-animation 50s linear infinite',
+          animation: 'ticker-animation 45s linear infinite',
           paddingLeft: '24px',
         }}
       >
         {tickerItems.map((item, index) => {
-          let color = 'rgba(255,255,255,0.55)';
-          if (item.startsWith('CRITICAL'))  color = '#EF4444';
-          else if (item.startsWith('PREDICTIVE')) color = '#8B5CF6';
-          else if (item.startsWith('DANGER'))     color = '#F59E0B';
-          else if (item.startsWith('NOMINAL'))    color = '#22C55E';
+          let color = '#EAEAEA'; // Default text
+          if (item.startsWith('CRITICAL'))  color = '#FF5C5C'; // Red
+          else if (item.startsWith('PREDICTIVE')) color = '#3DD9FF'; // Nominal Cyan
+          else if (item.startsWith('DANGER'))     color = '#FF5C5C'; // Red
+          else if (item.startsWith('CAUTION'))    color = '#FFC857'; // Yellow
+          else if (item.startsWith('NOMINAL'))    color = '#00D084'; // Safe Green
 
           return (
             <span
               key={index}
               style={{
                 marginRight: '72px',
-                fontFamily: "'Poppins', sans-serif",
+                fontFamily: "var(--font-metric)", // IBM Plex Mono
                 fontSize: '11px',
                 fontWeight: 500,
                 color,

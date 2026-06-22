@@ -23,20 +23,21 @@ export const LiveOps: React.FC = () => {
         overflow: 'hidden',
         position: 'relative',
         height: '100%',
+        background: '#000000', // Pure Black
       }}
     >
       {/* Top Banner Ticker */}
       <AlertTicker />
 
-      {/* Grid Layout */}
+      {/* Grid Layout (Map Hero: 16% | 68% | 16%) */}
       <div
         style={{
           flex: 1,
           display: 'grid',
-          gridTemplateColumns: '22% 56% 22%',
-          gridTemplateRows: 'calc(100% - 130px) 130px',
-          gap: '10px',
-          padding: '10px',
+          gridTemplateColumns: '16% 68% 16%',
+          gridTemplateRows: 'calc(100% - 90px) 90px', // Thinner timeline height
+          gap: '12px',
+          padding: '12px',
           overflow: 'hidden',
         }}
       >
@@ -51,15 +52,84 @@ export const LiveOps: React.FC = () => {
             position: 'relative',
             display: 'flex',
             flexDirection: 'column',
-            gap: '10px',
+            gap: '12px',
             minHeight: 0,
           }}
         >
+          {/* AI Predictive Risk Resolution HUD Panel */}
+          <div
+            style={{
+              position: 'absolute',
+              top: '52px',
+              left: '16px',
+              width: '290px',
+              background: 'rgba(13, 13, 13, 0.94)',
+              border: '1px solid #FF5C5C', // Peachy / red warning border
+              borderLeft: '4px solid #FF5C5C',
+              borderRadius: '2px',
+              padding: '12px 14px',
+              zIndex: 10,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '6px',
+              backdropFilter: 'blur(10px)',
+              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5)',
+            }}
+          >
+            {/* Header */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', borderBottom: '1px solid rgba(255, 92, 92, 0.15)', paddingBottom: '6px', marginBottom: '4px' }}>
+              <span style={{
+                width: '6px',
+                height: '6px',
+                borderRadius: '50%',
+                background: '#FF5C5C',
+                display: 'inline-block',
+              }} />
+              <span style={{ fontFamily: "var(--font-body)", fontSize: '10px', fontWeight: 700, color: '#FF5C5C', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                AI PREDICTIVE RESOLUTION ENGINE
+              </span>
+            </div>
+
+            {/* Warning details */}
+            <div style={{ fontFamily: "var(--font-metric)", fontSize: '11px', color: '#EAEAEA' }}>
+              <div style={{ color: '#FF5C5C', fontWeight: 700, marginBottom: '2px' }}>
+                ⚠ PREDICTED FORKLIFT COLLISION
+              </div>
+              <div style={{ color: '#9A9A9A', fontSize: '10px' }}>
+                Conflict: <span style={{ color: '#EAEAEA', fontWeight: 600 }}>Worker W-05 ⇆ Forklift F-01</span>
+              </div>
+              <div style={{ display: 'flex', gap: '10px', marginTop: '2px' }}>
+                <span>ETA: <strong style={{ color: '#FFC857' }}>14 Seconds</strong></span>
+                <span>Confidence: <strong style={{ color: '#FFC857' }}>87%</strong></span>
+              </div>
+            </div>
+
+            {/* Recommendation details */}
+            <div style={{ 
+              marginTop: '4px', 
+              padding: '6px 8px', 
+              background: 'rgba(0, 208, 132, 0.04)', 
+              border: '1px solid rgba(0, 208, 132, 0.15)', 
+              borderRadius: '1px',
+              fontFamily: "var(--font-body)",
+              fontSize: '10px',
+              color: '#D8D8D8'
+            }}>
+              <div style={{ color: '#00D084', fontWeight: 700, fontSize: '9.5px', letterSpacing: '0.04em', textTransform: 'uppercase', marginBottom: '2px' }}>
+                Recommended Action
+              </div>
+              <div>Reroute Worker W-05 through Walkway B</div>
+              <div style={{ color: '#00D084', fontWeight: 600, fontSize: '9px', marginTop: '2px' }}>
+                Expected Risk Mitigation: -41%
+              </div>
+            </div>
+          </div>
+
           <div style={{ flex: 1, minHeight: 0 }}>
             <SortTrackerMap mode="hologram" />
           </div>
 
-          {/* Critical incident popup */}
+          {/* Critical incident popup (uses Critical Red warning state) */}
           {isCriticalActive && (
             <div
               className="hud-panel critical-flash-active"
@@ -68,38 +138,38 @@ export const LiveOps: React.FC = () => {
                 bottom: '16px',
                 left: '50%',
                 transform: 'translateX(-50%)',
-                width: '400px',
-                background: 'rgba(10,2,2,0.97)',
-                border: '2px solid #EF4444',
-                padding: '12px 16px',
-                borderRadius: '6px',
+                width: '380px',
+                background: 'rgba(16, 16, 16, 0.95)',
+                border: '1px solid #FF5C5C', // Critical Red warning border
+                padding: '10px 14px',
+                borderRadius: '4px',
                 zIndex: 100,
                 display: 'flex',
                 alignItems: 'center',
-                gap: '14px',
+                gap: '12px',
               }}
             >
               <div
                 style={{
-                  background: '#EF4444',
+                  background: '#FF5C5C', // Critical Red circle
                   borderRadius: '50%',
-                  width: '30px',
-                  height: '30px',
+                  width: '24px',
+                  height: '24px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: '#ffffff',
+                  color: '#000000', // high contrast text
                   flexShrink: 0,
                 }}
               >
-                <ShieldAlert size={17} />
+                <ShieldAlert size={13} />
               </div>
               <div>
-                <div style={{ fontFamily: "'Sora', sans-serif", color: '#EF4444', fontSize: '11px', fontWeight: 700, letterSpacing: '0.05em' }}>
-                  CRITICAL INCIDENT DETECTED
+                <div style={{ fontFamily: "var(--font-header)", color: '#FF5C5C', fontSize: '10px', fontWeight: 600, letterSpacing: '0.05em' }}>
+                  CRITICAL ZONE INTRA-BREACH
                 </div>
-                <div style={{ fontFamily: "'Poppins', sans-serif", color: 'rgba(255,255,255,0.75)', fontSize: '11px', marginTop: '3px' }}>
-                  Track ID 0{latestEvent.trackId} has breached restricted zone {latestEvent.zoneId}
+                <div style={{ fontFamily: "var(--font-body)", color: '#EAEAEA', fontSize: '10.5px', marginTop: '2px' }}>
+                  Target W-0{latestEvent.trackId} has breached restricted zone {latestEvent.zoneId === 'zone_press_A' ? 'Press Machine A' : latestEvent.zoneId}
                 </div>
               </div>
             </div>
@@ -111,7 +181,7 @@ export const LiveOps: React.FC = () => {
           <LiveEventFeed />
         </div>
 
-        {/* BOTTOM PANEL: Threat timeline */}
+        {/* BOTTOM PANEL: Threat timeline (Redesigned as Predictive Event Rail) */}
         <div style={{ gridColumn: '1 / span 3', minHeight: 0 }}>
           <ThreatTimeline />
         </div>

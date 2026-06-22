@@ -13,39 +13,39 @@ interface ContributorBarProps {
 
 const ContributorBar: React.FC<ContributorBarProps> = ({ label, value, max, isActive }) => {
   const percent = Math.min(100, (value / max) * 100);
-  // Color system: Red for active violation, Green for nominal, desaturated gray for inactive baseline
   const isViolated = value > 0;
-  const barColor = isActive ? (isViolated ? '#EF4444' : '#22C55E') : 'rgba(255, 255, 255, 0.12)';
+  const barColor = isActive ? (isViolated ? '#FF5C5C' : '#00D084') : '#1A1A1A';
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', marginBottom: '14px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '12px' }}>
       <div 
         style={{ 
           display: 'flex', 
           justifyContent: 'space-between', 
-          fontSize: '11px', 
-          fontFamily: "'Poppins', sans-serif" 
+          fontSize: '10px', 
+          fontFamily: "var(--font-metric)" 
         }}
       >
         <span 
           style={{ 
-            color: isActive ? '#E5E7EB' : 'rgba(255,255,255,0.4)', 
+            color: isActive ? '#D8D8D8' : '#D8D8D8', 
+            fontFamily: "var(--font-metric)", 
             fontWeight: isActive ? 600 : 400 
           }}
         >
           {label}
         </span>
-        <span style={{ fontFamily: "'Sora', sans-serif", fontWeight: 700, color: barColor }}>
+        <span style={{ fontFamily: "var(--font-metric)", fontWeight: 700, color: barColor }}>
           {isViolated ? `+${value}` : '0'}{' '}
-          <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.25)', fontWeight: 400 }}>/ {max}</span>
+          <span style={{ fontSize: '8px', color: '#D8D8D8', fontWeight: 400 }}>/ {max}</span>
         </span>
       </div>
       <div 
         style={{ 
-          height: '6px', 
-          background: '#0F0F10', 
-          border: '1px solid rgba(255, 255, 255, 0.05)',
-          borderRadius: '3px', 
+          height: '4px', 
+          background: '#000000', 
+          border: '1px solid rgba(255, 255, 255, 0.01)',
+          borderRadius: '2px', 
           overflow: 'hidden' 
         }}
       >
@@ -54,7 +54,7 @@ const ContributorBar: React.FC<ContributorBarProps> = ({ label, value, max, isAc
             height: '100%',
             width: `${percent}%`,
             background: barColor,
-            borderRadius: '2px',
+            borderRadius: '1px',
             transition: 'width 0.4s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.4s ease',
           }}
         />
@@ -84,68 +84,69 @@ export const RiskPanel: React.FC = () => {
       style={{
         flex: 1,
         display: 'grid',
-        gridTemplateColumns: '320px 1fr',
+        gridTemplateColumns: '280px 1fr',
         gap: '12px',
         padding: '12px',
         overflow: 'hidden',
         height: '100%',
+        background: '#000000', // Pure Black
       }}
     >
-      {/* Left Sidebar: Diagnostics + Incident Diary */}
+      {/* Left Sidebar: Diagnostics & Incident Diary */}
       <div
         className="hud-panel"
         style={{
           display: 'flex',
           flexDirection: 'column',
-          background: '#141414',
-          border: '1px solid rgba(255,255,255,0.08)',
-          padding: '16px',
-          gap: '16px',
+          background: '#101010', // Panel background: charcoal
+          border: '1px solid #252525', // Border: charcoal
+          padding: '14px',
+          gap: '14px',
           minHeight: 0,
         }}
       >
         {/* AI Diagnostics header */}
         <div
           style={{
-            fontFamily: "'Sora', sans-serif",
+            fontFamily: "var(--font-body)", // Sora
             fontSize: '11px',
             fontWeight: 600,
-            color: 'rgba(255,255,255,0.55)',
+            color: '#EAEAEA',
             letterSpacing: '0.06em',
-            borderBottom: '1px solid rgba(255,255,255,0.07)',
-            paddingBottom: '10px',
+            borderBottom: '1px solid #252525',
+            paddingBottom: '8px',
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
           }}
         >
-          <Cpu size={13} style={{ color: '#00B8D9' }} />
+          <Cpu size={13} style={{ color: '#3DD9FF' }} />
           AI ENGINE DIAGNOSTICS
         </div>
 
         {/* Diagnostic metrics */}
         <div
           style={{
-            fontSize: '11px',
+            fontSize: '10.5px',
             display: 'flex',
             flexDirection: 'column',
             gap: '8px',
-            background: 'rgba(255,255,255,0.01)',
-            padding: '12px',
-            borderRadius: '4px',
-            border: '1px solid rgba(255,255,255,0.05)',
+            background: '#050505', // Terminal inner dark
+            padding: '10px 12px',
+            borderRadius: '2px',
+            border: '1px solid #252525',
           }}
         >
           {[
-            { label: 'Architecture', value: 'YOLOv8 + SORT Tracking', color: '#fff' },
-            { label: 'Inference Delay',  value: '14.2ms',                color: '#22C55E' },
-            { label: 'Skeletons Check',     value: '33 Keypoints (Active)', color: '#22C55E' },
-            { label: 'Trigger Level', value: '0.75 Confidence', color: '#00B8D9' },
-            { label: 'Action Alerts',      value: 'n8n Warning Dispatch',     color: '#E5E7EB' },
+            { label: 'Architecture', value: 'YOLOv8 + SORT Tracking', color: '#EAEAEA' },
+            { label: 'Inference Delay',  value: '14.2ms',                color: '#3DD9FF' },
+            { label: 'Skeletons Check',     value: '33 Keypoints (Active)', color: '#3DD9FF' },
+            { label: 'Confidence Threshold', value: '0.75 Target', color: '#3DD9FF' },
+            { label: 'Action Alerts',      value: 'n8n Dispatcher Active',    color: '#EAEAEA' },
           ].map(({ label, value, color }) => (
             <div key={label} style={{ display: 'flex', justifyContent: 'space-between', gap: '8px' }}>
-              <span style={{ fontFamily: "'Poppins', sans-serif", color: 'rgba(255,255,255,0.4)', fontWeight: 400 }}>{label}:</span>
-              <span style={{ fontFamily: "'Sora', sans-serif", color, fontWeight: 600, textAlign: 'right', fontSize: '10.5px' }}>{value}</span>
+              <span style={{ fontFamily: "var(--font-metric)", color: '#9A9A9A', fontWeight: 400 }}>{label}:</span>
+              <span style={{ fontFamily: "var(--font-metric)", color, fontWeight: 600, textAlign: 'right', fontSize: '10px' }}>{value}</span>
             </div>
           ))}
         </div>
@@ -154,26 +155,26 @@ export const RiskPanel: React.FC = () => {
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px', minHeight: 0 }}>
           <div
             style={{
-              fontFamily: "'Sora', sans-serif",
+              fontFamily: "var(--font-body)", // Sora
               fontSize: '10px',
               fontWeight: 600,
-              color: 'rgba(255,255,255,0.35)',
+              color: '#EAEAEA',
               letterSpacing: '0.07em',
-              borderBottom: '1px solid rgba(255,255,255,0.06)',
+              borderBottom: '1px solid #252525',
               paddingBottom: '6px',
               display: 'flex',
               alignItems: 'center',
-              gap: '7px',
+              gap: '6px',
             }}
           >
             <Activity size={11} />
             WARNING INCIDENT DIARY
           </div>
 
-          <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '5px' }}>
+          <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '4px' }}>
             {alertIncidents.slice(0, 15).map((evt) => {
               const theme = getRiskColor(evt.band);
-              const accentColor = evt.band === 'critical' || evt.band === 'danger' ? '#EF4444' : '#00B8D9';
+              const accentColor = evt.band === 'critical' ? '#FF5C5C' : (evt.band === 'danger' ? '#FF5C5C' : (evt.band === 'caution' ? '#FFC857' : '#00D084'));
               const time = new Date(evt.timestamp).toLocaleTimeString();
               const zoneName =
                 evt.zoneId === 'zone_press_A'       ? 'Press A' :
@@ -184,30 +185,30 @@ export const RiskPanel: React.FC = () => {
                 <div
                   key={evt.eventId}
                   style={{
-                    background: 'rgba(255,255,255,0.02)',
-                    border: '1px solid rgba(255,255,255,0.05)',
-                    borderLeft: `2px solid ${accentColor}`,
-                    borderRadius: '0 3px 3px 0',
-                    padding: '7px 10px',
-                    fontSize: '10px',
+                    background: '#050505',
+                    border: '1px solid #252525',
+                    borderLeft: `2.5px solid ${accentColor}`,
+                    borderRadius: '0 2px 2px 0',
+                    padding: '6px 8px',
+                    fontSize: '9.5px',
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: '2px',
+                    gap: '1px',
                     cursor: 'pointer',
-                    transition: 'background 0.15s ease',
+                    transition: 'background-color 0.15s ease',
                   }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.04)'; }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.02)'; }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.background = '#151515'; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.background = '#050505'; }}
                   onClick={() => {
                     const store = useEventStore.getState();
                     store.setSelectedTrackId(evt.trackId);
                   }}
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ fontFamily: "'Sora', sans-serif", fontWeight: 600, color: '#fff' }}>W-0{evt.trackId}</span>
-                    <span style={{ fontFamily: "'Sora', sans-serif", fontWeight: 600, color: accentColor }}>{theme.name.toUpperCase()} ({evt.riskScore})</span>
+                    <span style={{ fontFamily: "var(--font-metric)", fontWeight: 600, color: '#EAEAEA' }}>W-0{evt.trackId}</span>
+                    <span style={{ fontFamily: "var(--font-metric)", fontWeight: 600, color: accentColor }}>{theme.name.toUpperCase()} ({evt.riskScore})</span>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: "'Poppins', sans-serif", color: 'rgba(255,255,255,0.35)', fontWeight: 400 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: "var(--font-metric)", color: '#9A9A9A', opacity: 0.85 }}>
                     <span>{zoneName}</span>
                     <span>{time}</span>
                   </div>
@@ -215,7 +216,7 @@ export const RiskPanel: React.FC = () => {
               );
             })}
             {alertIncidents.length === 0 && (
-              <span style={{ fontFamily: "'Poppins', sans-serif", fontSize: '11px', color: 'rgba(255,255,255,0.25)', fontStyle: 'italic', padding: '10px 0' }}>
+              <span style={{ fontFamily: "var(--font-body)", fontSize: '11px', color: '#9A9A9A', fontStyle: 'italic', padding: '10px 0', opacity: 0.6 }}>
                 No hazard triggers recorded in shift database.
               </span>
             )}
@@ -223,19 +224,19 @@ export const RiskPanel: React.FC = () => {
         </div>
       </div>
 
-      {/* Main area: Risk Reactor + Weighted Contributor Panel */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 360px', gap: '12px', minHeight: 0 }}>
+      {/* Main area: Risk Reactor & Contributor list */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '12px', minHeight: 0 }}>
         {/* Center: The Reactor Console */}
         <div style={{ minHeight: 0 }}>
           <RiskReactor />
         </div>
 
-        {/* Right: Risk Contributor Panel */}
+        {/* Right: Contributor Panel */}
         <div
           className="hud-panel"
           style={{
-            background: '#141414',
-            border: '1px solid rgba(255,255,255,0.08)',
+            background: '#101010', // Panel background: charcoal
+            border: '1px solid #252525', // Border: charcoal
             padding: '16px',
             display: 'flex',
             flexDirection: 'column',
@@ -245,38 +246,37 @@ export const RiskPanel: React.FC = () => {
         >
           <div
             style={{
-              fontFamily: "'Sora', sans-serif",
+              fontFamily: "var(--font-body)", // Sora SemiBold
               fontSize: '11px',
               fontWeight: 600,
-              color: 'rgba(255,255,255,0.55)',
+              color: '#EAEAEA',
               letterSpacing: '0.06em',
-              borderBottom: '1px solid rgba(255,255,255,0.07)',
-              paddingBottom: '10px',
+              borderBottom: '1px solid #252525',
+              paddingBottom: '8px',
               display: 'flex',
               alignItems: 'center',
               gap: '8px',
-              marginBottom: '8px',
+              marginBottom: '4px',
             }}
           >
-            <Cpu size={13} style={{ color: '#00B8D9' }} />
+            <Cpu size={13} style={{ color: '#3DD9FF' }} />
             RISK CONTRIBUTOR EXPLORER
           </div>
 
           {selectedTrackId ? (
-            // Display active telemetry weights for selected target
             <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
               <div 
                 style={{ 
-                  fontFamily: "'Poppins', sans-serif", 
-                  fontSize: '10px', 
-                  color: 'rgba(255,255,255,0.4)', 
-                  marginBottom: '16px',
+                  fontFamily: "var(--font-body)", 
+                  fontSize: '9.5px', 
+                  color: '#9A9A9A', 
+                  marginBottom: '12px',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '6px'
+                  gap: '5px'
                 }}
               >
-                <Info size={11} style={{ color: '#00B8D9' }} />
+                <Info size={11} style={{ color: '#3DD9FF' }} />
                 Showing dynamic weights for Target W-0{selectedTrackId}
               </div>
               
@@ -287,20 +287,19 @@ export const RiskPanel: React.FC = () => {
               <ContributorBar label="Biometric Fall Override" value={breakdown.fallDetected} max={30} isActive={breakdown.fallDetected > 0} />
             </div>
           ) : (
-            // Display standard static engine weights (baseline guide)
             <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
               <div 
                 style={{ 
-                  fontFamily: "'Poppins', sans-serif", 
-                  fontSize: '10px', 
-                  color: 'rgba(255,255,255,0.4)', 
-                  marginBottom: '16px',
+                  fontFamily: "var(--font-body)", 
+                  fontSize: '9.5px', 
+                  color: '#9A9A9A', 
+                  marginBottom: '12px',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '6px'
+                  gap: '5px'
                 }}
               >
-                <Info size={11} style={{ color: '#8E8E93' }} />
+                <Info size={11} style={{ color: '#EAEAEA' }} />
                 Baseline System Rule Weights
               </div>
               
@@ -316,20 +315,20 @@ export const RiskPanel: React.FC = () => {
           <div
             style={{
               marginTop: 'auto',
-              background: '#0B0B0C',
-              border: '1px solid rgba(255,255,255,0.05)',
-              borderRadius: '4px',
-              padding: '12px',
-              fontSize: '10.5px',
-              fontFamily: "'Poppins', sans-serif",
-              color: 'rgba(255,255,255,0.45)',
-              lineHeight: '1.5'
+              background: '#050505', // Inner console background
+              border: '1px solid #252525',
+              borderRadius: '2px',
+              padding: '10px 12px',
+              fontSize: '10px',
+              fontFamily: "var(--font-body)",
+              color: '#9A9A9A',
+              lineHeight: '1.4'
             }}
           >
-            <div style={{ fontWeight: 600, color: '#E5E7EB', marginBottom: '4px', fontFamily: "'Sora', sans-serif" }}>
+            <div style={{ fontWeight: 600, color: '#EAEAEA', marginBottom: '3px', fontFamily: "var(--font-body)" }}>
               Decision Core Legend
             </div>
-            Values represent raw safety penalties mapped dynamically. Active metrics highlight in <span style={{ color: '#EF4444', fontWeight: 600 }}>Red (Danger)</span> and nominal metrics render in <span style={{ color: '#22C55E', fontWeight: 600 }}>Green (Safe)</span>.
+            Values represent raw safety penalties mapped dynamically. Active metrics highlight in <span style={{ color: '#FF5C5C', fontWeight: 600 }}>Critical (Red)</span> and caution indicators render in <span style={{ color: '#FFC857', fontWeight: 600 }}>Warning (Yellow)</span>, while safe parameters display in <span style={{ color: '#00D084', fontWeight: 600 }}>Safe (Green)</span>.
           </div>
 
         </div>

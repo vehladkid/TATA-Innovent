@@ -1,158 +1,202 @@
+@import "./styles/fonts.css";
+
 /* ============================================================
-   VIGIL EDGE — Design System v3.0
-   Typography: Sora (headings/metrics) + Poppins (body/labels)
-   Palette: Industrial Charcoal — premium, operational, serious
+   VIGIL EDGE — Executive Boardroom AI Platform OS Design System
+   Typography System:
+   - EQUINOX: Logo, loading titles, main titles, brand
+   - DELTHA: Executive metrics, hero stats
+   - OSIRIS: Navigation tabs, section headers
+   - BIERIKA: Secondary labels, data captions
+   - PERISIAN: Premium executive callouts, highlights
+   - Inter / system-ui: Fallback ONLY
    ============================================================ */
 
 :root {
   /* Backgrounds */
-  --color-bg-deep:    #0A0A0A;
-  --color-bg-panel:   #141414;
-  --color-bg-card:    #1A1A1A;
-  --color-bg-overlay: rgba(20, 20, 20, 0.92);
+  --color-bg-deep:    #050505; /* Main app background */
+  --color-bg-panel:   #0D0D0D; /* Secondary surfaces */
+  --color-bg-card:    #101010; /* Cards and panels */
+  --color-bg-hover:   #151515; /* Hover state */
+  --color-bg-elevated:#1A1A1A; /* Elevated surfaces */
+  --color-bg-overlay: rgba(5, 5, 5, 0.95);
 
-  /* Brand accent */
-  --color-accent:     #00B8D9;
-  --color-accent-dim: rgba(0, 184, 217, 0.12);
-  --color-accent-mid: rgba(0, 184, 217, 0.25);
+  /* Brand Accents (Used Sparingly) */
+  --color-accent:     #3DD9FF; /* Nominal Cyan - Primary Accent */
+  --color-accent-dim: rgba(61, 217, 255, 0.05);
+  --color-accent-mid: rgba(61, 217, 255, 0.1);
+  --color-blue:       #3E6AE0; /* Blue - Secondary Accent */
+  --color-blue-dim:   rgba(62, 106, 224, 0.05);
+  --color-silver:     #EAEAEA; /* Primary typography color */
 
-  /* Semantic colors */
-  --color-success:    #22C55E;
-  --color-warning:    #F59E0B;
-  --color-danger:     #EF4444;
-  --color-violet:     #8B5CF6;
-  --color-neutral:    #94A3B8;
+  /* Semantic Alerts (Status Colors) */
+  --color-safe:       #00D084;
+  --color-nominal:    #3DD9FF;
+  --color-warning:    #FFC857;
+  --color-critical:   #FF5C5C;
 
-  /* Semantic dim variants */
-  --color-success-dim: rgba(34, 197, 94, 0.12);
-  --color-warning-dim: rgba(245, 158, 11, 0.12);
-  --color-danger-dim:  rgba(239, 68, 68, 0.12);
+  --color-success:    #00D084;
+  --color-danger:     #FF5C5C;
+  --color-neutral:    #9A9A9A; /* Secondary text */
+
+  /* Semantic Dim Variants */
+  --color-success-dim: rgba(0, 208, 132, 0.05);
+  --color-warning-dim: rgba(255, 200, 87, 0.05);
+  --color-danger-dim:  rgba(255, 92, 92, 0.05);
 
   /* Borders */
-  --border-subtle: 1px solid rgba(255, 255, 255, 0.07);
-  --border-panel:  1px solid rgba(255, 255, 255, 0.10);
-  --border-accent: 1px solid rgba(0, 184, 217, 0.18);
-  --border-danger: 1px solid rgba(239, 68, 68, 0.35);
-  --border-warn:   1px solid rgba(245, 158, 11, 0.35);
+  --border-color:     #252525;
+  --border-color-alt: #2E2E2E;
+  --border-subtle: 1px solid var(--border-color);
+  --border-panel:  1px solid var(--border-color);
+  --border-accent: 1px solid var(--border-color-alt);
+  --border-danger: 1px solid var(--color-critical);
 
-  /* Typography */
-  --font-heading: 'Sora', system-ui, sans-serif;
-  --font-body:    'Poppins', system-ui, sans-serif;
+  /* Typography System */
+  --font-logo:    "Equinox";
+  --font-title:   "Osiris";
+  --font-header:  "Osiris";
+  --font-metric:  "IBM Plex Mono";
+  --font-label:   "Sora";
+  --font-callout: "Sora";
+  --font-body:    "Sora";
 }
 
 /* ============================================================
-   Reset
+   Reset & Base Styling
    ============================================================ */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  font-family: inherit;
 }
 
 body {
   background-color: var(--color-bg-deep);
-  color: #E2E8F0;
+  color: var(--color-silver);
   font-family: var(--font-body);
   overflow: hidden;
   height: 100vh;
   width: 100vw;
   user-select: none;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* ============================================================
-   Core Container — clean dark with subtle dot grid
+   Core Container — Pure flat black with subtle guidelines
    ============================================================ */
 .hud-container {
   position: relative;
   width: 100vw;
   height: 100vh;
   background-color: var(--color-bg-deep);
-  background-image:
-    radial-gradient(circle at 50% 0%, rgba(0, 184, 217, 0.04) 0%, transparent 60%),
-    radial-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px);
-  background-size: 100% 100%, 28px 28px;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.002) 1px, transparent 1px);
+  background-size: 36px 36px;
   display: flex;
   flex-direction: column;
 }
 
 /* ============================================================
-   Panels — flat dark, no neon
+   Panels — Boardroom minimalist flat designs (No glows)
    ============================================================ */
 .hud-panel {
-  background: var(--color-bg-panel);
-  border: var(--border-panel);
-  border-radius: 6px;
+  background: var(--color-bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
   position: relative;
   overflow: hidden;
-  transition: border-color 0.2s ease;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.2s ease,
+              background-color 0.2s ease,
+              box-shadow 0.2s ease;
+  box-shadow: none;
 }
 
 .hud-panel:hover {
-  border-color: rgba(255, 255, 255, 0.14);
+  border-color: var(--border-color-alt);
+  background: var(--color-bg-hover);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  transform: none;
 }
 
 /* ============================================================
-   Typography utilities
+   Typography Classes
    ============================================================ */
+.font-logo {
+  font-family: var(--font-logo);
+}
+
+.font-title {
+  font-family: var(--font-title);
+  letter-spacing: 0.05em;
+}
+
+.font-header {
+  font-family: var(--font-header);
+  letter-spacing: 0.06em;
+}
+
+.font-metric {
+  font-family: var(--font-metric);
+}
+
+.font-label {
+  font-family: var(--font-label);
+}
+
+.font-callout {
+  font-family: var(--font-callout);
+}
+
+.font-body {
+  font-family: var(--font-body);
+}
+
 .panel-header {
-  font-family: var(--font-heading);
+  font-family: var(--font-header);
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--color-neutral);
 }
 
 .data-label {
-  font-family: var(--font-body);
+  font-family: var(--font-label);
   font-size: 11px;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.45);
-  letter-spacing: 0.02em;
+  color: var(--color-neutral);
 }
 
 .data-value {
-  font-family: var(--font-heading);
-  font-size: 28px;
-  font-weight: 700;
-  color: #ffffff;
+  font-family: var(--font-metric);
+  font-size: 26px;
+  color: var(--color-silver);
   line-height: 1;
 }
 
 /* ============================================================
-   Critical alarm animations — these must remain functional
+   Mild Alert Animations (Peachy Warnings)
    ============================================================ */
 .critical-flash-active {
-  animation: alarm-red-flash 0.6s ease-in-out infinite alternate !important;
+  animation: alarm-critical-pulse 1.2s ease-in-out infinite alternate !important;
 }
 
-@keyframes alarm-red-flash {
+@keyframes alarm-critical-pulse {
   0% {
-    box-shadow: inset 0 0 8px rgba(239, 68, 68, 0.08);
-    border-color: rgba(239, 68, 68, 0.25);
+    border-color: rgba(255, 92, 92, 0.2);
+    background-color: var(--color-bg-card);
   }
   100% {
-    box-shadow: inset 0 0 30px rgba(239, 68, 68, 0.45), 0 0 12px rgba(239, 68, 68, 0.2);
-    border-color: rgba(239, 68, 68, 0.8);
+    border-color: rgba(255, 92, 92, 0.5);
+    background-color: rgba(255, 92, 92, 0.02);
   }
 }
 
 .danger-flash-active {
-  animation: alarm-orange-flash 0.8s ease-in-out infinite alternate !important;
+  animation: alarm-critical-pulse 1.6s ease-in-out infinite alternate !important;
 }
 
-@keyframes alarm-orange-flash {
-  0% {
-    box-shadow: inset 0 0 5px rgba(245, 158, 11, 0.08);
-    border-color: rgba(245, 158, 11, 0.25);
-  }
-  100% {
-    box-shadow: inset 0 0 20px rgba(245, 158, 11, 0.35), 0 0 10px rgba(245, 158, 11, 0.15);
-    border-color: rgba(245, 158, 11, 0.7);
-  }
-}
-
-/* Fullscreen critical border frame — still operational */
+/* Fullscreen alert overlay frame using Red */
 .fullscreen-alert-overlay {
   position: fixed;
   top: 0;
@@ -161,21 +205,13 @@ body {
   bottom: 0;
   pointer-events: none;
   z-index: 9999;
-  border: 12px solid transparent;
-  animation: border-flash-red 0.5s ease-in-out infinite alternate;
+  border: 4px solid transparent;
+  animation: border-flash-critical 0.8s ease-in-out infinite alternate;
 }
 
-@keyframes border-flash-red {
-  0%   { border-color: rgba(239, 68, 68, 0.04); box-shadow: inset 0 0 16px rgba(239, 68, 68, 0.04); }
-  100% { border-color: rgba(239, 68, 68, 0.6);  box-shadow: inset 0 0 50px rgba(239, 68, 68, 0.3); }
-}
-
-/* ============================================================
-   Radar grid (used in SortTrackerMap SVG backdrop)
-   ============================================================ */
-@keyframes radar-sweep {
-  0%   { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+@keyframes border-flash-critical {
+  0%   { border-color: rgba(255, 92, 92, 0.02); }
+  100% { border-color: rgba(255, 92, 92, 0.2); }
 }
 
 /* ============================================================
@@ -187,22 +223,64 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.03);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 184, 217, 0.2);
-  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 1px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 184, 217, 0.4);
+  background: rgba(255, 255, 255, 0.18);
 }
 
 /* ============================================================
-   Predictive badge pulse — live ops feed
+   Micro-animations & Interactive System Effects
    ============================================================ */
-@keyframes pulse-predictive {
-  0%   { border-color: rgba(139, 92, 246, 0.25); }
-  100% { border-color: rgba(139, 92, 246, 0.75); }
+.hud-panel, .live-feed-card, button, [role="button"] {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Hover scales and outlines */
+.worker-channel-card:hover {
+  border-color: var(--color-accent) !important;
+  transform: translateY(-1px);
+}
+
+/* Subtle Active Pulse (Nominal indicators) */
+.active-indicator-pulse {
+  animation: nominal-glow-pulse 2s infinite alternate;
+}
+
+@keyframes nominal-glow-pulse {
+  0% {
+    box-shadow: 0 0 2px rgba(61, 217, 255, 0.15);
+    opacity: 0.7;
+  }
+  100% {
+    box-shadow: 0 0 6px rgba(61, 217, 255, 0.45);
+    opacity: 1;
+  }
+}
+
+/* Soft Hologram Flicker */
+.hologram-flicker {
+  animation: subtle-flicker 4s infinite;
+}
+
+@keyframes subtle-flicker {
+  0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+    opacity: 0.99;
+    filter: hue-rotate(0deg);
+  }
+  20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+    opacity: 0.88;
+    filter: hue-rotate(2deg);
+  }
+}
+
+/* Subtle interactive button bounce */
+button:active {
+  transform: scale(0.97);
 }

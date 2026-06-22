@@ -169,13 +169,13 @@ export function getRiskColor(band: string | undefined): {
 } {
   switch (band) {
     case 'critical':
-      return { hex: '#ff003c', glow: '0 0 15px #ff003c', name: 'CRITICAL' };
+      return { hex: '#FF5C5C', glow: '0 2px 4px rgba(0, 0, 0, 0.5)', name: 'CRITICAL' };
     case 'danger':
-      return { hex: '#ffaa00', glow: '0 0 15px #ffaa00', name: 'DANGER' };
+      return { hex: '#FF5C5C', glow: '0 2px 4px rgba(0, 0, 0, 0.5)', name: 'DANGER' };
     case 'caution':
-      return { hex: '#ffea00', glow: '0 0 10px #ffea00', name: 'CAUTION' };
+      return { hex: '#FFC857', glow: '0 1px 3px rgba(0, 0, 0, 0.4)', name: 'CAUTION' };
     case 'safe':
     default:
-      return { hex: '#00f3ff', glow: '0 0 8px #00f3ff', name: 'SAFE' };
+      return { hex: '#00D084', glow: '0 1px 2px rgba(0, 0, 0, 0.3)', name: 'SAFE' };
   }
 }
