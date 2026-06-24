@@ -39,7 +39,7 @@ export const SortTrackerMap: React.FC<SortTrackerMapProps> = ({ mode }) => {
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <Cpu size={12} style={{ color: '#3DD9FF' }} />
+          <Cpu size={12} style={{ color: '#5ACDD9' }} />
           <span style={{
             fontFamily: "var(--font-header)", // Osiris
             fontSize: '11px',
@@ -108,13 +108,13 @@ export const SortTrackerMap: React.FC<SortTrackerMapProps> = ({ mode }) => {
               <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
                 <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.01)" strokeWidth="1" />
               </pattern>
-              {/* Critical Breach (Red Hatching) */}
+              {/* Critical Breach (Peach Hatching) */}
               <pattern id="warning-hatch" width="20" height="20" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
-                <line x1="0" y1="0" x2="0" y2="20" stroke="rgba(255, 92, 92, 0.18)" strokeWidth="6" />
+                <line x1="0" y1="0" x2="0" y2="20" stroke="rgba(255, 90, 69, 0.18)" strokeWidth="6" />
               </pattern>
-              {/* Warning/High (Yellow Hatching) */}
+              {/* Warning/High (Yellow/Peach Hatching) */}
               <pattern id="warning-yellow" width="20" height="20" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
-                <line x1="0" y1="0" x2="0" y2="20" stroke="rgba(255, 200, 87, 0.12)" strokeWidth="6" />
+                <line x1="0" y1="0" x2="0" y2="20" stroke="rgba(255, 115, 96, 0.12)" strokeWidth="6" />
               </pattern>
             </defs>
 
@@ -142,12 +142,12 @@ export const SortTrackerMap: React.FC<SortTrackerMapProps> = ({ mode }) => {
               let hatchPattern = 'none';
 
               if (zone.hazardLevel === 'critical') {
-                strokeColor = 'rgba(255, 92, 92, 0.65)'; // Critical Red
-                fillColor = 'rgba(255, 92, 92, 0.08)';
+                strokeColor = 'rgba(255, 90, 69, 0.65)'; // Critical Coral Peach
+                fillColor = 'rgba(255, 90, 69, 0.08)';
                 hatchPattern = 'url(#warning-hatch)';
               } else if (zone.hazardLevel === 'high') {
-                strokeColor = 'rgba(255, 200, 87, 0.55)'; // Warning Yellow
-                fillColor = 'rgba(255, 200, 87, 0.06)';
+                strokeColor = 'rgba(255, 115, 96, 0.55)'; // Warning Peach
+                fillColor = 'rgba(255, 115, 96, 0.06)';
                 hatchPattern = 'url(#warning-yellow)';
               }
 
@@ -279,7 +279,7 @@ export const SortTrackerMap: React.FC<SortTrackerMapProps> = ({ mode }) => {
                       cy={wy}
                       r="34"
                       fill="none"
-                      stroke="#FF5C5C" // Critical Emergency Ring
+                      stroke="#FF5A45" // Critical Emergency Ring
                       strokeWidth="1.2"
                       opacity="0.35"
                       style={{
@@ -334,7 +334,7 @@ export const SortTrackerMap: React.FC<SortTrackerMapProps> = ({ mode }) => {
                       <text
                         x="8"
                         y="41"
-                        fill={worker.helmet ? '#00D084' : '#FF5C5C'}
+                        fill={worker.helmet ? '#00D084' : '#FF5A45'}
                         fontFamily="var(--font-metric)"
                         fontSize="9"
                         fontWeight="500"
@@ -344,7 +344,7 @@ export const SortTrackerMap: React.FC<SortTrackerMapProps> = ({ mode }) => {
                       <text
                         x="68"
                         y="41"
-                        fill={worker.vest ? '#00D084' : '#FF5C5C'}
+                        fill={worker.vest ? '#00D084' : '#FF5A45'}
                         fontFamily="var(--font-metric)"
                         fontSize="9"
                         fontWeight="500"

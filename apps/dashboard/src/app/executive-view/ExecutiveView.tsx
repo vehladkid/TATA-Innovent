@@ -54,7 +54,7 @@ const AnimatedCounter: React.FC<{
 // Premium Sparkline Component
 const Sparkline: React.FC<{ data: number[]; color?: string; width?: number; height?: number }> = ({ 
   data, 
-  color = '#3DD9FF', 
+  color = '#5ACDD9', 
   width = 80, 
   height = 16 
 }) => {
@@ -177,7 +177,7 @@ export const ExecutiveView: React.FC = () => {
               left: 0,
               right: 0,
               height: '1.5px',
-              background: '#3DD9FF',
+              background: '#5ACDD9',
               zIndex: 3,
             }}
           />
@@ -192,7 +192,7 @@ export const ExecutiveView: React.FC = () => {
               left: 0,
               width: '200%',
               height: '8px',
-              fill: 'rgba(61, 217, 255, 0.03)',
+              fill: 'rgba(90, 205, 217, 0.03)',
               animation: 'wave-move-back 24s linear infinite',
               zIndex: 2,
             }}
@@ -208,7 +208,7 @@ export const ExecutiveView: React.FC = () => {
               left: 0,
               width: '200%',
               height: '6px',
-              fill: 'rgba(61, 217, 255, 0.07)',
+              fill: 'rgba(90, 205, 217, 0.07)',
               animation: 'wave-move-front 16s linear infinite',
               zIndex: 3,
             }}
@@ -269,12 +269,10 @@ export const ExecutiveView: React.FC = () => {
             top: '40%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
-            background: 'rgba(13, 13, 13, 0.75)',
-            border: '1px solid var(--border-color)',
+            background: 'radial-gradient(rgba(255, 115, 96, 0.05), transparent 70%)',
             borderRadius: '2px',
             padding: '24px 28px',
             textAlign: 'center',
-            backdropFilter: 'blur(20px)',
             zIndex: 5,
             pointerEvents: 'none',
             width: '82%',
@@ -302,6 +300,7 @@ export const ExecutiveView: React.FC = () => {
               lineHeight: 1,
               margin: '6px 0',
               letterSpacing: '-1px',
+              textShadow: '0 0 20px rgba(255, 115, 96, 0.15)',
             }}
           >
             {siteSafetyScore}
@@ -311,7 +310,7 @@ export const ExecutiveView: React.FC = () => {
               fontFamily: "var(--font-label)", // Bierika
               fontSize: '11px',
               fontWeight: 700,
-              color: isSafeState ? '#00D084' : '#FF5C5C',
+              color: isSafeState ? '#00D084' : '#FF5A45',
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
               display: 'inline-flex',
@@ -324,7 +323,7 @@ export const ExecutiveView: React.FC = () => {
                 width: '5px',
                 height: '5px',
                 borderRadius: '50%',
-                background: isSafeState ? '#00D084' : '#FF5C5C',
+                background: isSafeState ? '#00D084' : '#FF5A45',
                 display: 'inline-block',
               }}
             />
@@ -352,9 +351,9 @@ export const ExecutiveView: React.FC = () => {
               value: alertIncidents.length > 0 
                 ? new Date(alertIncidents[0].timestamp).toLocaleTimeString() 
                 : 'None (Nominal)', 
-              color: alertIncidents.length > 0 ? '#FF5C5C' : '#3DD9FF' 
+              color: alertIncidents.length > 0 ? '#FF5A45' : '#5ACDD9' 
             },
-            { label: 'Uptime SLA Metrics', value: '+1.4% (Nominal)', color: '#3DD9FF' },
+            { label: 'Uptime SLA Metrics', value: '+1.4% (Nominal)', color: '#5ACDD9' },
             { label: 'Calibration Shift', value: 'Morning Shift A', color: 'var(--color-silver)' },
           ].map(({ label, value, color }) => (
             <div key={label} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontFamily: "var(--font-label)" }}>
@@ -372,8 +371,9 @@ export const ExecutiveView: React.FC = () => {
         <div
           className="hud-panel"
           style={{
-            background: 'var(--color-bg-card)',
+            background: 'linear-gradient(135deg, rgba(90, 205, 217, 0.05), transparent 60%), var(--color-bg-card)',
             border: '1px solid var(--border-color)',
+            borderTop: '2px solid #3E6AE0',
             borderRadius: '2px',
             padding: '32px 36px', // Increased padding for prominent centerpiece
             display: 'flex',
@@ -417,7 +417,7 @@ export const ExecutiveView: React.FC = () => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#3DD9FF',
+                color: '#5ACDD9',
               }}
             >
               <TrendingUp size={18} />
@@ -442,8 +442,10 @@ export const ExecutiveView: React.FC = () => {
               </div>
             }
             extraInfo="Target Threshold: 0 incidents"
-            icon={<ShieldCheck size={16} style={{ color: '#3DD9FF' }} />}
+            icon={<ShieldCheck size={16} style={{ color: '#5ACDD9' }} />}
             size="medium"
+            borderTopColor="#FF7360"
+            backgroundGradient="linear-gradient(135deg, rgba(62, 106, 224, 0.05), transparent 60%)"
           />
           <MetricBox
             title="PREDICTIVE PATHS AVERTED"
@@ -451,16 +453,18 @@ export const ExecutiveView: React.FC = () => {
             subtitle="Collisions & breaches avoided"
             detail={
               <div style={{ display: 'flex', justifySelf: 'stretch', justifyContent: 'space-between', width: '100%', alignItems: 'center', marginTop: '2px' }}>
-                <span style={{ color: '#3DD9FF', fontWeight: 600 }}>+12% tracking accuracy</span>
+                <span style={{ color: '#5ACDD9', fontWeight: 600 }}>+12% tracking accuracy</span>
                 <Sparkline data={[10, 12, 14, 13, 17, 18, 21]} color="#3E6AE0" />
               </div>
             }
             extraInfo="Risk avoidance SLA: 99.9%"
-            icon={<Shield size={16} style={{ color: '#3DD9FF' }} />}
+            icon={<Shield size={16} style={{ color: '#5ACDD9' }} />}
             size="medium"
+            borderTopColor="#5ACDD9"
+            backgroundGradient="linear-gradient(135deg, rgba(90, 205, 217, 0.03), transparent 60%)"
           />
         </div>
-
+ 
         {/* Row 3: Smaller Cards */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
           <MetricBox
@@ -471,8 +475,10 @@ export const ExecutiveView: React.FC = () => {
               <span style={{ color: '#00D084', fontWeight: 600 }}>● OPTIMAL (98.2%)</span>
             }
             extraInfo="Vision Model: v8.2"
-            icon={<UserCheck size={12} style={{ color: '#3DD9FF' }} />}
+            icon={<UserCheck size={12} style={{ color: '#5ACDD9' }} />}
             size="small"
+            borderTopColor="#5ACDD9"
+            backgroundGradient="linear-gradient(135deg, rgba(90, 205, 217, 0.03), transparent 60%)"
           />
           <MetricBox
             title="EDGE AI LATENCY"
@@ -480,8 +486,10 @@ export const ExecutiveView: React.FC = () => {
             subtitle="SLA Threshold: 30ms"
             detail="System Nominal"
             extraInfo="SORT Tracker Link"
-            icon={<Clock size={12} style={{ color: '#3DD9FF' }} />}
+            icon={<Clock size={12} style={{ color: '#5ACDD9' }} />}
             size="small"
+            borderTopColor="#3E6AE0"
+            backgroundGradient="linear-gradient(135deg, rgba(62, 106, 224, 0.03), transparent 60%)"
           />
           <MetricBox
             title="WORKERS TRACKED"
@@ -491,6 +499,8 @@ export const ExecutiveView: React.FC = () => {
             extraInfo="Tx Rate: 4.8 Mb/s"
             icon={<UserCheck size={12} style={{ color: 'var(--color-silver)' }} />}
             size="small"
+            borderTopColor="#5ACDD9"
+            backgroundGradient="linear-gradient(135deg, rgba(90, 205, 217, 0.03), transparent 60%)"
           />
           <MetricBox
             title="SYSTEM STATUS"
@@ -500,8 +510,10 @@ export const ExecutiveView: React.FC = () => {
               <span style={{ color: '#00D084', fontWeight: 600 }}>● ONLINE</span>
             }
             extraInfo="ScyllaDB stable"
-            icon={<Wifi size={12} style={{ color: '#3DD9FF' }} />}
+            icon={<Wifi size={12} style={{ color: '#5ACDD9' }} />}
             size="small"
+            borderTopColor="#3E6AE0"
+            backgroundGradient="linear-gradient(135deg, rgba(62, 106, 224, 0.03), transparent 60%)"
           />
         </div>
 
@@ -519,17 +531,33 @@ interface MetricBoxProps {
   icon: React.ReactNode;
   size: 'medium' | 'small';
   flash?: boolean;
+  borderTopColor?: string;
+  backgroundGradient?: string;
 }
 
-const MetricBox: React.FC<MetricBoxProps> = ({ title, value, subtitle, detail, extraInfo, icon, size, flash }) => {
+const MetricBox: React.FC<MetricBoxProps> = ({ 
+  title, 
+  value, 
+  subtitle, 
+  detail, 
+  extraInfo, 
+  icon, 
+  size, 
+  flash,
+  borderTopColor,
+  backgroundGradient
+}) => {
   const isSmall = size === 'small';
 
   return (
     <div
       className={`hud-panel ${flash ? 'critical-flash-active' : ''}`}
       style={{
-        background: 'var(--color-bg-card)',
+        background: backgroundGradient
+          ? `${backgroundGradient}, var(--color-bg-card)`
+          : 'var(--color-bg-card)',
         border: '1px solid var(--border-color)',
+        borderTop: borderTopColor ? `2px solid ${borderTopColor}` : '1px solid var(--border-color)',
         borderRadius: '2px',
         padding: isSmall ? '16px' : '22px',
         display: 'flex',

@@ -56,8 +56,8 @@ export const AlertTicker: React.FC = () => {
       style={{
         width: '100%',
         height: '30px',
-        background: hasRecentCritical ? 'rgba(255, 92, 92, 0.08)' : 'rgba(13, 13, 13, 0.4)',
-        borderBottom: hasRecentCritical ? '1px solid rgba(255, 92, 92, 0.35)' : '1px solid #252525',
+        background: hasRecentCritical ? 'rgba(255, 90, 69, 0.08)' : 'rgba(13, 13, 13, 0.4)',
+        borderBottom: hasRecentCritical ? '1px solid rgba(255, 90, 69, 0.35)' : '1px solid #252525',
         display: 'flex',
         alignItems: 'center',
         overflow: 'hidden',
@@ -70,8 +70,8 @@ export const AlertTicker: React.FC = () => {
       {/* Label badge */}
       <div
         style={{
-          background: hasRecentCritical ? '#FF5C5C' : 'rgba(61, 217, 255, 0.12)', // Red override or nominal cyan
-          color: hasRecentCritical ? '#000000' : '#3DD9FF', // High contrast text or primary cyan
+          background: hasRecentCritical ? '#FF5A45' : 'rgba(90, 205, 217, 0.12)', // Deep Coral Peach or nominal turquoise
+          color: hasRecentCritical ? '#000000' : '#5ACDD9', // High contrast text or primary turquoise
           fontFamily: "var(--font-header)", // Osiris
           fontSize: '10px',
           fontWeight: 600,
@@ -106,10 +106,10 @@ export const AlertTicker: React.FC = () => {
       >
         {tickerItems.map((item, index) => {
           let color = '#EAEAEA'; // Default text
-          if (item.startsWith('CRITICAL'))  color = '#FF5C5C'; // Red
-          else if (item.startsWith('PREDICTIVE')) color = '#3DD9FF'; // Nominal Cyan
-          else if (item.startsWith('DANGER'))     color = '#FF5C5C'; // Red
-          else if (item.startsWith('CAUTION'))    color = '#FFC857'; // Yellow
+          if (item.startsWith('CRITICAL'))  color = '#FF5A45'; // Deep Coral Peach
+          else if (item.startsWith('PREDICTIVE')) color = '#5ACDD9'; // Nominal Turquoise
+          else if (item.startsWith('DANGER'))     color = '#FF5A45'; // Deep Coral Peach
+          else if (item.startsWith('CAUTION'))    color = '#FF7360'; // Peach
           else if (item.startsWith('NOMINAL'))    color = '#00D084'; // Safe Green
 
           return (

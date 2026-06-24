@@ -289,10 +289,10 @@ export const HazardHeatmap: React.FC = () => {
           }}
         >
           <KpiCard label="ACTIVE HAZARDS" value={activeHazardsVal.toString()} color="#FF9100" />
-          <KpiCard label="CRITICAL ZONES" value={criticalZonesVal.toString()} color="#FF5C5C" />
-          <KpiCard label="PREDICTED BREACHES" value={predictedBreachesVal.toString()} color="#FF5C5C" />
+          <KpiCard label="CRITICAL ZONES" value={criticalZonesVal.toString()} color="#FF5A45" />
+          <KpiCard label="PREDICTED BREACHES" value={predictedBreachesVal.toString()} color="#FF5A45" />
           <KpiCard label="AVG EXPOSURE" value={avgExposureVal} color="var(--color-silver)" />
-          <KpiCard label="RISK TREND" value={riskTrendVal} color="#FF5C5C" />
+          <KpiCard label="RISK TREND" value={riskTrendVal} color="#FF5A45" />
         </div>
 
         {/* Blueprint Map Canvas */}
@@ -317,14 +317,14 @@ export const HazardHeatmap: React.FC = () => {
               gap: '6px',
             }}
           >
-            <div style={{ fontFamily: "var(--font-header)", fontSize: '9px', fontWeight: 600, color: '#FF5C5C', letterSpacing: '0.05em', borderBottom: '1px solid var(--border-color)', paddingBottom: '4px', display: 'flex', alignItems: 'center', gap: '5px' }}>
-              <Cpu size={10} style={{ color: '#FF5C5C' }} />
+            <div style={{ fontFamily: "var(--font-header)", fontSize: '9px', fontWeight: 600, color: '#FF5A45', letterSpacing: '0.05em', borderBottom: '1px solid var(--border-color)', paddingBottom: '4px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+              <Cpu size={10} style={{ color: '#FF5A45' }} />
               FLOATING AI ANALYTICS LAYER
             </div>
             
             <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: "var(--font-metric)", fontSize: '9.5px', color: 'var(--color-neutral)' }}>
               <span>Active Risk Zones:</span>
-              <span style={{ fontWeight: 600, color: '#FF5C5C' }}>{activeZonesCount} Zones</span>
+              <span style={{ fontWeight: 600, color: '#FF5A45' }}>{activeZonesCount} Zones</span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: "var(--font-metric)", fontSize: '9.5px', color: 'var(--color-neutral)' }}>
               <span>Highest Density Area:</span>
@@ -332,7 +332,7 @@ export const HazardHeatmap: React.FC = () => {
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: "var(--font-metric)", fontSize: '9.5px', color: 'var(--color-neutral)' }}>
               <span>Risk Growth Rate:</span>
-              <span style={{ fontWeight: 600, color: '#FF5C5C' }}>+{riskGrowthRate}%</span>
+              <span style={{ fontWeight: 600, color: '#FF5A45' }}>+{riskGrowthRate}%</span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: "var(--font-metric)", fontSize: '9.5px', color: 'var(--color-neutral)' }}>
               <span>Average Exposure:</span>
@@ -340,7 +340,7 @@ export const HazardHeatmap: React.FC = () => {
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: "var(--font-metric)", fontSize: '9.5px', color: 'var(--color-neutral)' }}>
               <span>Breach Anomaly Prob:</span>
-              <span style={{ fontWeight: 700, color: timelineStep >= 3 ? '#FF5C5C' : 'var(--color-nominal)' }}>{breachProbability}</span>
+              <span style={{ fontWeight: 700, color: timelineStep >= 3 ? '#FF5A45' : 'var(--color-nominal)' }}>{breachProbability}</span>
             </div>
           </div>
 
@@ -352,7 +352,7 @@ export const HazardHeatmap: React.FC = () => {
               </pattern>
               
               <pattern id="warning-hatch" width="20" height="20" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
-                <line x1="0" y1="0" x2="0" y2="20" stroke="rgba(255, 92, 92, 0.15)" strokeWidth="6" />
+                <line x1="0" y1="0" x2="0" y2="20" stroke="rgba(255, 90, 69, 0.15)" strokeWidth="6" />
               </pattern>
               
               {/* Heatmap analytical blur with smooth gradient merging */}
@@ -378,9 +378,9 @@ export const HazardHeatmap: React.FC = () => {
             <text x="90" y="472" fill="rgba(62, 106, 224, 0.5)" fontFamily="var(--font-label)" fontSize="9" fontWeight="600">FORKLIFT TRAVEL LANE A</text>
 
             {/* 3. Welding Bay C */}
-            <rect x="300" y="660" width="160" height="130" fill="none" stroke="rgba(255, 92, 92, 0.25)" strokeWidth="1.2" strokeDasharray="4,4" />
+            <rect x="300" y="660" width="160" height="130" fill="none" stroke="rgba(255, 90, 69, 0.25)" strokeWidth="1.2" strokeDasharray="4,4" />
             <rect x="300" y="660" width="160" height="130" fill="url(#warning-hatch)" opacity="0.3" />
-            <text x="310" y="680" fill="#FF5C5C" fontFamily="var(--font-header)" fontSize="10" fontWeight="600">WELDING ZONE C</text>
+            <text x="310" y="680" fill="#FF5A45" fontFamily="var(--font-header)" fontSize="10" fontWeight="600">WELDING ZONE C</text>
 
             {/* 4. Loading Dock B */}
             <rect x="700" y="600" width="200" height="150" fill="none" stroke="rgba(62, 106, 224, 0.2)" strokeWidth="1.2" />
@@ -388,9 +388,9 @@ export const HazardHeatmap: React.FC = () => {
             <text x="710" y="620" fill="rgba(62, 106, 224, 0.5)" fontFamily="var(--font-header)" fontSize="10" fontWeight="600">LOADING BAY B</text>
 
             {/* 5. Restricted Zone Press Machine A */}
-            <rect x="150" y="240" width="150" height="130" fill="none" stroke="rgba(255, 92, 92, 0.3)" strokeWidth="1.2" />
+            <rect x="150" y="240" width="150" height="130" fill="none" stroke="rgba(255, 90, 69, 0.3)" strokeWidth="1.2" />
             <rect x="150" y="240" width="150" height="130" fill="url(#warning-hatch)" opacity="0.5" />
-            <text x="160" y="256" fill="#FF5C5C" fontFamily="var(--font-header)" fontSize="9" fontWeight="600">RESTRICTED ZONE: PRESS A</text>
+            <text x="160" y="256" fill="#FF5A45" fontFamily="var(--font-header)" fontSize="9" fontWeight="600">RESTRICTED ZONE: PRESS A</text>
 
             {/* Weather Radar Style Multilayered Heatmap Blended Layer */}
             <g filter="url(#heatmap-blur-filter)">
@@ -413,13 +413,13 @@ export const HazardHeatmap: React.FC = () => {
                       opacity={Math.min(0.85, intensity * spot.maxOpacity * 0.3)}
                       style={{ transition: 'r 0.6s ease' }}
                     />
-                    {/* Moderate (Yellow) Tier */}
+                    {/* Moderate (Peach) Tier */}
                     {isModerate && (
                       <circle
                         cx={spot.cx}
                         cy={spot.cy}
                         r={radius * 0.75}
-                        fill="#FFC857"
+                        fill="#FF7360"
                         opacity={Math.min(0.85, intensity * spot.maxOpacity * 0.55)}
                         style={{ transition: 'r 0.6s ease' }}
                       />
@@ -435,13 +435,13 @@ export const HazardHeatmap: React.FC = () => {
                         style={{ transition: 'r 0.6s ease' }}
                       />
                     )}
-                    {/* Critical (Red) Core */}
+                    {/* Critical (Peach Coral) Core */}
                     {isCritical && (
                       <circle
                         cx={spot.cx}
                         cy={spot.cy}
                         r={radius * 0.25}
-                        fill="#FF5C5C"
+                        fill="#FF5A45"
                         opacity={Math.min(0.95, intensity * spot.maxOpacity * 0.95)}
                         style={{ transition: 'r 0.6s ease' }}
                       />
@@ -473,14 +473,14 @@ export const HazardHeatmap: React.FC = () => {
                     strokeDasharray="4, 6"
                     opacity="0.3"
                   />
-                  {/* Moderate Boundary (Yellow dashed) */}
+                  {/* Moderate Boundary (Peach dashed) */}
                   {isModerate && (
                     <circle
                       cx={spot.cx}
                       cy={spot.cy}
                       r={radius * 0.75}
                       fill="none"
-                      stroke="#FFC857"
+                      stroke="#FF7360"
                       strokeWidth="0.6"
                       strokeDasharray="2, 4"
                       opacity="0.45"
@@ -498,14 +498,14 @@ export const HazardHeatmap: React.FC = () => {
                       opacity="0.6"
                     />
                   )}
-                  {/* Critical Core Boundary (Red solid) */}
+                  {/* Critical Core Boundary (Peach Coral solid) */}
                   {isCritical && (
                     <circle
                       cx={spot.cx}
                       cy={spot.cy}
                       r={radius * 0.25}
                       fill="none"
-                      stroke="#FF5C5C"
+                      stroke="#FF5A45"
                       strokeWidth="1.2"
                       strokeDasharray="1, 2"
                       opacity="0.85"
@@ -516,7 +516,7 @@ export const HazardHeatmap: React.FC = () => {
                   <text
                     x={spot.cx + radius * 0.707}
                     y={spot.cy - radius * 0.707}
-                    fill={isCritical ? '#FF5C5C' : (isHigh ? '#FF9100' : (isModerate ? '#FFC857' : '#00D084'))}
+                    fill={isCritical ? '#FF5A45' : (isHigh ? '#FF9100' : (isModerate ? '#FF7360' : '#00D084'))}
                     fontFamily="var(--font-label)"
                     fontSize="7"
                     fontWeight="600"
@@ -531,11 +531,11 @@ export const HazardHeatmap: React.FC = () => {
             {/* Dynamic visual particles in high risk spots */}
             {timelineStep >= 3 && (
               <g opacity="0.85">
-                <circle cx="210" cy="290" r="1.5" fill="#FF5C5C" className="pulse-p-1" />
-                <circle cx="230" cy="310" r="1.8" fill="#FF5C5C" className="pulse-p-2" />
-                <circle cx="225" cy="280" r="1.2" fill="#FF5C5C" className="pulse-p-3" />
-                <circle cx="170" cy="610" r="1.5" fill="#FF5C5C" className="pulse-p-1" />
-                <circle cx="160" cy="630" r="1.2" fill="#FF5C5C" className="pulse-p-3" />
+                <circle cx="210" cy="290" r="1.5" fill="#FF5A45" className="pulse-p-1" />
+                <circle cx="230" cy="310" r="1.8" fill="#FF5A45" className="pulse-p-2" />
+                <circle cx="225" cy="280" r="1.2" fill="#FF5A45" className="pulse-p-3" />
+                <circle cx="170" cy="610" r="1.5" fill="#FF5A45" className="pulse-p-1" />
+                <circle cx="160" cy="630" r="1.2" fill="#FF5A45" className="pulse-p-3" />
               </g>
             )}
 
@@ -554,7 +554,7 @@ export const HazardHeatmap: React.FC = () => {
                 <polyline
                   points={w1Trail.map(p => `${p.x},${p.y}`).join(' ')}
                   fill="none"
-                  stroke={timelineStep >= 4 ? '#FF5C5C' : '#3DD9FF'}
+                  stroke={timelineStep >= 4 ? '#FF5A45' : '#5ACDD9'}
                   strokeWidth="2.2"
                   strokeOpacity="0.4"
                 />
@@ -569,7 +569,7 @@ export const HazardHeatmap: React.FC = () => {
                   strokeOpacity="0.7"
                 />
               )}
-              <circle cx={w1Current.x} cy={w1Current.y} r="6.5" fill={timelineStep >= 4 ? '#FF5C5C' : '#3DD9FF'} stroke="#000000" strokeWidth="1.8" />
+              <circle cx={w1Current.x} cy={w1Current.y} r="6.5" fill={timelineStep >= 4 ? '#FF5A45' : '#5ACDD9'} stroke="#000000" strokeWidth="1.8" />
               <text x={w1Current.x + 9} y={w1Current.y + 3} fill="var(--color-silver)" fontFamily="var(--font-metric)" fontSize="9.5" fontWeight="700">W-01</text>
             </g>
 
@@ -604,7 +604,7 @@ export const HazardHeatmap: React.FC = () => {
                 <polyline
                   points={w3Trail.map(p => `${p.x},${p.y}`).join(' ')}
                   fill="none"
-                  stroke={timelineStep >= 7 ? '#FF5C5C' : '#3DD9FF'}
+                  stroke={timelineStep >= 7 ? '#FF5A45' : '#5ACDD9'}
                   strokeWidth="2.2"
                   strokeOpacity="0.4"
                 />
@@ -619,7 +619,7 @@ export const HazardHeatmap: React.FC = () => {
                   strokeOpacity="0.7"
                 />
               )}
-              <circle cx={w3Current.x} cy={w3Current.y} r="6.5" fill={timelineStep >= 7 ? '#FF5C5C' : '#3DD9FF'} stroke="#000000" strokeWidth="1.8" />
+              <circle cx={w3Current.x} cy={w3Current.y} r="6.5" fill={timelineStep >= 7 ? '#FF5A45' : '#5ACDD9'} stroke="#000000" strokeWidth="1.8" />
               <text x={w3Current.x + 9} y={w3Current.y + 3} fill="var(--color-silver)" fontFamily="var(--font-metric)" fontSize="9.5" fontWeight="700">W-03</text>
             </g>
 
@@ -629,7 +629,7 @@ export const HazardHeatmap: React.FC = () => {
                 <polyline
                   points={w5Trail.map(p => `${p.x},${p.y}`).join(' ')}
                   fill="none"
-                  stroke={isApproachingCollision ? '#FF5C5C' : '#3DD9FF'}
+                  stroke={isApproachingCollision ? '#FF5A45' : '#5ACDD9'}
                   strokeWidth="2.2"
                   strokeOpacity="0.4"
                 />
@@ -644,7 +644,7 @@ export const HazardHeatmap: React.FC = () => {
                   strokeOpacity="0.7"
                 />
               )}
-              <circle cx={w5Current.x} cy={w5Current.y} r="6.5" fill={isApproachingCollision ? '#FF5C5C' : '#3DD9FF'} stroke="#000000" strokeWidth="1.8" />
+              <circle cx={w5Current.x} cy={w5Current.y} r="6.5" fill={isApproachingCollision ? '#FF5A45' : '#5ACDD9'} stroke="#000000" strokeWidth="1.8" />
               <text x={w5Current.x + 9} y={w5Current.y + 3} fill="var(--color-silver)" fontFamily="var(--font-metric)" fontSize="9.5" fontWeight="700">W-05</text>
             </g>
 
@@ -675,7 +675,7 @@ export const HazardHeatmap: React.FC = () => {
                 y={f1Current.y - 7}
                 width="14"
                 height="14"
-                fill="#FFC857"
+                fill="#FF7360"
                 stroke="#000000"
                 strokeWidth="1.8"
                 transform={`rotate(45, ${f1Current.x}, ${f1Current.y})`}
@@ -687,19 +687,19 @@ export const HazardHeatmap: React.FC = () => {
             {isApproachingCollision && (
               <g>
                 {/* Target Reticle at Intersection Point */}
-                <circle cx="640" cy="480" r="18" fill="none" stroke="#FF5C5C" strokeWidth="1.5" strokeDasharray="3, 2" className="pulse-p-2" />
-                <circle cx="640" cy="480" r="6" fill="none" stroke="#FF5C5C" strokeWidth="1.2" />
-                <line x1="620" y1="480" x2="660" y2="480" stroke="#FF5C5C" strokeWidth="0.8" />
-                <line x1="640" y1="460" x2="640" y2="500" stroke="#FF5C5C" strokeWidth="0.8" />
+                <circle cx="640" cy="480" r="18" fill="none" stroke="#FF5A45" strokeWidth="1.5" strokeDasharray="3, 2" className="pulse-p-2" />
+                <circle cx="640" cy="480" r="6" fill="none" stroke="#FF5A45" strokeWidth="1.2" />
+                <line x1="620" y1="480" x2="660" y2="480" stroke="#FF5A45" strokeWidth="0.8" />
+                <line x1="640" y1="460" x2="640" y2="500" stroke="#FF5A45" strokeWidth="0.8" />
                 
                 {/* Dotted lines connecting entities to intersection point */}
-                <line x1={w5Current.x} y1={w5Current.y} x2="640" y2="480" stroke="#FF5C5C" strokeWidth="1" strokeDasharray="2, 2" opacity="0.6" />
-                <line x1={f1Current.x} y1={f1Current.y} x2="640" y2="480" stroke="#FF5C5C" strokeWidth="1" strokeDasharray="2, 2" opacity="0.6" />
+                <line x1={w5Current.x} y1={w5Current.y} x2="640" y2="480" stroke="#FF5A45" strokeWidth="1" strokeDasharray="2, 2" opacity="0.6" />
+                <line x1={f1Current.x} y1={f1Current.y} x2="640" y2="480" stroke="#FF5A45" strokeWidth="1" strokeDasharray="2, 2" opacity="0.6" />
                 
                 {/* Text indicator overlay near collision center */}
                 <g transform="translate(660, 442)">
-                  <rect x="0" y="0" width="135" height="38" fill="rgba(0, 0, 0, 0.85)" stroke="#FF5C5C" strokeWidth="1.2" rx="2" />
-                  <text x="8" y="12" fill="#FF5C5C" fontFamily="var(--font-header)" fontSize="8" fontWeight="700">⚠ TRAJECTORY RISK ALERT</text>
+                  <rect x="0" y="0" width="135" height="38" fill="rgba(0, 0, 0, 0.85)" stroke="#FF5A45" strokeWidth="1.2" rx="2" />
+                  <text x="8" y="12" fill="#FF5A45" fontFamily="var(--font-header)" fontSize="8" fontWeight="700">⚠ TRAJECTORY RISK ALERT</text>
                   <text x="8" y="22" fill="var(--color-silver)" fontFamily="var(--font-metric)" fontSize="7.5" fontWeight="600">Collision Risk: {collisionRisk}</text>
                   <text x="8" y="31" fill="var(--color-silver)" fontFamily="var(--font-metric)" fontSize="7.5" fontWeight="600">ETA: {collisionEta}</text>
                 </g>
@@ -709,9 +709,9 @@ export const HazardHeatmap: React.FC = () => {
             {/* Welding Zone Entry Warning */}
             {timelineStep >= 6 && (
               <g>
-                <circle cx="380" cy="670" r="14" fill="none" stroke="#FF5C5C" strokeWidth="1.5" className="pulse-p-2" />
-                <circle cx="380" cy="670" r="3" fill="#FF5C5C" />
-                <text x="390" y="662" fill="#FF5C5C" fontFamily="var(--font-metric)" fontSize="8" fontWeight="700">⚠ WELDING ENTRY BREACH</text>
+                <circle cx="380" cy="670" r="14" fill="none" stroke="#FF5A45" strokeWidth="1.5" className="pulse-p-2" />
+                <circle cx="380" cy="670" r="3" fill="#FF5A45" />
+                <text x="390" y="662" fill="#FF5A45" fontFamily="var(--font-metric)" fontSize="8" fontWeight="700">⚠ WELDING ENTRY BREACH</text>
               </g>
             )}
 
@@ -815,8 +815,8 @@ export const HazardHeatmap: React.FC = () => {
             gap: '8px',
           }}
         >
-          <div style={{ fontFamily: "var(--font-header)", fontSize: '10px', fontWeight: 600, color: '#FF5C5C', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <AlertTriangle size={11} style={{ color: '#FF5C5C' }} />
+          <div style={{ fontFamily: "var(--font-header)", fontSize: '10px', fontWeight: 600, color: '#FF5A45', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <AlertTriangle size={11} style={{ color: '#FF5A45' }} />
             AI ANOMALY SUMMARIZATION
           </div>
           <div style={{ fontFamily: "var(--font-body)", fontSize: '10.5px', color: 'var(--color-silver)', lineHeight: 1.45 }}>
@@ -840,13 +840,13 @@ export const HazardHeatmap: React.FC = () => {
               gap: '6px',
             }}
           >
-            <AlertTriangle size={12} style={{ color: '#FFC857' }} />
+            <AlertTriangle size={12} style={{ color: '#FF7360' }} />
             TOP HAZARD AREAS
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <HazardAreaRow label="Press Machine A" risk={pressMachineRisk} color="#FF5C5C" />
+            <HazardAreaRow label="Press Machine A" risk={pressMachineRisk} color="#FF5A45" />
             <HazardAreaRow label="Forklift Lane B" risk={forkliftLaneRisk} color="#FF9100" />
-            <HazardAreaRow label="Welding Zone C" risk={weldingZoneRisk} color="#FFC857" />
+            <HazardAreaRow label="Welding Zone C" risk={weldingZoneRisk} color="#FF7360" />
             <HazardAreaRow label="Loading Bay B" risk={loadingBayRisk} color="#00D084" />
           </div>
         </div>
@@ -896,9 +896,9 @@ export const HazardHeatmap: React.FC = () => {
           <div style={{ fontFamily: "var(--font-header)", fontSize: '9.5px', fontWeight: 600, color: 'var(--color-silver)', letterSpacing: '0.06em' }}>
             OPERATIONAL DENSITY LEGEND
           </div>
-          <LegendRow color="#FF5C5C" level="CRITICAL DENSITY (Red)" desc="Extreme risk zones with active collision pathways." />
+          <LegendRow color="#FF5A45" level="CRITICAL DENSITY (Coral)" desc="Extreme risk zones with active collision pathways." />
           <LegendRow color="#FF9100" level="HIGH HAZARD (Orange)" desc="Press machine entry limits or high velocity machinery." />
-          <LegendRow color="#FFC857" level="MODERATE HAZARD (Yellow)" desc="Caution areas: walkways or forklift travel lanes." />
+          <LegendRow color="#FF7360" level="MODERATE HAZARD (Peach)" desc="Caution areas: walkways or forklift travel lanes." />
           <LegendRow color="#00D084" level="NOMINAL DENSITY (Green)" desc="Compliant worker zones and baseline routes." />
         </div>
       </div>

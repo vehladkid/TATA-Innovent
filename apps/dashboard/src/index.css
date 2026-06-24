@@ -21,27 +21,27 @@
   --color-bg-overlay: rgba(5, 5, 5, 0.95);
 
   /* Brand Accents (Used Sparingly) */
-  --color-accent:     #3DD9FF; /* Nominal Cyan - Primary Accent */
-  --color-accent-dim: rgba(61, 217, 255, 0.05);
-  --color-accent-mid: rgba(61, 217, 255, 0.1);
+  --color-accent:     #5ACDD9; /* Turquoise - Primary Accent */
+  --color-accent-dim: rgba(90, 205, 217, 0.05);
+  --color-accent-mid: rgba(90, 205, 217, 0.1);
   --color-blue:       #3E6AE0; /* Blue - Secondary Accent */
   --color-blue-dim:   rgba(62, 106, 224, 0.05);
   --color-silver:     #EAEAEA; /* Primary typography color */
 
   /* Semantic Alerts (Status Colors) */
   --color-safe:       #00D084;
-  --color-nominal:    #3DD9FF;
-  --color-warning:    #FFC857;
-  --color-critical:   #FF5C5C;
+  --color-nominal:    #5ACDD9; /* Turquoise */
+  --color-warning:    #FF7360; /* Peach - Warning */
+  --color-critical:   #FF5A45; /* Deep Coral Peach - Critical */
 
   --color-success:    #00D084;
-  --color-danger:     #FF5C5C;
+  --color-danger:     #FF5A45;
   --color-neutral:    #9A9A9A; /* Secondary text */
 
   /* Semantic Dim Variants */
   --color-success-dim: rgba(0, 208, 132, 0.05);
-  --color-warning-dim: rgba(255, 200, 87, 0.05);
-  --color-danger-dim:  rgba(255, 92, 92, 0.05);
+  --color-warning-dim: rgba(255, 115, 96, 0.05);
+  --color-danger-dim:  rgba(255, 90, 69, 0.05);
 
   /* Borders */
   --border-color:     #252525;
@@ -255,11 +255,11 @@ body {
 
 @keyframes nominal-glow-pulse {
   0% {
-    box-shadow: 0 0 2px rgba(61, 217, 255, 0.15);
+    box-shadow: 0 0 2px rgba(90, 205, 217, 0.15);
     opacity: 0.7;
   }
   100% {
-    box-shadow: 0 0 6px rgba(61, 217, 255, 0.45);
+    box-shadow: 0 0 6px rgba(90, 205, 217, 0.45);
     opacity: 1;
   }
 }

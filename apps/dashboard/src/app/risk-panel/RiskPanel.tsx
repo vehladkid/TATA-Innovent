@@ -14,7 +14,7 @@ interface ContributorBarProps {
 const ContributorBar: React.FC<ContributorBarProps> = ({ label, value, max, isActive }) => {
   const percent = Math.min(100, (value / max) * 100);
   const isViolated = value > 0;
-  const barColor = isActive ? (isViolated ? '#FF5C5C' : '#00D084') : '#1A1A1A';
+  const barColor = isActive ? (isViolated ? '#FF5A45' : '#00D084') : '#1A1A1A';
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '12px' }}>
@@ -120,7 +120,7 @@ export const RiskPanel: React.FC = () => {
             gap: '8px',
           }}
         >
-          <Cpu size={13} style={{ color: '#3DD9FF' }} />
+          <Cpu size={13} style={{ color: '#5ACDD9' }} />
           AI ENGINE DIAGNOSTICS
         </div>
 
@@ -139,9 +139,9 @@ export const RiskPanel: React.FC = () => {
         >
           {[
             { label: 'Architecture', value: 'YOLOv8 + SORT Tracking', color: '#EAEAEA' },
-            { label: 'Inference Delay',  value: '14.2ms',                color: '#3DD9FF' },
-            { label: 'Skeletons Check',     value: '33 Keypoints (Active)', color: '#3DD9FF' },
-            { label: 'Confidence Threshold', value: '0.75 Target', color: '#3DD9FF' },
+            { label: 'Inference Delay',  value: '14.2ms',                color: '#5ACDD9' },
+            { label: 'Skeletons Check',     value: '33 Keypoints (Active)', color: '#5ACDD9' },
+            { label: 'Confidence Threshold', value: '0.75 Target', color: '#5ACDD9' },
             { label: 'Action Alerts',      value: 'n8n Dispatcher Active',    color: '#EAEAEA' },
           ].map(({ label, value, color }) => (
             <div key={label} style={{ display: 'flex', justifyContent: 'space-between', gap: '8px' }}>
@@ -174,7 +174,7 @@ export const RiskPanel: React.FC = () => {
           <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '4px' }}>
             {alertIncidents.slice(0, 15).map((evt) => {
               const theme = getRiskColor(evt.band);
-              const accentColor = evt.band === 'critical' ? '#FF5C5C' : (evt.band === 'danger' ? '#FF5C5C' : (evt.band === 'caution' ? '#FFC857' : '#00D084'));
+              const accentColor = evt.band === 'critical' ? '#FF5A45' : (evt.band === 'danger' ? '#FF5A45' : (evt.band === 'caution' ? '#FF7360' : '#00D084'));
               const time = new Date(evt.timestamp).toLocaleTimeString();
               const zoneName =
                 evt.zoneId === 'zone_press_A'       ? 'Press A' :
@@ -259,7 +259,7 @@ export const RiskPanel: React.FC = () => {
               marginBottom: '4px',
             }}
           >
-            <Cpu size={13} style={{ color: '#3DD9FF' }} />
+            <Cpu size={13} style={{ color: '#5ACDD9' }} />
             RISK CONTRIBUTOR EXPLORER
           </div>
 
@@ -276,7 +276,7 @@ export const RiskPanel: React.FC = () => {
                   gap: '5px'
                 }}
               >
-                <Info size={11} style={{ color: '#3DD9FF' }} />
+                <Info size={11} style={{ color: '#5ACDD9' }} />
                 Showing dynamic weights for Target W-0{selectedTrackId}
               </div>
               
@@ -328,7 +328,7 @@ export const RiskPanel: React.FC = () => {
             <div style={{ fontWeight: 600, color: '#EAEAEA', marginBottom: '3px', fontFamily: "var(--font-body)" }}>
               Decision Core Legend
             </div>
-            Values represent raw safety penalties mapped dynamically. Active metrics highlight in <span style={{ color: '#FF5C5C', fontWeight: 600 }}>Critical (Red)</span> and caution indicators render in <span style={{ color: '#FFC857', fontWeight: 600 }}>Warning (Yellow)</span>, while safe parameters display in <span style={{ color: '#00D084', fontWeight: 600 }}>Safe (Green)</span>.
+            Values represent raw safety penalties mapped dynamically. Active metrics highlight in <span style={{ color: '#FF5A45', fontWeight: 600 }}>Critical (Coral)</span> and caution indicators render in <span style={{ color: '#FF7360', fontWeight: 600 }}>Warning (Peach)</span>, while safe parameters display in <span style={{ color: '#00D084', fontWeight: 600 }}>Safe (Green)</span>.
           </div>
 
         </div>

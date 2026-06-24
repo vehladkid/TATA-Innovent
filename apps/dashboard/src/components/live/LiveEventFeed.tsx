@@ -43,7 +43,7 @@ export const LiveEventFeed: React.FC = () => {
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <Activity size={12} style={{ color: '#3DD9FF' }} />
+          <Activity size={12} style={{ color: '#5ACDD9' }} />
           <span style={{
             fontFamily: "var(--font-body)", // Sora
             fontSize: '11px',
@@ -56,14 +56,14 @@ export const LiveEventFeed: React.FC = () => {
         </div>
         <div
           style={{
-            background: 'rgba(61, 217, 255, 0.08)',
-            border: '1px solid rgba(61, 217, 255, 0.16)',
+            background: 'rgba(90, 205, 217, 0.08)',
+            border: '1px solid rgba(90, 205, 217, 0.16)',
             borderRadius: '2px',
             padding: '1px 5px',
             fontFamily: "var(--font-metric)",
             fontSize: '9px',
             fontWeight: 600,
-            color: '#3DD9FF',
+            color: '#5ACDD9',
           }}
         >
           LIVE
@@ -91,10 +91,10 @@ export const LiveEventFeed: React.FC = () => {
 
           // Color mappings mapping to Warning/Critical status colors
           const accentColor =
-            isPredictive            ? '#3DD9FF' : // Nominal Cyan
-            evt.band === 'critical' ? '#FF5C5C' : // Critical Red
-            evt.band === 'danger'   ? '#FF5C5C' : // Critical Red
-            evt.band === 'caution'  ? '#FFC857' : '#00D084'; // Warning Yellow or Safe Green
+            isPredictive            ? '#5ACDD9' : // Nominal Turquoise
+            evt.band === 'critical' ? '#FF5A45' : // Critical Coral Peach
+            evt.band === 'danger'   ? '#FF5A45' : // Critical Coral Peach
+            evt.band === 'caution'  ? '#FF7360' : '#00D084'; // Warning Peach or Safe Green
 
           const isFresh = idx === 0;
 
@@ -103,7 +103,7 @@ export const LiveEventFeed: React.FC = () => {
               key={evt.eventId}
               className="live-feed-card"
               style={{
-                background: isFresh ? 'rgba(61, 217, 255, 0.03)' : 'transparent',
+                background: isFresh ? 'rgba(90, 205, 217, 0.03)' : 'transparent',
                 borderBottom: '1px solid #252525',
                 padding: '6px 8px',
                 display: 'flex',
@@ -159,8 +159,8 @@ export const LiveEventFeed: React.FC = () => {
                 opacity: 0.85
               }}>
                 <span>Score: <strong style={{ color: '#EAEAEA' }}>{evt.riskScore}</strong></span>
-                {evt.breakdown.ppeViolation > 0 && <span style={{ color: '#FFC857' }}>PPE ANOMALY</span>}
-                {evt.breakdown.fallDetected > 0 && <span style={{ color: '#FF5C5C', fontWeight: 600 }}>EMERGENCY FALL</span>}
+                {evt.breakdown.ppeViolation > 0 && <span style={{ color: '#FF7360' }}>PPE ANOMALY</span>}
+                {evt.breakdown.fallDetected > 0 && <span style={{ color: '#FF5A45', fontWeight: 600 }}>EMERGENCY FALL</span>}
               </div>
 
               {/* Predictive warning badge */}
@@ -168,8 +168,8 @@ export const LiveEventFeed: React.FC = () => {
                 <div
                   style={{
                     marginTop: '3px',
-                    background: 'rgba(61, 217, 255, 0.05)', // Nominal Cyan dim
-                    border: '1px solid rgba(61, 217, 255, 0.15)', // Nominal border
+                    background: 'rgba(90, 205, 217, 0.05)', // Nominal Turquoise dim
+                    border: '1px solid rgba(90, 205, 217, 0.15)', // Nominal border
                     color: '#EAEAEA',
                     padding: '2px 5px',
                     borderRadius: '2px',
@@ -181,7 +181,7 @@ export const LiveEventFeed: React.FC = () => {
                     gap: '4px',
                   }}
                 >
-                  <Zap size={9} style={{ color: '#3DD9FF' }} />
+                  <Zap size={9} style={{ color: '#5ACDD9' }} />
                   Boundary crossover: {(evt.predictedEntryMs / 1000).toFixed(1)}s
                 </div>
               )}

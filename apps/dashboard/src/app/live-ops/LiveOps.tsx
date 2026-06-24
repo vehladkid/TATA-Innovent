@@ -64,8 +64,8 @@ export const LiveOps: React.FC = () => {
               left: '16px',
               width: '290px',
               background: 'rgba(13, 13, 13, 0.94)',
-              border: '1px solid #FF5C5C', // Peachy / red warning border
-              borderLeft: '4px solid #FF5C5C',
+              border: '1px solid #FF5A45', // Peachy / coral warning border
+              borderLeft: '4px solid #FF5A45',
               borderRadius: '2px',
               padding: '12px 14px',
               zIndex: 10,
@@ -77,30 +77,30 @@ export const LiveOps: React.FC = () => {
             }}
           >
             {/* Header */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', borderBottom: '1px solid rgba(255, 92, 92, 0.15)', paddingBottom: '6px', marginBottom: '4px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', borderBottom: '1px solid rgba(255, 90, 69, 0.15)', paddingBottom: '6px', marginBottom: '4px' }}>
               <span style={{
                 width: '6px',
                 height: '6px',
                 borderRadius: '50%',
-                background: '#FF5C5C',
+                background: '#FF5A45',
                 display: 'inline-block',
               }} />
-              <span style={{ fontFamily: "var(--font-body)", fontSize: '10px', fontWeight: 700, color: '#FF5C5C', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+              <span style={{ fontFamily: "var(--font-body)", fontSize: '10px', fontWeight: 700, color: '#FF5A45', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
                 AI PREDICTIVE RESOLUTION ENGINE
               </span>
             </div>
 
             {/* Warning details */}
             <div style={{ fontFamily: "var(--font-metric)", fontSize: '11px', color: '#EAEAEA' }}>
-              <div style={{ color: '#FF5C5C', fontWeight: 700, marginBottom: '2px' }}>
+              <div style={{ color: '#FF5A45', fontWeight: 700, marginBottom: '2px' }}>
                 ⚠ PREDICTED FORKLIFT COLLISION
               </div>
               <div style={{ color: '#9A9A9A', fontSize: '10px' }}>
                 Conflict: <span style={{ color: '#EAEAEA', fontWeight: 600 }}>Worker W-05 ⇆ Forklift F-01</span>
               </div>
               <div style={{ display: 'flex', gap: '10px', marginTop: '2px' }}>
-                <span>ETA: <strong style={{ color: '#FFC857' }}>14 Seconds</strong></span>
-                <span>Confidence: <strong style={{ color: '#FFC857' }}>87%</strong></span>
+                <span>ETA: <strong style={{ color: '#FF7360' }}>14 Seconds</strong></span>
+                <span>Confidence: <strong style={{ color: '#FF7360' }}>87%</strong></span>
               </div>
             </div>
 
@@ -140,7 +140,7 @@ export const LiveOps: React.FC = () => {
                 transform: 'translateX(-50%)',
                 width: '380px',
                 background: 'rgba(16, 16, 16, 0.95)',
-                border: '1px solid #FF5C5C', // Critical Red warning border
+                border: '1px solid #FF5A45', // Critical Coral Peach warning border
                 padding: '10px 14px',
                 borderRadius: '4px',
                 zIndex: 100,
@@ -151,7 +151,7 @@ export const LiveOps: React.FC = () => {
             >
               <div
                 style={{
-                  background: '#FF5C5C', // Critical Red circle
+                  background: '#FF5A45', // Critical Coral Peach circle
                   borderRadius: '50%',
                   width: '24px',
                   height: '24px',
@@ -165,7 +165,7 @@ export const LiveOps: React.FC = () => {
                 <ShieldAlert size={13} />
               </div>
               <div>
-                <div style={{ fontFamily: "var(--font-header)", color: '#FF5C5C', fontSize: '10px', fontWeight: 600, letterSpacing: '0.05em' }}>
+                <div style={{ fontFamily: "var(--font-header)", color: '#FF5A45', fontSize: '10px', fontWeight: 600, letterSpacing: '0.05em' }}>
                   CRITICAL ZONE INTRA-BREACH
                 </div>
                 <div style={{ fontFamily: "var(--font-body)", color: '#EAEAEA', fontSize: '10.5px', marginTop: '2px' }}>

@@ -300,7 +300,7 @@ export const BootScreen: React.FC = () => {
               letterSpacing: '0.05em',
             }}
           >
-            <span style={{ color: '#3DD9FF', animation: 'boot-dot-pulse 1s infinite alternate', fontSize: '12px' }}>●</span>
+            <span style={{ color: '#5ACDD9', animation: 'boot-dot-pulse 1s infinite alternate', fontSize: '12px' }}>●</span>
             Risk Engine Online
           </div>
         ) : (
@@ -343,7 +343,7 @@ export const BootScreen: React.FC = () => {
                   style={{
                     flex: 1,
                     height: '4px',
-                    background: isActive ? '#3DD9FF' : '#1A1A1A',
+                    background: isActive ? '#5ACDD9' : '#1A1A1A',
                     borderRadius: '1px',
                     transition: 'background-color 0.1s ease',
                   }}

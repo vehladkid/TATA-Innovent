@@ -159,12 +159,12 @@ export const ThreatTimeline: React.FC = () => {
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <Zap size={10} style={{ color: '#3DD9FF' }} />
+          <Zap size={10} style={{ color: '#5ACDD9' }} />
           <span style={{ fontFamily: "var(--font-body)", fontSize: '10px', fontWeight: 600, color: '#EAEAEA', letterSpacing: '0.05em' }}>
             PREDICTIVE EVENT RAIL
           </span>
         </div>
-        <span style={{ fontFamily: "var(--font-label)", fontSize: '9px', fontWeight: 600, color: '#3DD9FF', opacity: 0.8 }}>
+        <span style={{ fontFamily: "var(--font-label)", fontSize: '9px', fontWeight: 600, color: '#5ACDD9', opacity: 0.8 }}>
           CALIBRATED RESOLUTION FEED
         </span>
       </div>
@@ -201,7 +201,7 @@ export const ThreatTimeline: React.FC = () => {
               top: 0,
               bottom: 0,
               width: '1px',
-              borderLeft: tick === 0 ? '1.5px solid #FF5C5C' : '1px dashed #252525',
+              borderLeft: tick === 0 ? '1.5px solid #FF5A45' : '1px dashed #252525',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'center',
@@ -213,7 +213,7 @@ export const ThreatTimeline: React.FC = () => {
                 fontFamily: "var(--font-metric)", // IBM Plex Mono
                 fontSize: '8px',
                 fontWeight: 600,
-                color: tick === 0 ? '#FF5C5C' : 'rgba(255,255,255,0.22)',
+                color: tick === 0 ? '#FF5A45' : 'rgba(255,255,255,0.22)',
                 transform: 'translateY(14px)',
               }}
             >
@@ -227,16 +227,16 @@ export const ThreatTimeline: React.FC = () => {
           const positionPercent = (marker.timeRemainingSec / 5.0) * 100;
           
           let icon = <AlertCircle size={6} />;
-          let color = '#FFC857'; // Warning Yellow default
+          let color = '#FF7360'; // Warning Peach default
 
           if (marker.severity === 'critical') {
-            color = '#FF5C5C'; // Critical Red
+            color = '#FF5A45'; // Critical Coral Peach
             icon = <ShieldAlert size={6} />;
           } else if (marker.type === 'zone_entry') {
-            color = '#3DD9FF'; // Nominal Cyan
+            color = '#5ACDD9'; // Nominal Turquoise
             icon = <Flame size={6} />;
           } else if (marker.type === 'collision') {
-            color = '#FF5C5C'; // Critical Red
+            color = '#FF5A45'; // Critical Coral Peach
             icon = <Truck size={6} />;
           }
 
@@ -295,7 +295,7 @@ export const ThreatTimeline: React.FC = () => {
                 <span style={{ color: 'rgba(255,255,255,0.15)' }}>·</span>
                 <span>{marker.label}</span>
                 <span style={{ color: 'rgba(255,255,255,0.15)' }}>·</span>
-                <span style={{ color: '#3DD9FF' }}>{marker.confidence}%</span>
+                <span style={{ color: '#5ACDD9' }}>{marker.confidence}%</span>
               </div>
             </div>
           );

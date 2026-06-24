@@ -84,7 +84,7 @@ export const useEventStore = create<EventState>((set) => ({
   shiftSummary: INITIAL_SHIFT,
   siteSafetyScore: 88,
   activeView: 'BOOT',
-  soundMuted: false,
+  soundMuted: true,
   alertVolume: 0.2,
   lastHeartbeat: Date.now(),
   selectedTrackId: null,

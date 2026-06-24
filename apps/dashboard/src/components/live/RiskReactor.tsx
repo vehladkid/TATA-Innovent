@@ -9,7 +9,7 @@ const VerticalRiskGauge: React.FC<{ score: number; band: string }> = ({ score, b
   
   const isSafe = band.toLowerCase() === 'safe';
   const isDanger = band.toLowerCase() === 'critical' || band.toLowerCase() === 'danger' || score >= 60;
-  const fillColor = isSafe ? '#00D084' : (isDanger ? '#FF5C5C' : '#FFC857');
+  const fillColor = isSafe ? '#00D084' : (isDanger ? '#FF5A45' : '#FF7360');
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
@@ -100,7 +100,7 @@ export const RiskReactor: React.FC = () => {
 
   const isSafe = band.toLowerCase() === 'safe';
   const isDanger = band.toLowerCase() === 'critical' || band.toLowerCase() === 'danger' || riskScore >= 60;
-  const riskColor = isSafe ? '#00D084' : (isDanger ? '#FF5C5C' : '#FFC857');
+  const riskColor = isSafe ? '#00D084' : (isDanger ? '#FF5A45' : '#FF7360');
 
   // Dynamic AI Explanation (Hero Text)
   const getAIReasoningText = () => {
@@ -170,7 +170,7 @@ export const RiskReactor: React.FC = () => {
           {workers.map((w) => {
             const wIsSafe = w.band.toLowerCase() === 'safe';
             const wIsDanger = w.band.toLowerCase() === 'critical' || w.band.toLowerCase() === 'danger' || w.riskScore >= 60;
-            const wStatusColor = wIsSafe ? '#00D084' : (wIsDanger ? '#FF5C5C' : '#FFC857');
+            const wStatusColor = wIsSafe ? '#00D084' : (wIsDanger ? '#FF5A45' : '#FF7360');
             const wSelected = selectedTrackId === w.trackId;
 
             return (
@@ -330,7 +330,7 @@ export const RiskReactor: React.FC = () => {
             </div>
             <div>
               <span style={{ color: 'var(--color-neutral)' }}>Emergency SMS:</span>
-              <span style={{ color: isDanger ? '#FF5C5C' : 'var(--color-silver)', fontWeight: 600, marginLeft: '6px' }}>
+              <span style={{ color: isDanger ? '#FF5A45' : 'var(--color-silver)', fontWeight: 600, marginLeft: '6px' }}>
                 {isDanger ? 'DISPATCHED' : 'NOMINAL'}
               </span>
             </div>
@@ -412,11 +412,11 @@ export const RiskReactor: React.FC = () => {
           <span>WEIGHT VALUE</span>
         </div>
 
-        <BreakdownBar name="PPE Compliance Check"       value={breakdown.ppeViolation}   max={40} color={breakdown.ppeViolation > 0 ? '#FF5C5C' : '#00D084'}   prefix={breakdown.ppeViolation > 0 ? `+${breakdown.ppeViolation}` : 'NOMINAL'} />
-        <BreakdownBar name="Hazard Zone Proximity"       value={breakdown.proximityToZone} max={30} color={breakdown.proximityToZone > 0 ? '#FF5C5C' : '#00D084'} prefix={breakdown.proximityToZone > 0 ? `+${breakdown.proximityToZone}` : 'NOMINAL'} />
-        <BreakdownBar name="Velocity Heading Vector"      value={breakdown.velocityToward}  max={20} color={breakdown.velocityToward > 0 ? '#FF5C5C' : '#00D084'}  prefix={breakdown.velocityToward > 0 ? `+${breakdown.velocityToward}` : 'NOMINAL'} />
-        <BreakdownBar name="Posture & Ergonomics check"  value={breakdown.posture}          max={10} color={breakdown.posture > 0 ? '#FF5C5C' : '#00D084'}          prefix={breakdown.posture > 0 ? `+${breakdown.posture}` : 'NOMINAL'} />
-        <BreakdownBar name="Biometric Fall Detection"     value={breakdown.fallDetected}     max={30} color="#FF5C5C"                                                  prefix={breakdown.fallDetected > 0 ? '⚠ EMERGENCY OVERRIDE (+30)' : 'NOMINAL'} />
+        <BreakdownBar name="PPE Compliance Check"       value={breakdown.ppeViolation}   max={40} color={breakdown.ppeViolation > 0 ? '#FF5A45' : '#00D084'}   prefix={breakdown.ppeViolation > 0 ? `+${breakdown.ppeViolation}` : 'NOMINAL'} />
+        <BreakdownBar name="Hazard Zone Proximity"       value={breakdown.proximityToZone} max={30} color={breakdown.proximityToZone > 0 ? '#FF5A45' : '#00D084'} prefix={breakdown.proximityToZone > 0 ? `+${breakdown.proximityToZone}` : 'NOMINAL'} />
+        <BreakdownBar name="Velocity Heading Vector"      value={breakdown.velocityToward}  max={20} color={breakdown.velocityToward > 0 ? '#FF5A45' : '#00D084'}  prefix={breakdown.velocityToward > 0 ? `+${breakdown.velocityToward}` : 'NOMINAL'} />
+        <BreakdownBar name="Posture & Ergonomics check"  value={breakdown.posture}          max={10} color={breakdown.posture > 0 ? '#FF5A45' : '#00D084'}          prefix={breakdown.posture > 0 ? `+${breakdown.posture}` : 'NOMINAL'} />
+        <BreakdownBar name="Biometric Fall Detection"     value={breakdown.fallDetected}     max={30} color="#FF5A45"                                                  prefix={breakdown.fallDetected > 0 ? '⚠ EMERGENCY OVERRIDE (+30)' : 'NOMINAL'} />
       </div>
     </div>
   );

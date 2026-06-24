@@ -114,11 +114,11 @@ export const CommandOverlay: React.FC = () => {
               width: '6px',
               height: '6px',
               borderRadius: '50%',
-              background: '#3DD9FF', // Nominal Cyan
+              background: '#5ACDD9', // Nominal Turquoise
             }}
           />
           <span style={{ fontFamily: "var(--font-label)", fontSize: '9.5px', color: '#9A9A9A', fontWeight: 500, letterSpacing: '0.05em' }}>
-            SYSTEM: <span style={{ color: '#3DD9FF', fontWeight: 600 }}>ONLINE</span>
+            SYSTEM: <span style={{ color: '#5ACDD9', fontWeight: 600 }}>ONLINE</span>
           </span>
         </div>
 
@@ -148,7 +148,7 @@ export const CommandOverlay: React.FC = () => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: soundMuted ? '#FF5C5C' : '#9A9A9A', // Critical red for mute warning
+            color: soundMuted ? '#FF5A45' : '#9A9A9A', // Critical coral peach for mute warning
             cursor: 'pointer',
             transition: 'all 0.15s ease',
           }}
@@ -174,7 +174,7 @@ const NavButton: React.FC<NavButtonProps> = ({ active, onClick, icon, label }) =
     style={{
       background: active ? '#101010' : 'transparent',
       border: 'none',
-      borderBottom: active ? '2px solid #3DD9FF' : '2px solid transparent',
+      borderBottom: active ? '2px solid #5ACDD9' : '2px solid transparent',
       borderTop: '2px solid transparent',
       color: active ? '#EAEAEA' : '#9A9A9A',
       borderRadius: 0,
@@ -190,7 +190,7 @@ const NavButton: React.FC<NavButtonProps> = ({ active, onClick, icon, label }) =
       cursor: 'pointer',
       transition: 'all 0.15s ease',
       whiteSpace: 'nowrap',
-      boxShadow: active ? '0 1px 6px rgba(61, 217, 255, 0.15)' : 'none',
+      boxShadow: active ? '0 1px 6px rgba(90, 205, 217, 0.15)' : 'none',
     }}
     onMouseEnter={(e) => {
       if (!active) {
@@ -205,7 +205,7 @@ const NavButton: React.FC<NavButtonProps> = ({ active, onClick, icon, label }) =
       }
     }}
   >
-    <span style={{ color: active ? '#3DD9FF' : '#9A9A9A' }}>{icon}</span>
+    <span style={{ color: active ? '#5ACDD9' : '#9A9A9A' }}>{icon}</span>
     <span>{label}</span>
   </button>
 );
