@@ -127,7 +127,7 @@ Format: **severity · file · problem · why it matters · how to fix · owner**
 - **F5 · `requirements.txt` / `app/db/session.py`** ✅ FIXED by Tejvir (2026-06-11) — added `asyncpg==0.30.0` and `fpdf2==2.8.1` to `requirements.txt`.
 - **F6 · `render.yaml` + `.env.example`** ✅ FIXED by Tejvir (2026-06-11) — added `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `GROQ_API_KEY`, `ANTHROPIC_API_KEY`, `N8N_WEBHOOK_URL` to both files.
 - **F7 · `apps/backend/app/services/event_broker.py:16`** ✅ FIXED by Tejvir (2026-06-11) — Queue bounded to `maxsize=256`; `publish()` uses `put_nowait` with QueueFull handling (drops oldest, logs warning).
-- **F8 · hostname mismatch** ✅ FIXED by Tejvir (2026-06-11) — all four files now use `https://suraksha-ai.onrender.com` (matches render.yaml service name).
+- **F8 · hostname mismatch** ✅ FIXED by Tejvir (2026-06-11, updated 2026-06-12) — all four files now use `https://suraksha-backend-fams.onrender.com` (actual Render service URL).
 - **F9 · `apps/pwa/README.md`** — documents a 25-class model map, but training produces 9 classes. `ppe.yaml` also fixed (nc:9, relative path). **Owner:** ⏳ PENDING — Dhruv to update PWA README class map.
 - **F10 · `apps/pwa/src/lib/postProcessor.ts:146`** — inferred `no_vest` detections always dropped by temporal smoothing. **Fix:** exempt `inferred` detections from smoothing. **Owner:** ⏳ PENDING — Dhruv.
 - **F11 · `ml/training/augment_minority.py:39`** ✅ FIXED by Tejvir (2026-06-11) — `augment_image()` now returns `(img, angle, did_flip)`; caller uses the actual flip decision instead of re-deriving it independently.

@@ -112,7 +112,7 @@ Open `http://localhost:3000` — within ~2 seconds you should see fake risk even
 
 | Environment | URL | Notes |
 |---|---|---|
-| Backend (prod) | `https://suraksha-ai.onrender.com` | Render free tier, sleeps after 15 min |
+| Backend (prod) | `https://suraksha-backend-fams.onrender.com` | Render free tier, sleeps after 15 min |
 | Dashboard | `https://suraksha-ai.vercel.app` | Vercel auto-deploys from `main` |
 | PWA | `https://suraksha-pwa.vercel.app` | Install on phone via "Add to Home Screen" |
 

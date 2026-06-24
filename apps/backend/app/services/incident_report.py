@@ -21,24 +21,45 @@ _SECTION_HEADERS = {
 
 
 async def gather_events(event_ids: Optional[list[str]], minutes: int) -> list[dict]:
-    """Pull events from Supabase (preferred) or the in-memory broker."""
-    from app.services.database import get_recent_events
-    from app.services.event_broker import broker
+    """Pull events from Supabase (preferred) or the in-memory broker.
 
-    # NOTE: fetches newest N then time-filters in Python. Raised to 1000 to avoid
-    # silent truncation for busy shifts. Proper fix (Tejvir): add a
-    # get_events_since(since_ms) query in database.py and call it here.
-    db = await get_recent_events(limit=1000)
-    if db:
-        events = [e.model_dump(by_alias=True) for e in db]
+    When a shift is active, scopes to the shift window via get_events_since().
+    Falls back to the last-1000 slice (then time-filtered by `minutes`) when no
+    shift is active.
+    """
+    from app.services.database import get_events_since, get_recent_events
+    from app.services.event_broker import broker
+    from app.routers.shifts import _active_shift
+
+    shift = _active_shift()
+
+    if shift is not None:
+        # Exact shift window — get_events_since() falls back to the in-memory
+        # broker ring buffer when Supabase is unavailable.
+        raw = await get_events_since(shift.start_time)
+        # get_events_since returns RiskEvent Pydantic objects (Supabase path) or
+        # broker message dicts {"type": ..., "data": ...} (in-memory path);
+        # normalise to plain camelCase dicts either way.
+        if raw and hasattr(raw[0], "model_dump"):
+            events = [e.model_dump(by_alias=True) for e in raw]
+        else:
+            events = [m["data"] for m in raw if m.get("type") == "risk_event"]
     else:
-        events = [
-            m["data"] for m in broker.recent(100) if m.get("type") == "risk_event"
-        ]
+        # No active shift — fall back to last-1000 slice from Supabase, or broker.
+        db = await get_recent_events(limit=1000)
+        if db:
+            events = [e.model_dump(by_alias=True) for e in db]
+        else:
+            events = [
+                m["data"] for m in broker.recent(100) if m.get("type") == "risk_event"
+            ]
 
     if event_ids:
         wanted = set(event_ids)
         return [e for e in events if e.get("eventId") in wanted]
+
+    if shift is not None:
+        return events  # already scoped to shift window; no further time-filtering
 
     since = int(time.time() * 1000) - minutes * 60 * 1000
     return [e for e in events if e.get("timestamp", 0) >= since]

@@ -14,7 +14,8 @@ services:
       - key: LOG_LEVEL
         value: INFO
       - key: CORS_ORIGINS
-        value: "*"
+        # TODO: add dashboard Vercel URL and PWA Vercel URL once deployed
+        value: "http://localhost:5173"
       - key: DATABASE_URL
         sync: false   # paste your Supabase connection string in the Render dashboard
       - key: SUPABASE_URL
