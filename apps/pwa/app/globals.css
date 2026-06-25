@@ -1,0 +1,109 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Premium dark palette tokens ─────────────────────────────────────────── */
+:root {
+  --canvas:        #09090b;   /* near-black charcoal */
+  --surface-1:     #111113;   /* primary card */
+  --surface-2:     #18181b;   /* nested/secondary */
+  --surface-3:     #1f1f23;   /* input fields */
+  --border-subtle: #27272a;   /* barely-there dividers */
+  --border-faint:  #1c1c1f;   /* card edges */
+  --text-primary:  #fafafa;
+  --text-secondary:#a1a1aa;
+  --text-muted:    #52525b;
+  --accent-amber:       #d4a853;   /* metallic gold */
+  --accent-orange:      #f97316;   /* safety CTA */
+  --accent-critical:    #FF7360;   /* Peachy Orange — critical hazard */
+  --accent-green:       #10b981;   /* safe state */
+  --accent-turquoise:   #5ACDD9;   /* Turquoise — info / light-blue */
+  --accent-royal-blue:  #3E6AE0;   /* Royal Blue — primary blue */
+}
+
+/* ── Reset ────────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+}
+
+body {
+  background-color: var(--canvas);
+  color: var(--text-primary);
+}
+
+/* ── PWA safe area ────────────────────────────────────────────────────────── */
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+
+/* ── Touch targets ────────────────────────────────────────────────────────── */
+.touch-target { min-height: 44px; min-width: 44px; }
+
+/* ── Premium scrollbar ────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 3px; height: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: #3f3f46;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover { background: #52525b; }
+
+/* ── Critical blink ───────────────────────────────────────────────────────── */
+@keyframes blink-border {
+  0%, 100% { border-color: #FF7360; }
+  50%       { border-color: transparent; }
+}
+.blink-border { animation: blink-border 1s step-start infinite; }
+
+/* ── Pulse dot ────────────────────────────────────────────────────────────── */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.45; transform: scale(1.5); }
+}
+.pulse-dot { animation: pulse-dot 1.8s ease-in-out infinite; }
+
+/* ── Premium card surface ─────────────────────────────────────────────────── */
+.card-premium {
+  background: linear-gradient(145deg, #141416 0%, #111113 100%);
+  border: 1px solid #222226;
+  box-shadow: 0 1px 0 0 rgba(255,255,255,0.03) inset,
+              0 4px 24px 0 rgba(0,0,0,0.4);
+}
+
+/* ── Metallic gold shimmer accent ─────────────────────────────────────────── */
+.accent-gold { color: var(--accent-amber); }
+
+/* ── Button glow ──────────────────────────────────────────────────────────── */
+.btn-primary-glow {
+  box-shadow: 0 0 0 0 rgba(249,115,22,0);
+  transition: box-shadow 0.2s ease;
+}
+.btn-primary-glow:hover {
+  box-shadow: 0 0 20px 0 rgba(249,115,22,0.25);
+}
+
+/* ── Subtle gradient overlay on header ───────────────────────────────────── */
+.header-glass {
+  background: rgba(9,9,11,0.92);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+/* ── Dot grid pattern ────────────────────────────────────────────────────── */
+.dot-grid {
+  background-image: radial-gradient(circle, #27272a 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* ── Number display refinement ───────────────────────────────────────────── */
+.metric-num {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
