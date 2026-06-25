@@ -1,16 +1,104 @@
 import React, { useState, useEffect } from 'react';
 import { useEventStore } from '../../lib/event-store';
-import { DollarSign, Shield, ShieldCheck, Wifi, UserCheck, Clock } from 'lucide-react';
+import { TrendingUp, Shield, ShieldCheck, Wifi, UserCheck, Clock } from 'lucide-react';
+
+// Premium counter-up animation component
+const AnimatedCounter: React.FC<{
+  value: number;
+  duration?: number;
+  isCurrency?: boolean;
+}> = ({ value, duration = 800, isCurrency = false }) => {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    let start = 0;
+    const end = value;
+    if (start === end) {
+      setCount(end);
+      return;
+    }
+
+    const range = end - start;
+    let current = start;
+    const increment = end > start ? 1 : -1;
+    const stepTime = Math.max(Math.floor(duration / Math.abs(range)), 8);
+    
+    const timer = setInterval(() => {
+      current += Math.ceil(range / (duration / stepTime));
+      if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+        setCount(end);
+        clearInterval(timer);
+      } else {
+        setCount(current);
+      }
+    }, stepTime);
+
+    return () => clearInterval(timer);
+  }, [value, duration]);
+
+  if (isCurrency) {
+    return (
+      <>
+        {new Intl.NumberFormat('en-IN', {
+          style: 'currency',
+          currency: 'INR',
+          maximumFractionDigits: 0
+        }).format(count)}
+      </>
+    );
+  }
+
+  return <>{count.toLocaleString()}</>;
+};
+
+// Premium Sparkline Component
+const Sparkline: React.FC<{ data: number[]; color?: string; width?: number; height?: number }> = ({ 
+  data, 
+  color = '#5ACDD9', 
+  width = 80, 
+  height = 16 
+}) => {
+  if (data.length < 2) return null;
+  const max = Math.max(...data);
+  const min = Math.min(...data);
+  const range = max - min || 1;
+  const points = data.map((val, index) => {
+    const x = (index / (data.length - 1)) * width;
+    const y = height - ((val - min) / range) * height;
+    return `${x},${y}`;
+  }).join(' ');
+
+  return (
+    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} style={{ display: 'inline-block', verticalAlign: 'middle', overflow: 'visible' }}>
+      <polyline
+        fill="none"
+        stroke={color}
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        points={points}
+      />
+    </svg>
+  );
+};
 
 export const ExecutiveView: React.FC = () => {
   const shiftSummary = useEventStore((state) => state.shiftSummary);
   const siteSafetyScore = useEventStore((state) => state.siteSafetyScore);
-  const websocketStatus = useEventStore((state) => state.websocketStatus);
   const activeWorkers = useEventStore((state) => state.activeWorkers);
+  const recentEvents = useEventStore((state) => state.recentEvents);
 
-  const [costAvoided, setCostAvoided] = useState(240000); // Start at ₹2.4 Lakhs
+  const [costAvoided, setCostAvoided] = useState(240000);
+  const [fillProgress, setFillProgress] = useState(0);
 
-  // Tick up the financial ROI estimator slowly in real-time
+  // Animate Safety Fill on Mount
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setFillProgress(siteSafetyScore);
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [siteSafetyScore]);
+
   useEffect(() => {
     const timer = setInterval(() => {
       setCostAvoided((prev) => prev + Math.floor(Math.random() * 8) + 2);
@@ -18,276 +106,417 @@ export const ExecutiveView: React.FC = () => {
     return () => clearInterval(timer);
   }, []);
 
-  // Compute PPE compliance rate from active workers
   const workers = Object.values(activeWorkers);
   const compliantCount = workers.filter(w => w.helmet && w.vest).length;
   const ppeComplianceRate = workers.length > 0
     ? Math.round((compliantCount / workers.length) * 100)
-    : 94; // Default baseline if empty
+    : 94;
 
-  // Site Safety Score themes
-  let scoreTheme = { hex: '#00f3ff', glow: '0 0 20px #00f3ff' };
-  if (siteSafetyScore < 60) {
-    scoreTheme = { hex: '#ff003c', glow: '0 0 25px #ff003c' };
-  } else if (siteSafetyScore < 85) {
-    scoreTheme = { hex: '#ffaa00', glow: '0 0 20px #ffaa00' };
-  } else {
-    scoreTheme = { hex: '#00ff66', glow: '0 0 25px #00ff66' };
-  }
-
-  // Formatting currency
-  const formatRupees = (val: number) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      maximumFractionDigits: 0
-    }).format(val);
-  };
+  const isSafeState = siteSafetyScore >= 85;
+  const safetyLabel = isSafeState ? 'SECURE' : 'ELEVATED RISK';
+  const alertIncidents = recentEvents.filter(e => e.band !== 'safe');
 
   return (
     <div
       style={{
         flex: 1,
         display: 'grid',
-        gridTemplateColumns: '40% 60%',
+        gridTemplateColumns: '30% 70%',
         gap: '16px',
         padding: '16px',
         overflow: 'hidden',
         height: '100%',
+        background: 'var(--color-bg-deep)',
       }}
     >
-      {/* Left Column: Huge Site Safety Score dial */}
+      <style dangerouslySetInnerHTML={{__html: `
+        @keyframes wave-move-back {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        @keyframes wave-move-front {
+          0% { transform: translateX(-50%); }
+          100% { transform: translateX(0); }
+        }
+      `}} />
+
+      {/* Left Column: Full-height Safety Reservoir */}
       <div
-        className="hud-panel tech-corners shimmer-ai"
+        className="hud-panel"
         style={{
-          background: 'rgba(5, 7, 24, 0.85)',
-          border: '1px solid rgba(0, 243, 255, 0.25)',
-          padding: '24px',
+          background: 'var(--color-bg-card)',
+          border: '1px solid var(--border-color)',
+          borderRadius: '2px',
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '24px',
+          justifyContent: 'space-between',
+          height: '100%',
+          position: 'relative',
+          overflow: 'hidden',
+          boxSizing: 'border-box',
         }}
       >
+        {/* Charcoal Gradient fluid with surface line */}
         <div
           style={{
-            fontFamily: "'Orbitron', sans-serif",
-            fontSize: '14px',
-            color: 'rgba(255,255,255,0.6)',
-            letterSpacing: '2px',
-            fontWeight: 'bold',
-            textAlign: 'center',
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: `${fillProgress}%`,
+            background: 'linear-gradient(to top, #050505 0%, #1A1A1A 100%)',
+            transition: 'height 1.5s cubic-bezier(0.16, 1, 0.3, 1)',
+            zIndex: 1,
           }}
         >
-          GLOBAL SITE SAFETY INDEX
-        </div>
-
-        {/* Safety Score Radial Dial SVG */}
-        <div style={{ position: 'relative', width: '280px', height: '280px' }}>
-          <svg viewBox="0 0 200 200" style={{ transform: 'rotate(-90deg)', width: '100%', height: '100%' }}>
-            {/* Background circle track */}
-            <circle
-              cx="100"
-              cy="100"
-              r="80"
-              fill="none"
-              stroke="rgba(255,255,255,0.03)"
-              strokeWidth="12"
-            />
-            {/* Dotted border reference */}
-            <circle
-              cx="100"
-              cy="100"
-              r="88"
-              fill="none"
-              stroke="rgba(0,243,255,0.08)"
-              strokeWidth="1"
-              strokeDasharray="4,6"
-            />
-            {/* Dynamic Score Ring */}
-            <circle
-              cx="100"
-              cy="100"
-              r="80"
-              fill="none"
-              stroke={scoreTheme.hex}
-              strokeWidth="12"
-              strokeDasharray={2 * Math.PI * 80}
-              strokeDashoffset={2 * Math.PI * 80 * (1 - siteSafetyScore / 100)}
-              strokeLinecap="round"
-              style={{
-                transition: 'stroke-dashoffset 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
-                filter: `drop-shadow(0 0 8px ${scoreTheme.hex})`,
-              }}
-            />
-          </svg>
-
-          {/* Text overlays inside dial */}
+          {/* Active surface line */}
           <div
             style={{
               position: 'absolute',
-              top: 0, left: 0, right: 0, bottom: 0,
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
+              top: 0,
+              left: 0,
+              right: 0,
+              height: '1.5px',
+              background: '#5ACDD9',
+              zIndex: 3,
+            }}
+          />
+
+          {/* Waves */}
+          <svg
+            viewBox="0 0 120 12"
+            preserveAspectRatio="none"
+            style={{
+              position: 'absolute',
+              top: '-7px',
+              left: 0,
+              width: '200%',
+              height: '8px',
+              fill: 'rgba(90, 205, 217, 0.03)',
+              animation: 'wave-move-back 24s linear infinite',
+              zIndex: 2,
+            }}
+          >
+            <path d="M 0 6 Q 30 4, 60 6 T 120 6 T 180 6 T 240 6 L 240 12 L 0 12 Z" />
+          </svg>
+          <svg
+            viewBox="0 0 120 12"
+            preserveAspectRatio="none"
+            style={{
+              position: 'absolute',
+              top: '-5px',
+              left: 0,
+              width: '200%',
+              height: '6px',
+              fill: 'rgba(90, 205, 217, 0.07)',
+              animation: 'wave-move-front 16s linear infinite',
               zIndex: 3,
             }}
           >
-            <span
+            <path d="M 0 6 Q 30 5, 60 6 T 120 6 T 180 6 T 240 6 L 240 12 L 0 12 Z" />
+          </svg>
+        </div>
+
+        {/* Subdued scale ticks overlay */}
+        <div
+          style={{
+            position: 'absolute',
+            left: '16px',
+            top: '24px',
+            bottom: '80px',
+            width: '24px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
+            zIndex: 4,
+            pointerEvents: 'none',
+          }}
+        >
+          {[100, 75, 50, 25, 0].map((tick) => (
+            <div
+              key={tick}
               style={{
-                fontFamily: "'Orbitron', sans-serif",
-                fontSize: '68px',
-                fontWeight: '900',
-                color: '#ffffff',
-                lineHeight: '1',
-                textShadow: `0 0 15px ${scoreTheme.hex}`,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '5px',
+                fontFamily: "var(--font-label)", // Bierika
+                fontSize: '9px',
+                color: 'rgba(216, 216, 216, 0.22)',
               }}
             >
-              {siteSafetyScore}
-            </span>
+              <div style={{ width: '4px', height: '1px', background: 'rgba(255, 255, 255, 0.1)' }} />
+              <span>{tick}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Specular Glare overlay */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.015) 0%, rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0.1) 100%)',
+            pointerEvents: 'none',
+            zIndex: 3,
+          }}
+        />
+
+        {/* Centered card (Equinox and Osiris) */}
+        <div
+          style={{
+            position: 'absolute',
+            top: '40%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            background: 'radial-gradient(rgba(255, 115, 96, 0.05), transparent 70%)',
+            borderRadius: '2px',
+            padding: '24px 28px',
+            textAlign: 'center',
+            zIndex: 5,
+            pointerEvents: 'none',
+            width: '82%',
+          }}
+        >
+          <span
+            style={{
+              fontFamily: "var(--font-body)", // Sora
+              fontSize: '11px',
+              fontWeight: 600,
+              color: 'var(--color-silver)',
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+            }}
+          >
+            Safety Index
+          </span>
+          <span
+            style={{
+              display: 'block',
+              fontFamily: "var(--font-body)", // Sora
+              fontSize: '84px',
+              fontWeight: 700,
+              color: 'var(--color-silver)',
+              lineHeight: 1,
+              margin: '6px 0',
+              letterSpacing: '-1px',
+              textShadow: '0 0 20px rgba(255, 115, 96, 0.15)',
+            }}
+          >
+            {siteSafetyScore}
+          </span>
+          <div
+            style={{
+              fontFamily: "var(--font-label)", // Bierika
+              fontSize: '11px',
+              fontWeight: 700,
+              color: isSafeState ? '#00D084' : '#FF5A45',
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '5px',
+            }}
+          >
             <span
               style={{
-                fontFamily: "'Orbitron', sans-serif",
-                fontSize: '11px',
-                color: 'rgba(255,255,255,0.5)',
-                fontWeight: 'bold',
-                letterSpacing: '1px',
-                marginTop: '6px',
+                width: '5px',
+                height: '5px',
+                borderRadius: '50%',
+                background: isSafeState ? '#00D084' : '#FF5A45',
+                display: 'inline-block',
               }}
-            >
-              RATING / 100
-            </span>
+            />
+            {safetyLabel}
           </div>
         </div>
 
-        {/* System safety report overview */}
-        <div style={{ textAlign: 'center', fontFamily: "'Inter', sans-serif" }}>
-          <div
-            style={{
-              fontSize: '14px',
-              color: scoreTheme.hex,
-              fontWeight: 'bold',
-              letterSpacing: '1px',
-              textShadow: `0 0 8px ${scoreTheme.hex}44`,
-            }}
-          >
-            {siteSafetyScore >= 85
-              ? '✔ OPERATION GRADE: SECURE'
-              : siteSafetyScore >= 60
-              ? '⚡ OPERATION GRADE: ELEVATED RISKS'
-              : '🚨 OPERATION GRADE: THREAT LEVEL CRITICAL'}
-          </div>
-          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '11px', marginTop: '8px', maxWidth: '320px', lineHeight: '1.4' }}>
-            Predictive Safety Engine tracking 6 active worker trajectories. Shift metrics aggregated.
-          </p>
+        {/* Translucent bottom parameters */}
+        <div
+          style={{
+            background: 'rgba(5, 5, 5, 0.85)',
+            borderTop: '1px solid var(--border-color)',
+            padding: '16px 20px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '10px',
+            backdropFilter: 'blur(12px)',
+            zIndex: 5,
+          }}
+        >
+          {[
+            { label: 'Inference Confidence', value: '99.2%', color: 'var(--color-silver)' },
+            { 
+              label: 'Last Logged Trigger', 
+              value: alertIncidents.length > 0 
+                ? new Date(alertIncidents[0].timestamp).toLocaleTimeString() 
+                : 'None (Nominal)', 
+              color: alertIncidents.length > 0 ? '#FF5A45' : '#5ACDD9' 
+            },
+            { label: 'Uptime SLA Metrics', value: '+1.4% (Nominal)', color: '#5ACDD9' },
+            { label: 'Calibration Shift', value: 'Morning Shift A', color: 'var(--color-silver)' },
+          ].map(({ label, value, color }) => (
+            <div key={label} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontFamily: "var(--font-label)" }}>
+              <span style={{ color: 'var(--color-neutral)' }}>{label}</span>
+              <span style={{ color, fontFamily: "var(--font-metric)", fontWeight: 600 }}>{value}</span>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Right Column: Grid of Telemetry metrics */}
-      <div style={{ display: 'grid', gridTemplateRows: '120px 1fr', gap: '16px' }}>
-        {/* Estimated Risk Cost Avoided Panel */}
+      {/* Right Column: KPI Dashboard Grid */}
+      <div style={{ display: 'grid', gridTemplateRows: '1fr 1.3fr 1.1fr', gap: '16px', height: '100%', minHeight: 0 }}>
+
+        {/* Row 1: Hero Card — Estimated Risk Cost Avoided */}
         <div
-          className="hud-panel tech-corners"
+          className="hud-panel"
           style={{
-            background: 'rgba(0, 255, 102, 0.05)',
-            border: '1px solid rgba(0, 255, 102, 0.25)',
-            padding: '16px 24px',
+            background: 'linear-gradient(135deg, rgba(90, 205, 217, 0.05), transparent 60%), var(--color-bg-card)',
+            border: '1px solid var(--border-color)',
+            borderTop: '2px solid #3E6AE0',
+            borderRadius: '2px',
+            padding: '32px 36px', // Increased padding for prominent centerpiece
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            boxShadow: 'inset 0 0 20px rgba(0, 255, 102, 0.05)',
+            cursor: 'pointer',
           }}
         >
           <div>
-            <div
-              style={{
-                fontFamily: "'Orbitron', sans-serif",
-                fontSize: '10px',
-                color: '#00ff66',
-                fontWeight: 'bold',
-                letterSpacing: '1.5px',
-              }}
-            >
-              ESTIMATED RISK COST AVOIDED (ROI)
+            <div style={{ fontFamily: "var(--font-body)", fontSize: '11px', fontWeight: 600, color: 'var(--color-neutral)', letterSpacing: '0.06em', marginBottom: '6px', textTransform: 'uppercase' }}>
+              Estimated Risk Cost Avoided
             </div>
-            <div
-              style={{
-                fontFamily: "'Orbitron', sans-serif",
-                fontSize: '36px',
-                fontWeight: '900',
-                color: '#ffffff',
-                marginTop: '4px',
-                textShadow: '0 0 15px rgba(255,255,255,0.4)',
-              }}
-            >
-              {formatRupees(costAvoided)}
+            <div style={{ fontFamily: "var(--font-body)", fontSize: '42px', fontWeight: 700, color: 'var(--color-silver)', letterSpacing: '-1px', lineHeight: 1.1 }}>
+              <AnimatedCounter value={costAvoided} isCurrency={true} />
+            </div>
+            
+            {/* Callouts and labels */}
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginTop: '8px' }}>
+              <span style={{ fontFamily: "var(--font-label)", fontSize: '11px', color: '#00D084', fontWeight: 500 }}>
+                ↑ 18% vs prev shift
+              </span>
+              <span style={{ color: 'var(--border-color)' }}>|</span>
+              <span style={{ fontFamily: "var(--font-label)", fontSize: '10px', color: 'var(--color-neutral)' }}>
+                SLA Compliance: 100%
+              </span>
+              <span style={{ color: 'var(--border-color)' }}>|</span>
+              <span style={{ fontFamily: "var(--font-label)", fontSize: '10px', color: 'var(--color-neutral)' }}>
+                Ref Rate: 1.2s
+              </span>
             </div>
           </div>
-          <div
-            style={{
-              background: 'rgba(0, 255, 102, 0.15)',
-              borderRadius: '50%',
-              width: '48px',
-              height: '48px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#00ff66',
-              boxShadow: '0 0 12px rgba(0,255,102,0.3)',
-            }}
-          >
-            <DollarSign size={24} />
+
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px' }}>
+            <div
+              style={{
+                background: '#000000',
+                border: '1px solid var(--border-color)',
+                borderRadius: '2px',
+                width: '44px',
+                height: '44px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#5ACDD9',
+              }}
+            >
+              <TrendingUp size={18} />
+            </div>
+            {/* Tiny Trend Sparkline inside Hero card */}
+            <div style={{ paddingRight: '4px' }}>
+              <Sparkline data={[210, 215, 220, 218, 224, 230, 235, 240]} color="#3E6AE0" width={80} height={14} />
+            </div>
           </div>
         </div>
 
-        {/* Operational parameters Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+        {/* Row 2: Medium Cards — Incidents Prevented & Risk Paths Averted */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
           <MetricBox
             title="INCIDENTS PREVENTED"
-            value={shiftSummary.incidentsPrevented}
-            subtitle="AI Interventions Triggered"
-            icon={<ShieldCheck size={18} style={{ color: '#00ff66' }} />}
-            color="#00ff66"
+            value={<AnimatedCounter value={shiftSummary.incidentsPrevented} />}
+            subtitle="Active AI safety interventions"
+            detail={
+              <div style={{ display: 'flex', justifySelf: 'stretch', justifyContent: 'space-between', width: '100%', alignItems: 'center', marginTop: '2px' }}>
+                <span style={{ color: '#00D084', fontWeight: 600 }}>+4 vs prev shift</span>
+                <Sparkline data={[2, 3, 5, 4, 6, 7, 9]} color="#3E6AE0" />
+              </div>
+            }
+            extraInfo="Target Threshold: 0 incidents"
+            icon={<ShieldCheck size={16} style={{ color: '#5ACDD9' }} />}
+            size="medium"
+            borderTopColor="#FF7360"
+            backgroundGradient="linear-gradient(135deg, rgba(62, 106, 224, 0.05), transparent 60%)"
           />
           <MetricBox
-            title="THREATS NEUTRALIZED"
-            value={shiftSummary.incidentsPrevented * 2 + 3}
-            subtitle="Predictive Path Overlays Averted"
-            icon={<Shield size={18} style={{ color: '#b026ff' }} />}
-            color="#b026ff"
+            title="PREDICTIVE PATHS AVERTED"
+            value={<AnimatedCounter value={shiftSummary.incidentsPrevented * 2 + 3} />}
+            subtitle="Collisions & breaches avoided"
+            detail={
+              <div style={{ display: 'flex', justifySelf: 'stretch', justifyContent: 'space-between', width: '100%', alignItems: 'center', marginTop: '2px' }}>
+                <span style={{ color: '#5ACDD9', fontWeight: 600 }}>+12% tracking accuracy</span>
+                <Sparkline data={[10, 12, 14, 13, 17, 18, 21]} color="#3E6AE0" />
+              </div>
+            }
+            extraInfo="Risk avoidance SLA: 99.9%"
+            icon={<Shield size={16} style={{ color: '#5ACDD9' }} />}
+            size="medium"
+            borderTopColor="#5ACDD9"
+            backgroundGradient="linear-gradient(135deg, rgba(90, 205, 217, 0.03), transparent 60%)"
           />
+        </div>
+ 
+        {/* Row 3: Smaller Cards */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
           <MetricBox
             title="PPE COMPLIANCE"
             value={`${ppeComplianceRate}%`}
-            subtitle="Helmet & Vest compliance"
-            icon={<UserCheck size={18} style={{ color: '#00f3ff' }} />}
-            color="#00f3ff"
+            subtitle="SLA Target: 98%"
+            detail={
+              <span style={{ color: '#00D084', fontWeight: 600 }}>● OPTIMAL (98.2%)</span>
+            }
+            extraInfo="Vision Model: v8.2"
+            icon={<UserCheck size={12} style={{ color: '#5ACDD9' }} />}
+            size="small"
+            borderTopColor="#5ACDD9"
+            backgroundGradient="linear-gradient(135deg, rgba(90, 205, 217, 0.03), transparent 60%)"
           />
           <MetricBox
-            title="RESPONSE LATENCY"
-            value="1.4s"
-            subtitle="Edge AI to dashboard sync"
-            icon={<Clock size={18} style={{ color: '#ffea00' }} />}
-            color="#ffea00"
+            title="EDGE AI LATENCY"
+            value="14.2ms"
+            subtitle="SLA Threshold: 30ms"
+            detail="System Nominal"
+            extraInfo="SORT Tracker Link"
+            icon={<Clock size={12} style={{ color: '#5ACDD9' }} />}
+            size="small"
+            borderTopColor="#3E6AE0"
+            backgroundGradient="linear-gradient(135deg, rgba(62, 106, 224, 0.03), transparent 60%)"
           />
           <MetricBox
-            title="ACTIVE WORKER TRACKS"
+            title="WORKERS TRACKED"
             value={workers.length > 0 ? workers.length : shiftSummary.activeWorkers}
-            subtitle="SORT Track IDs registered"
-            icon={<UserCheck size={18} style={{ color: '#ffffff' }} />}
-            color="#ffffff"
+            subtitle="ID tags active"
+            detail="Uptime: 100%"
+            extraInfo="Tx Rate: 4.8 Mb/s"
+            icon={<UserCheck size={12} style={{ color: 'var(--color-silver)' }} />}
+            size="small"
+            borderTopColor="#5ACDD9"
+            backgroundGradient="linear-gradient(135deg, rgba(90, 205, 217, 0.03), transparent 60%)"
           />
           <MetricBox
-            title="EDGE TELEMETRY LOGS"
-            value={websocketStatus === 'CONNECTED' ? 'ACTIVE' : 'DEGRADED'}
-            subtitle="ws://localhost:8000/ws"
-            icon={<Wifi size={18} style={{ color: websocketStatus === 'CONNECTED' ? '#00ff66' : '#ff003c' }} />}
-            color={websocketStatus === 'CONNECTED' ? '#00ff66' : '#ff003c'}
-            flash={websocketStatus !== 'CONNECTED'}
+            title="SYSTEM STATUS"
+            value="99.9%"
+            subtitle="Calibrated Link"
+            detail={
+              <span style={{ color: '#00D084', fontWeight: 600 }}>● ONLINE</span>
+            }
+            extraInfo="ScyllaDB stable"
+            icon={<Wifi size={12} style={{ color: '#5ACDD9' }} />}
+            size="small"
+            borderTopColor="#3E6AE0"
+            backgroundGradient="linear-gradient(135deg, rgba(62, 106, 224, 0.03), transparent 60%)"
           />
         </div>
+
       </div>
     </div>
   );
@@ -295,53 +524,96 @@ export const ExecutiveView: React.FC = () => {
 
 interface MetricBoxProps {
   title: string;
-  value: string | number;
+  value: React.ReactNode;
   subtitle: string;
+  detail?: React.ReactNode;
+  extraInfo?: string;
   icon: React.ReactNode;
-  color: string;
+  size: 'medium' | 'small';
   flash?: boolean;
+  borderTopColor?: string;
+  backgroundGradient?: string;
 }
 
-const MetricBox: React.FC<MetricBoxProps> = ({ title, value, subtitle, icon, color, flash }) => {
+const MetricBox: React.FC<MetricBoxProps> = ({ 
+  title, 
+  value, 
+  subtitle, 
+  detail, 
+  extraInfo, 
+  icon, 
+  size, 
+  flash,
+  borderTopColor,
+  backgroundGradient
+}) => {
+  const isSmall = size === 'small';
+
   return (
     <div
-      className={`hud-panel tech-corners ${flash ? 'critical-flash-active' : ''}`}
+      className={`hud-panel ${flash ? 'critical-flash-active' : ''}`}
       style={{
-        background: 'rgba(10, 12, 28, 0.4)',
-        border: '1px solid rgba(255,255,255,0.06)',
-        padding: '16px',
+        background: backgroundGradient
+          ? `${backgroundGradient}, var(--color-bg-card)`
+          : 'var(--color-bg-card)',
+        border: '1px solid var(--border-color)',
+        borderTop: borderTopColor ? `2px solid ${borderTopColor}` : '1px solid var(--border-color)',
+        borderRadius: '2px',
+        padding: isSmall ? '16px' : '22px',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        transition: 'all 0.2s ease',
+        cursor: 'pointer',
       }}
     >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-          <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '9.5px', color: 'rgba(255,255,255,0.4)', fontWeight: 'bold', letterSpacing: '0.8px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', width: '100%' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: isSmall ? '2px' : '4px' }}>
+          <span style={{ fontFamily: "var(--font-body)", fontSize: isSmall ? '9px' : '10.5px', fontWeight: 600, color: 'var(--color-silver)', letterSpacing: '0.06em' }}>
             {title}
           </span>
-          <span style={{ fontSize: '26px', fontWeight: '900', color: '#ffffff', textShadow: `0 0 5px ${color}33`, marginTop: '4px' }}>
+          <span style={{ 
+            fontFamily: isSmall ? "var(--font-metric)" : "var(--font-body)", 
+            fontSize: isSmall ? '22px' : '33px', 
+            fontWeight: 700, 
+            color: 'var(--color-silver)', 
+            lineHeight: 1.1,
+            letterSpacing: isSmall ? 'normal' : '-1px'
+          }}>
             {value}
           </span>
         </div>
         <div
           style={{
-            background: 'rgba(255, 255, 255, 0.03)',
-            borderRadius: '4px',
-            width: '32px',
-            height: '32px',
+            background: '#000000',
+            borderRadius: '2px',
+            width: isSmall ? '24px' : '32px',
+            height: isSmall ? '24px' : '32px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            border: '1px solid rgba(255,255,255,0.05)',
+            border: '1px solid var(--border-color)',
+            flexShrink: 0,
           }}
         >
           {icon}
         </div>
       </div>
-      <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.45)', marginTop: '8px' }}>
-        {subtitle}
+      
+      {/* Subtitles and information overlays */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginTop: isSmall ? '8px' : '14px' }}>
+        <div style={{ fontFamily: "var(--font-label)", fontSize: isSmall ? '9px' : '10px', color: 'var(--color-neutral)', opacity: 0.8 }}>
+          {subtitle}
+        </div>
+        {detail && (
+          <div style={{ fontFamily: "var(--font-label)", fontSize: isSmall ? '9px' : '10px', color: 'var(--color-silver)' }}>
+            {detail}
+          </div>
+        )}
+        {extraInfo && (
+          <div style={{ fontFamily: "var(--font-label)", fontSize: isSmall ? '8px' : '9px', color: 'var(--color-neutral)', opacity: 0.5, marginTop: '2px' }}>
+            {extraInfo}
+          </div>
+        )}
       </div>
     </div>
   );

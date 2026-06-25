@@ -1,184 +1,202 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;700;900&display=swap');
+@import "./styles/fonts.css";
+
+/* ============================================================
+   VIGIL EDGE — Executive Boardroom AI Platform OS Design System
+   Typography System:
+   - EQUINOX: Logo, loading titles, main titles, brand
+   - DELTHA: Executive metrics, hero stats
+   - OSIRIS: Navigation tabs, section headers
+   - BIERIKA: Secondary labels, data captions
+   - PERISIAN: Premium executive callouts, highlights
+   - Inter / system-ui: Fallback ONLY
+   ============================================================ */
 
 :root {
-  --color-bg-deep: #030307;
-  --color-bg-navy: #070814;
-  --color-bg-glass: rgba(7, 8, 20, 0.65);
-  --color-bg-glass-bright: rgba(15, 18, 45, 0.8);
+  /* Backgrounds */
+  --color-bg-deep:    #050505; /* Main app background */
+  --color-bg-panel:   #0D0D0D; /* Secondary surfaces */
+  --color-bg-card:    #101010; /* Cards and panels */
+  --color-bg-hover:   #151515; /* Hover state */
+  --color-bg-elevated:#1A1A1A; /* Elevated surfaces */
+  --color-bg-overlay: rgba(5, 5, 5, 0.95);
 
-  --color-cyan: #00f3ff;
-  --color-blue: #0066ff;
-  --color-purple: #b026ff;
-  --color-red: #ff003c;
-  --color-amber: #ffaa00;
-  --color-green: #00ff66;
+  /* Brand Accents (Used Sparingly) */
+  --color-accent:     #5ACDD9; /* Turquoise - Primary Accent */
+  --color-accent-dim: rgba(90, 205, 217, 0.05);
+  --color-accent-mid: rgba(90, 205, 217, 0.1);
+  --color-blue:       #3E6AE0; /* Blue - Secondary Accent */
+  --color-blue-dim:   rgba(62, 106, 224, 0.05);
+  --color-silver:     #EAEAEA; /* Primary typography color */
 
-  --border-cyan: 1px solid rgba(0, 243, 255, 0.2);
-  --border-blue: 1px solid rgba(0, 102, 255, 0.2);
-  --border-purple: 1px solid rgba(176, 38, 255, 0.2);
-  --border-red: 1px solid rgba(255, 0, 60, 0.35);
-  --border-amber: 1px solid rgba(255, 170, 0, 0.35);
+  /* Semantic Alerts (Status Colors) */
+  --color-safe:       #00D084;
+  --color-nominal:    #5ACDD9; /* Turquoise */
+  --color-warning:    #FF7360; /* Peach - Warning */
+  --color-critical:   #FF5A45; /* Deep Coral Peach - Critical */
 
-  --glow-cyan: 0 0 10px rgba(0, 243, 255, 0.3);
-  --glow-purple: 0 0 10px rgba(176, 38, 255, 0.3);
-  --glow-red: 0 0 15px rgba(255, 0, 60, 0.5);
-  --glow-amber: 0 0 12px rgba(255, 170, 0, 0.4);
+  --color-success:    #00D084;
+  --color-danger:     #FF5A45;
+  --color-neutral:    #9A9A9A; /* Secondary text */
 
-  --font-hud: 'Orbitron', sans-serif;
-  --font-data: 'Inter', sans-serif;
+  /* Semantic Dim Variants */
+  --color-success-dim: rgba(0, 208, 132, 0.05);
+  --color-warning-dim: rgba(255, 115, 96, 0.05);
+  --color-danger-dim:  rgba(255, 90, 69, 0.05);
+
+  /* Borders */
+  --border-color:     #252525;
+  --border-color-alt: #2E2E2E;
+  --border-subtle: 1px solid var(--border-color);
+  --border-panel:  1px solid var(--border-color);
+  --border-accent: 1px solid var(--border-color-alt);
+  --border-danger: 1px solid var(--color-critical);
+
+  /* Typography System */
+  --font-logo:    "Equinox";
+  --font-title:   "Osiris";
+  --font-header:  "Osiris";
+  --font-metric:  "IBM Plex Mono";
+  --font-label:   "Sora";
+  --font-callout: "Sora";
+  --font-body:    "Sora";
 }
 
+/* ============================================================
+   Reset & Base Styling
+   ============================================================ */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  font-family: inherit;
 }
 
 body {
   background-color: var(--color-bg-deep);
-  color: #e2e8f0;
-  font-family: var(--font-data);
+  color: var(--color-silver);
+  font-family: var(--font-body);
   overflow: hidden;
   height: 100vh;
   width: 100vw;
   user-select: none;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Futuristic Scanline and Grid Overlay */
+/* ============================================================
+   Core Container — Pure flat black with subtle guidelines
+   ============================================================ */
 .hud-container {
   position: relative;
   width: 100vw;
   height: 100vh;
-  background-image:
-    radial-gradient(circle at 50% 50%, rgba(10, 12, 36, 0.8) 0%, var(--color-bg-deep) 100%),
-    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
-    linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-  background-size: 100% 100%, 100% 4px, 6px 100%;
+  background-color: var(--color-bg-deep);
+  background-image: radial-gradient(rgba(255, 255, 255, 0.002) 1px, transparent 1px);
+  background-size: 36px 36px;
   display: flex;
   flex-direction: column;
 }
 
-/* Futuristic Scanline Animation */
-.hud-container::before {
-  content: " ";
-  display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-  z-index: 100;
-  background-size: 100% 2px, 3px 100%;
-  pointer-events: none;
-}
-
-.hud-container::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 100%;
-  background: linear-gradient(0deg, transparent 0%, rgba(0, 243, 255, 0.04) 10%, transparent 100%);
-  animation: scan 8s linear infinite;
-  z-index: 101;
-  pointer-events: none;
-}
-
-@keyframes scan {
-  0% {
-    transform: translateY(-100%);
-  }
-
-  100% {
-    transform: translateY(100%);
-  }
-}
-
-/* Glassmorphism tactical panels */
+/* ============================================================
+   Panels — Boardroom minimalist flat designs (No glows)
+   ============================================================ */
 .hud-panel {
-  background: var(--color-bg-glass);
-  border: var(--border-blue);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(0, 102, 255, 0.05);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: var(--color-bg-card);
+  border: 1px solid var(--border-color);
   border-radius: 4px;
   position: relative;
   overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.2s ease,
+              background-color 0.2s ease,
+              box-shadow 0.2s ease;
+  box-shadow: none;
 }
 
-.hud-panel::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, rgba(0, 243, 255, 0.03) 0%, transparent 100%);
-  pointer-events: none;
+.hud-panel:hover {
+  border-color: var(--border-color-alt);
+  background: var(--color-bg-hover);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  transform: none;
 }
 
-/* Tech corners for HUD styling */
-.tech-corners::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 10px;
-  height: 10px;
-  border-top: 2px solid var(--color-cyan);
-  border-right: 2px solid var(--color-cyan);
-  pointer-events: none;
+/* ============================================================
+   Typography Classes
+   ============================================================ */
+.font-logo {
+  font-family: var(--font-logo);
 }
 
-.tech-corners::before {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 10px;
-  height: 10px;
-  border-bottom: 2px solid var(--color-cyan);
-  border-left: 2px solid var(--color-cyan);
-  pointer-events: none;
+.font-title {
+  font-family: var(--font-title);
+  letter-spacing: 0.05em;
 }
 
-/* Alarm pulses */
+.font-header {
+  font-family: var(--font-header);
+  letter-spacing: 0.06em;
+}
+
+.font-metric {
+  font-family: var(--font-metric);
+}
+
+.font-label {
+  font-family: var(--font-label);
+}
+
+.font-callout {
+  font-family: var(--font-callout);
+}
+
+.font-body {
+  font-family: var(--font-body);
+}
+
+.panel-header {
+  font-family: var(--font-header);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-neutral);
+}
+
+.data-label {
+  font-family: var(--font-label);
+  font-size: 11px;
+  color: var(--color-neutral);
+}
+
+.data-value {
+  font-family: var(--font-metric);
+  font-size: 26px;
+  color: var(--color-silver);
+  line-height: 1;
+}
+
+/* ============================================================
+   Mild Alert Animations (Peachy Warnings)
+   ============================================================ */
 .critical-flash-active {
-  animation: alarm-red-flash 0.6s ease-in-out infinite alternate !important;
+  animation: alarm-critical-pulse 1.2s ease-in-out infinite alternate !important;
 }
 
-@keyframes alarm-red-flash {
+@keyframes alarm-critical-pulse {
   0% {
-    box-shadow: inset 0 0 10px rgba(255, 0, 60, 0.1);
-    border-color: rgba(255, 0, 60, 0.3);
+    border-color: rgba(255, 92, 92, 0.2);
+    background-color: var(--color-bg-card);
   }
-
   100% {
-    box-shadow: inset 0 0 40px rgba(255, 0, 60, 0.6), 0 0 20px rgba(255, 0, 60, 0.3);
-    border-color: rgba(255, 0, 60, 0.9);
+    border-color: rgba(255, 92, 92, 0.5);
+    background-color: rgba(255, 92, 92, 0.02);
   }
 }
 
 .danger-flash-active {
-  animation: alarm-orange-flash 0.8s ease-in-out infinite alternate !important;
+  animation: alarm-critical-pulse 1.6s ease-in-out infinite alternate !important;
 }
 
-@keyframes alarm-orange-flash {
-  0% {
-    box-shadow: inset 0 0 5px rgba(255, 170, 0, 0.1);
-    border-color: rgba(255, 170, 0, 0.3);
-  }
-
-  100% {
-    box-shadow: inset 0 0 25px rgba(255, 170, 0, 0.45), 0 0 15px rgba(255, 170, 0, 0.2);
-    border-color: rgba(255, 170, 0, 0.8);
-  }
-}
-
-/* Fullscreen red alarm overlay */
+/* Fullscreen alert overlay frame using Red */
 .fullscreen-alert-overlay {
   position: fixed;
   top: 0;
@@ -187,157 +205,82 @@ body {
   bottom: 0;
   pointer-events: none;
   z-index: 9999;
-  border: 15px solid transparent;
-  animation: border-flash-red 0.5s ease-in-out infinite alternate;
+  border: 4px solid transparent;
+  animation: border-flash-critical 0.8s ease-in-out infinite alternate;
 }
 
-@keyframes border-flash-red {
-  0% {
-    border-color: rgba(255, 0, 60, 0.05);
-    box-shadow: inset 0 0 20px rgba(255, 0, 60, 0.05);
-  }
-
-  100% {
-    border-color: rgba(255, 0, 60, 0.7);
-    box-shadow: inset 0 0 60px rgba(255, 0, 60, 0.4);
-  }
+@keyframes border-flash-critical {
+  0%   { border-color: rgba(255, 92, 92, 0.02); }
+  100% { border-color: rgba(255, 92, 92, 0.2); }
 }
 
-/* Radar Sweep Animation */
-@keyframes radar-sweep {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-/* Scanner line sweep */
-.scanner-line {
-  position: absolute;
-  left: 0;
-  width: 100%;
-  height: 4px;
-  background: linear-gradient(180deg, transparent, var(--color-cyan), transparent);
-  box-shadow: 0 0 8px var(--color-cyan);
-  opacity: 0.35;
-  animation: scanner-loop 6s linear infinite;
-  pointer-events: none;
-}
-
-@keyframes scanner-loop {
-  0% {
-    top: 0%;
-  }
-
-  50% {
-    top: 100%;
-  }
-
-  100% {
-    top: 0%;
-  }
-}
-
-/* Glow helper classes */
-.glow-text-cyan {
-  text-shadow: 0 0 5px var(--color-cyan), 0 0 10px rgba(0, 243, 255, 0.5);
-}
-
-.glow-text-red {
-  text-shadow: 0 0 5px var(--color-red), 0 0 10px rgba(255, 0, 60, 0.5);
-}
-
-.glow-text-purple {
-  text-shadow: 0 0 5px var(--color-purple), 0 0 10px rgba(176, 38, 255, 0.5);
-}
-
-.glow-text-amber {
-  text-shadow: 0 0 5px var(--color-amber), 0 0 10px rgba(255, 170, 0, 0.5);
-}
-
-/* Custom terminal scrollbar */
+/* ============================================================
+   Scrollbar — minimal industrial
+   ============================================================ */
 ::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
+  width: 3px;
+  height: 3px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.3);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 102, 255, 0.3);
-  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 1px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-cyan);
-  box-shadow: var(--glow-cyan);
+  background: rgba(255, 255, 255, 0.18);
 }
 
-/* Glitch Text Effect */
-.glitch-text {
-  position: relative;
-  animation: glitch 4s infinite;
+/* ============================================================
+   Micro-animations & Interactive System Effects
+   ============================================================ */
+.hud-panel, .live-feed-card, button, [role="button"] {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@keyframes glitch {
-
-  0%,
-  100% {
-    transform: none;
-  }
-
-  92% {
-    transform: skewX(-2deg);
-  }
-
-  94% {
-    transform: skewX(3deg);
-    filter: hue-rotate(90deg);
-  }
-
-  96% {
-    transform: skewX(-5deg) skewY(1deg);
-    filter: invert(0.05);
-  }
-
-  98% {
-    transform: none;
-  }
+/* Hover scales and outlines */
+.worker-channel-card:hover {
+  border-color: var(--color-accent) !important;
+  transform: translateY(-1px);
 }
 
-/* Shimmer AI effect */
-.shimmer-ai {
-  position: relative;
-  overflow: hidden;
+/* Subtle Active Pulse (Nominal indicators) */
+.active-indicator-pulse {
+  animation: nominal-glow-pulse 2s infinite alternate;
 }
 
-.shimmer-ai::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(176, 38, 255, 0.25), transparent);
-  transform: skewX(-25deg);
-  animation: ai-shimmer 4s infinite;
-}
-
-@keyframes ai-shimmer {
+@keyframes nominal-glow-pulse {
   0% {
-    left: -100%;
+    box-shadow: 0 0 2px rgba(90, 205, 217, 0.15);
+    opacity: 0.7;
   }
-
-  30% {
-    left: 200%;
-  }
-
   100% {
-    left: 200%;
+    box-shadow: 0 0 6px rgba(90, 205, 217, 0.45);
+    opacity: 1;
   }
+}
+
+/* Soft Hologram Flicker */
+.hologram-flicker {
+  animation: subtle-flicker 4s infinite;
+}
+
+@keyframes subtle-flicker {
+  0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+    opacity: 0.99;
+    filter: hue-rotate(0deg);
+  }
+  20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+    opacity: 0.88;
+    filter: hue-rotate(2deg);
+  }
+}
+
+/* Subtle interactive button bounce */
+button:active {
+  transform: scale(0.97);
 }

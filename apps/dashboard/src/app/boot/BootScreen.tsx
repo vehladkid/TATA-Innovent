@@ -1,6 +1,69 @@
 import React, { useEffect, useState } from 'react';
 import { useEventStore } from '../../lib/event-store';
-import { Shield, Cpu, Activity, Server, Radio, Database, CheckCircle2 } from 'lucide-react';
+import { VigilEdgeLogo } from '../../components/VigilEdgeLogo';
+
+const ParticleBackground: React.FC = () => {
+  const canvasRef = React.useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    
+    let animationId: number;
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
+    
+    const handleResize = () => {
+      if (!canvas) return;
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    };
+    window.addEventListener('resize', handleResize);
+    
+    // Very sparse, low-opacity executive particles
+    const particles: Array<{ x: number; y: number; vx: number; vy: number; r: number; alpha: number }> = [];
+    for (let i = 0; i < 30; i++) {
+      particles.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 0.1,
+        vy: -Math.random() * 0.12 - 0.04, // extremely slow upward drift
+        r: Math.random() * 1.0 + 0.5,
+        alpha: Math.random() * 0.07 + 0.02 // barely visible
+      });
+    }
+    
+    const draw = () => {
+      ctx.clearRect(0, 0, width, height);
+      particles.forEach((p) => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(90, 205, 217, ${p.alpha})`; // Turquoise dust
+        ctx.fill();
+        
+        p.x += p.vx;
+        p.y += p.vy;
+        
+        if (p.y < -10) {
+          p.y = height + 10;
+          p.x = Math.random() * width;
+        }
+        if (p.x < -10 || p.x > width + 10) {
+          p.x = Math.random() * width;
+        }
+      });
+      animationId = requestAnimationFrame(draw);
+    };
+    
+    draw();
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      cancelAnimationFrame(animationId);
+    };
+  }, []);
+  return <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none' }} />;
+};
 
 export const BootScreen: React.FC = () => {
   const setView = useEventStore((state) => state.setView);
@@ -9,17 +72,17 @@ export const BootScreen: React.FC = () => {
   const [progress, setProgress] = useState(0);
   const [bootFinished, setBootFinished] = useState(false);
 
+  // Real industrial edge booting sequence logs
   const logsSequence = [
-    { text: 'SYSTEM: Initializing Suraksha AI bootloader...', delay: 200, icon: <Cpu size={12} /> },
-    { text: 'MODELS: Loading Edge YOLOv8 & MediaPipe PoseLandmarkers...', delay: 600, icon: <Server size={12} /> },
-    { text: 'TRACKER: Initializing SORT multi-object tracking kernel...', delay: 1100, icon: <Activity size={12} /> },
-    { text: 'WEBSOCKET: Connecting to FastAPI telemetry endpoint (port 8000)...', delay: 1700, icon: <Radio size={12} /> },
-    { text: 'HAZARD: Compiling factory floor zones polygons database...', delay: 2300, icon: <Database size={12} /> },
-    { text: 'PREDICTOR: Calibrating trajectory extrapolation matrix (t + 5.0s)...', delay: 2800, icon: <Shield size={12} /> },
-    { text: 'DATA: Fetching active shift logs and incident thresholds...', delay: 3300, icon: <CheckCircle2 size={12} /> },
+    { text: 'LOADING SAFETY MODELS ..... ACTIVE', delay: 400 },
+    { text: 'SYNCHRONIZING EDGE NODES .. CONNECTED', delay: 1000 },
+    { text: 'CALIBRATING SORT TRACKER .. COMPLETE', delay: 1600 },
+    { text: 'BUILDING RISK GRAPH ...... ACTIVE', delay: 2200 },
+    { text: 'EDGE ENGINE ............. CALIBRATED', delay: 2800 },
+    { text: 'PREDICTIVE PIPELINES ... READY', delay: 3400 },
   ];
 
-  // Synthesize booting sound
+  // Synthesize booting sound (low volume chime)
   const playBootSound = (percentage: number, finished: boolean) => {
     try {
       // @ts-ignore
@@ -28,18 +91,17 @@ export const BootScreen: React.FC = () => {
       const ctx = new AudioContextClass();
       
       if (finished) {
-        // High-tech chime sound when loaded
         const osc = ctx.createOscillator();
         const osc2 = ctx.createOscillator();
         const gainNode = ctx.createGain();
         
-        osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
-        osc.frequency.exponentialRampToValueAtTime(1046.50, ctx.currentTime + 0.3); // C6
+        osc.frequency.setValueAtTime(523.25, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1046.50, ctx.currentTime + 0.3);
         
-        osc2.frequency.setValueAtTime(659.25, ctx.currentTime); // E5
-        osc2.frequency.exponentialRampToValueAtTime(1318.51, ctx.currentTime + 0.3); // E6
+        osc2.frequency.setValueAtTime(659.25, ctx.currentTime);
+        osc2.frequency.exponentialRampToValueAtTime(1318.51, ctx.currentTime + 0.3);
 
-        gainNode.gain.setValueAtTime(0.08, ctx.currentTime);
+        gainNode.gain.setValueAtTime(0.04, ctx.currentTime);
         gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
 
         osc.connect(gainNode);
@@ -51,14 +113,13 @@ export const BootScreen: React.FC = () => {
         osc.stop(ctx.currentTime + 0.4);
         osc2.stop(ctx.currentTime + 0.4);
       } else {
-        // Modulated sine wave drone that climbs in pitch
         const osc = ctx.createOscillator();
         const gainNode = ctx.createGain();
         
         osc.type = 'sine';
         osc.frequency.setValueAtTime(110 + percentage * 2.2, ctx.currentTime);
         
-        gainNode.gain.setValueAtTime(0.02, ctx.currentTime);
+        gainNode.gain.setValueAtTime(0.01, ctx.currentTime);
         gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
         
         osc.connect(gainNode);
@@ -67,39 +128,36 @@ export const BootScreen: React.FC = () => {
         osc.stop(ctx.currentTime + 0.1);
       }
     } catch (e) {
-      // Audio blocked by browser policy, fail silently
+      // Audio blocked or unsupported
     }
   };
 
   useEffect(() => {
-    // Print terminal logs sequentially
     logsSequence.forEach((log) => {
       setTimeout(() => {
         setLogs((prev) => [...prev, log.text]);
       }, log.delay);
     });
 
-    // Animate progress bar (total duration ~4 seconds)
     const interval = setInterval(() => {
       setProgress((prev) => {
-        const next = prev + Math.floor(Math.random() * 8) + 2;
+        const next = prev + Math.floor(Math.random() * 8) + 4;
         if (next >= 100) {
           clearInterval(interval);
           setBootFinished(true);
           playBootSound(100, true);
           return 100;
         }
-        if (Math.random() > 0.4) {
+        if (Math.random() > 0.5) {
           playBootSound(next, false);
         }
         return next;
       });
-    }, 120);
+    }, 180);
 
     return () => clearInterval(interval);
   }, []);
 
-  // When boot finishes, wait 1.2s then transition to live view
   useEffect(() => {
     if (bootFinished) {
       const timer = setTimeout(() => {
@@ -109,9 +167,11 @@ export const BootScreen: React.FC = () => {
     }
   }, [bootFinished, setView]);
 
+  const totalSegments = 24;
+  const activeSegments = Math.floor((progress / 100) * totalSegments);
+
   return (
     <div
-      className="hud-container"
       style={{
         display: 'flex',
         flexDirection: 'column',
@@ -120,144 +180,131 @@ export const BootScreen: React.FC = () => {
         height: '100vh',
         width: '100vw',
         padding: '20px',
-        fontFamily: "'Orbitron', sans-serif",
+        backgroundColor: '#050505', // Charcoal deep app background
+        position: 'relative',
+        overflow: 'hidden'
       }}
     >
+      {/* Subtle particle canvas */}
+      <ParticleBackground />
+
       <div
-        className="hud-panel tech-corners shimmer-ai"
         style={{
-          width: '640px',
-          padding: '40px',
-          background: 'rgba(5, 7, 24, 0.9)',
-          border: '1px solid rgba(0, 243, 255, 0.3)',
+          width: '520px',
+          padding: '40px 48px',
+          background: '#101010', // Charcoal card background
+          border: '1px solid #252525', // Border color
+          borderRadius: '4px',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          boxShadow: '0 0 50px rgba(0, 243, 255, 0.15)',
+          boxShadow: 'none',
+          zIndex: 1,
+          position: 'relative',
+          overflow: 'hidden',
         }}
       >
-        {/* Animated Cyber Shield Grid */}
-        <div
-          style={{
-            position: 'relative',
-            width: '80px',
-            height: '80px',
-            marginBottom: '24px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
+        {/* Startup sequence dynamic overlays */}
+        {progress >= 25 && progress < 55 && <div className="turquoise-scan-line" />}
+        {progress >= 55 && progress < 80 && <div className="predictive-blue-pulse" />}
+        {progress >= 80 && progress < 95 && <div className="calibration-peachy-flash" />}
+
+        {/* Brand logo & Equinox fonts */}
+        <div 
+          className="logo-reveal-container" 
+          style={{ marginBottom: '24px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
         >
-          {/* Animated concentric rings */}
+          <VigilEdgeLogo size={80} progress={progress} showText={false} />
+          <h1
+            style={{
+              fontFamily: "var(--font-logo)",
+              fontSize: '22px',
+              fontWeight: 700,
+              color: 'var(--color-silver)',
+              letterSpacing: '0.18em',
+              textTransform: 'uppercase',
+              marginTop: '16px',
+              marginBottom: '2px',
+              textAlign: 'center',
+              lineHeight: 1.2
+            }}
+          >
+            VIGIL EDGE
+          </h1>
           <div
             style={{
-              position: 'absolute',
-              width: '100%',
-              height: '100%',
-              border: '2px dashed #00f3ff',
-              borderRadius: '50%',
-              animation: 'reactor-spin-right 10s linear infinite',
-              opacity: 0.6,
+              fontFamily: 'var(--font-header)',
+              fontSize: '9px',
+              fontWeight: 600,
+              color: 'var(--color-neutral)',
+              letterSpacing: '0.1em',
+              textAlign: 'center',
+              textTransform: 'uppercase'
             }}
-          />
-          <div
-            style={{
-              position: 'absolute',
-              width: '75%',
-              height: '75%',
-              border: '1px dashed #b026ff',
-              borderRadius: '50%',
-              animation: 'reactor-spin-left 6s linear infinite',
-              opacity: 0.4,
-            }}
-          />
-          <Shield
-            size={36}
-            style={{
-              color: '#00f3ff',
-              filter: 'drop-shadow(0 0 10px #00f3ff)',
-              zIndex: 5,
-            }}
-          />
+          >
+            PREDICTIVE INDUSTRIAL SAFETY OS
+          </div>
         </div>
 
-        {/* Title and tagline */}
-        <h1
-          style={{
-            fontSize: '28px',
-            fontWeight: '900',
-            letterSpacing: '5px',
-            color: '#ffffff',
-            textShadow: '0 0 15px rgba(0, 243, 255, 0.6)',
-            marginBottom: '4px',
-            textAlign: 'center',
-          }}
-        >
-          SURAKSHA AI
-        </h1>
-        <p
-          style={{
-            fontSize: '11px',
-            letterSpacing: '2px',
-            color: 'rgba(0, 243, 255, 0.8)',
-            marginBottom: '32px',
-            textAlign: 'center',
-            fontWeight: 500,
-          }}
-        >
-          PREDICTIVE SAFETY COMMAND CENTER
-        </p>
-
-        {/* Terminal Logs Window */}
+        {/* Terminal Logs Window (IBM Plex Mono font) */}
         <div
           style={{
             width: '100%',
-            height: '150px',
-            background: 'rgba(0,0,0,0.6)',
-            border: '1px solid rgba(0, 243, 255, 0.1)',
-            borderRadius: '4px',
-            padding: '16px',
+            height: '115px',
+            background: '#050505', // Terminal inner
+            border: '1px solid #252525',
+            borderRadius: '2px',
+            padding: '10px 14px',
             display: 'flex',
             flexDirection: 'column',
-            gap: '8px',
+            gap: '4px',
             overflow: 'hidden',
-            fontFamily: "'Courier New', Courier, monospace",
+            fontFamily: "var(--font-metric)", // IBM Plex Mono Font
             fontSize: '11px',
-            color: 'rgba(255, 255, 255, 0.85)',
-            marginBottom: '30px',
+            color: '#EAEAEA',
+            marginBottom: '16px',
             textAlign: 'left',
           }}
         >
           {logs.map((log, idx) => (
-            <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ color: '#00f3ff' }}>▸</span>
-              <span>{log}</span>
+            <div
+              key={idx}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '5px',
+                animation: 'log-fade-in 0.3s ease-out forwards',
+              }}
+            >
+              <span style={{ color: '#5ACDD9', opacity: 0.85 }}>▸</span>
+              <span style={{ fontWeight: 400, opacity: 0.85 }}>{log}</span>
             </div>
           ))}
-          {!bootFinished && <span style={{ animation: 'blink 0.8s infinite', color: '#b026ff' }}>█</span>}
+          {!bootFinished && <span className="boot-terminal-cursor">█</span>}
         </div>
 
-        {/* System Nominal Display */}
+        {/* Status display */}
         {bootFinished ? (
           <div
             style={{
-              fontSize: '14px',
-              color: '#00ff66',
-              fontWeight: 'bold',
-              letterSpacing: '2px',
-              textAlign: 'center',
+              fontFamily: "var(--font-metric)", // IBM Plex Mono
+              fontSize: '11px',
+              fontWeight: 500,
+              color: '#EAEAEA',
               display: 'flex',
-              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
               gap: '6px',
-              animation: 'hud-pulse 1s ease-in-out infinite alternate',
-              marginBottom: '20px',
+              height: '18px',
+              marginBottom: '16px',
+              letterSpacing: '0.05em',
             }}
           >
-            <div>RISK ENGINE ONLINE</div>
-            <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.6)' }}>ALL SYSTEMS NOMINAL. REDIRECTING...</div>
+            <span style={{ color: '#5ACDD9', animation: 'boot-dot-pulse 1s infinite alternate', fontSize: '12px' }}>●</span>
+            Risk Engine Online
           </div>
         ) : (
-          <div style={{ height: '38px', marginBottom: '20px' }} />
+          <div style={{ height: '18px', marginBottom: '16px' }} />
         )}
 
         {/* Progress Bar Container */}
@@ -266,38 +313,144 @@ export const BootScreen: React.FC = () => {
             style={{
               display: 'flex',
               justifyContent: 'space-between',
+              fontFamily: "var(--font-metric)", // IBM Plex Mono
               fontSize: '10px',
-              color: 'rgba(255,255,255,0.5)',
+              color: '#9A9A9A',
               marginBottom: '6px',
             }}
           >
-            <span>BOOT LOAD SEQUENCE</span>
-            <span>{progress}%</span>
+            <span style={{ fontWeight: 400, letterSpacing: '0.05em' }}>RUNTIME INITIALIZATION</span>
+            <span style={{ fontFamily: "var(--font-metric)", fontWeight: 700, color: '#EAEAEA' }}>{progress}%</span>
           </div>
           
+          {/* Segmented Progress Bar */}
           <div
             style={{
               width: '100%',
-              height: '8px',
-              background: 'rgba(255,255,255,0.05)',
-              border: '1px solid rgba(0, 243, 255, 0.2)',
-              borderRadius: '4px',
-              overflow: 'hidden',
+              display: 'flex',
+              gap: '2px',
+              background: '#050505',
+              border: '1px solid #252525',
+              borderRadius: '2px',
+              padding: '2px',
             }}
           >
-            <div
-              style={{
-                height: '100%',
-                width: `${progress}%`,
-                background: 'linear-gradient(90deg, #00f3ff, #b026ff)',
-                boxShadow: '0 0 10px #00f3ff',
-                borderRadius: '4px',
-                transition: 'width 0.1s linear',
-              }}
-            />
+            {Array.from({ length: totalSegments }).map((_, i) => {
+              const isActive = i < activeSegments;
+              return (
+                <div
+                  key={i}
+                  style={{
+                    flex: 1,
+                    height: '4px',
+                    background: isActive ? '#5ACDD9' : '#1A1A1A',
+                    borderRadius: '1px',
+                    transition: 'background-color 0.1s ease',
+                  }}
+                />
+              );
+            })}
           </div>
         </div>
       </div>
+      
+      <style>{`
+        @keyframes boot-cursor-blink {
+          0% { opacity: 0; }
+          50% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+        .boot-terminal-cursor {
+          color: #5ACDD9;
+          animation: boot-cursor-blink 0.8s infinite;
+        }
+        @keyframes boot-dot-pulse {
+          0% { opacity: 0.35; }
+          100% { opacity: 1; }
+        }
+        @keyframes logo-reveal {
+          0% {
+            opacity: 0;
+            transform: scale(0.92) rotate(-3deg);
+            filter: blur(5px);
+          }
+          100% {
+            opacity: 1;
+            transform: scale(1) rotate(0deg);
+            filter: blur(0px);
+          }
+        }
+        .logo-reveal-container {
+          animation: logo-reveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes scan-line-anim {
+          0% { top: 0%; opacity: 0; }
+          10% { opacity: 1; }
+          90% { opacity: 1; }
+          100% { top: 100%; opacity: 0; }
+        }
+        .turquoise-scan-line {
+          position: absolute;
+          left: 0;
+          right: 0;
+          height: 2px;
+          background: linear-gradient(90deg, transparent, #5ACDD9, transparent);
+          box-shadow: 0 0 8px rgba(90, 205, 217, 0.6), 0 0 15px rgba(90, 205, 217, 0.3);
+          animation: scan-line-anim 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+          pointer-events: none;
+          z-index: 10;
+        }
+        @keyframes predictive-blue-pulse-anim {
+          0% {
+            border-color: rgba(62, 106, 224, 0.2);
+            box-shadow: inset 0 0 8px rgba(62, 106, 224, 0.05);
+          }
+          100% {
+            border-color: rgba(62, 106, 224, 0.85);
+            box-shadow: inset 0 0 20px rgba(62, 106, 224, 0.2);
+          }
+        }
+        .predictive-blue-pulse {
+          position: absolute;
+          inset: 0;
+          border: 1px solid rgba(62, 106, 224, 0.5);
+          border-radius: 2px;
+          animation: predictive-blue-pulse-anim 0.8s ease-in-out infinite alternate;
+          pointer-events: none;
+          z-index: 5;
+        }
+        @keyframes calibration-peachy-flash-anim {
+          0% {
+            border-color: rgba(255, 115, 96, 0.25);
+            background: rgba(255, 115, 96, 0.01);
+            box-shadow: inset 0 0 10px rgba(255, 115, 96, 0.04);
+          }
+          100% {
+            border-color: rgba(255, 115, 96, 0.9);
+            background: rgba(255, 115, 96, 0.03);
+            box-shadow: inset 0 0 30px rgba(255, 115, 96, 0.25);
+          }
+        }
+        .calibration-peachy-flash {
+          position: absolute;
+          inset: 0;
+          border: 1.5px solid rgba(255, 115, 96, 0.7);
+          border-radius: 2px;
+          animation: calibration-peachy-flash-anim 0.25s ease-in-out infinite alternate;
+          pointer-events: none;
+          z-index: 6;
+        }
+        @keyframes log-fade-in {
+          0% {
+            opacity: 0;
+            transform: translateX(-6px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+      `}</style>
     </div>
   );
 };

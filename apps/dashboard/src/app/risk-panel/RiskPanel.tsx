@@ -2,167 +2,221 @@ import React from 'react';
 import { RiskReactor } from '../../components/live/RiskReactor';
 import { useEventStore } from '../../lib/event-store';
 import { getRiskColor } from '../../lib/risk-utils';
-import { Cpu, Terminal } from 'lucide-react';
+import { Cpu, Activity, Info } from 'lucide-react';
+
+interface ContributorBarProps {
+  label: string;
+  value: number;
+  max: number;
+  isActive: boolean;
+}
+
+const ContributorBar: React.FC<ContributorBarProps> = ({ label, value, max, isActive }) => {
+  const percent = Math.min(100, (value / max) * 100);
+  const isViolated = value > 0;
+  const barColor = isActive ? (isViolated ? '#FF5A45' : '#00D084') : '#1A1A1A';
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '12px' }}>
+      <div 
+        style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          fontSize: '10px', 
+          fontFamily: "var(--font-metric)" 
+        }}
+      >
+        <span 
+          style={{ 
+            color: isActive ? '#D8D8D8' : '#D8D8D8', 
+            fontFamily: "var(--font-metric)", 
+            fontWeight: isActive ? 600 : 400 
+          }}
+        >
+          {label}
+        </span>
+        <span style={{ fontFamily: "var(--font-metric)", fontWeight: 700, color: barColor }}>
+          {isViolated ? `+${value}` : '0'}{' '}
+          <span style={{ fontSize: '8px', color: '#D8D8D8', fontWeight: 400 }}>/ {max}</span>
+        </span>
+      </div>
+      <div 
+        style={{ 
+          height: '4px', 
+          background: '#000000', 
+          border: '1px solid rgba(255, 255, 255, 0.01)',
+          borderRadius: '2px', 
+          overflow: 'hidden' 
+        }}
+      >
+        <div
+          style={{
+            height: '100%',
+            width: `${percent}%`,
+            background: barColor,
+            borderRadius: '1px',
+            transition: 'width 0.4s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.4s ease',
+          }}
+        />
+      </div>
+    </div>
+  );
+};
 
 export const RiskPanel: React.FC = () => {
   const recentEvents = useEventStore((state) => state.recentEvents);
-  
-  // Filter for events with significant safety alerts (non-safe)
+  const selectedTrackId = useEventStore((state) => state.selectedTrackId);
+
   const alertIncidents = recentEvents.filter(e => e.band !== 'safe');
+
+  // Selected worker's data
+  const latestEventForWorker = recentEvents.find(e => e.trackId === selectedTrackId);
+  const breakdown = latestEventForWorker?.breakdown ?? {
+    ppeViolation: 0,
+    proximityToZone: 0,
+    velocityToward: 0,
+    posture: 0,
+    fallDetected: 0,
+  };
 
   return (
     <div
       style={{
         flex: 1,
         display: 'grid',
-        gridTemplateColumns: '350px 1fr',
-        gap: '16px',
-        padding: '16px',
+        gridTemplateColumns: '280px 1fr',
+        gap: '12px',
+        padding: '12px',
         overflow: 'hidden',
         height: '100%',
+        background: '#000000', // Pure Black
       }}
     >
-      {/* Left Sidebar: Diagnostic Controls & Historical Alerts list */}
+      {/* Left Sidebar: Diagnostics & Incident Diary */}
       <div
-        className="hud-panel tech-corners"
+        className="hud-panel"
         style={{
           display: 'flex',
           flexDirection: 'column',
-          background: 'rgba(4, 5, 12, 0.85)',
-          border: '1px solid rgba(0, 243, 255, 0.2)',
-          padding: '16px',
-          gap: '16px',
+          background: '#101010', // Panel background: charcoal
+          border: '1px solid #252525', // Border: charcoal
+          padding: '14px',
+          gap: '14px',
           minHeight: 0,
         }}
       >
+        {/* AI Diagnostics header */}
         <div
           style={{
-            fontFamily: "'Orbitron', sans-serif",
-            fontSize: '13px',
-            color: '#00f3ff',
-            fontWeight: 'bold',
-            letterSpacing: '1px',
-            borderBottom: '1px solid rgba(0,243,255,0.2)',
+            fontFamily: "var(--font-body)", // Sora
+            fontSize: '11px',
+            fontWeight: 600,
+            color: '#EAEAEA',
+            letterSpacing: '0.06em',
+            borderBottom: '1px solid #252525',
             paddingBottom: '8px',
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
           }}
         >
-          <Terminal size={15} style={{ color: '#00f3ff' }} />
-          <span>AI DIAGNOSTICS</span>
+          <Cpu size={13} style={{ color: '#5ACDD9' }} />
+          AI ENGINE DIAGNOSTICS
         </div>
 
-        {/* Neural Net Diagnostics metrics */}
+        {/* Diagnostic metrics */}
         <div
           style={{
-            fontSize: '11px',
+            fontSize: '10.5px',
             display: 'flex',
             flexDirection: 'column',
             gap: '8px',
-            background: 'rgba(0,0,0,0.4)',
-            padding: '12px',
-            borderRadius: '4px',
-            border: '1px solid rgba(255,255,255,0.05)',
+            background: '#050505', // Terminal inner dark
+            padding: '10px 12px',
+            borderRadius: '2px',
+            border: '1px solid #252525',
           }}
         >
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ color: 'rgba(255,255,255,0.5)' }}>Model Architecture:</span>
-            <span style={{ color: '#ffffff', fontWeight: 'bold' }}>YOLOv8 + SORT tracker</span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ color: 'rgba(255,255,255,0.5)' }}>Inference Latency:</span>
-            <span style={{ color: '#00ff66', fontWeight: 'bold' }}>14.2ms</span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ color: 'rgba(255,255,255,0.5)' }}>Pose Keypoints:</span>
-            <span style={{ color: '#00ff66', fontWeight: 'bold' }}>33 landmarks (MediaPipe)</span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ color: 'rgba(255,255,255,0.5)' }}>Confidence Threshold:</span>
-            <span style={{ color: '#00f3ff', fontWeight: 'bold' }}>0.75 (Auto-Calibrated)</span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ color: 'rgba(255,255,255,0.5)' }}>Alert Routing:</span>
-            <span style={{ color: '#b026ff', fontWeight: 'bold' }}>n8n Webhook / SMS</span>
-          </div>
+          {[
+            { label: 'Architecture', value: 'YOLOv8 + SORT Tracking', color: '#EAEAEA' },
+            { label: 'Inference Delay',  value: '14.2ms',                color: '#5ACDD9' },
+            { label: 'Skeletons Check',     value: '33 Keypoints (Active)', color: '#5ACDD9' },
+            { label: 'Confidence Threshold', value: '0.75 Target', color: '#5ACDD9' },
+            { label: 'Action Alerts',      value: 'n8n Dispatcher Active',    color: '#EAEAEA' },
+          ].map(({ label, value, color }) => (
+            <div key={label} style={{ display: 'flex', justifyContent: 'space-between', gap: '8px' }}>
+              <span style={{ fontFamily: "var(--font-metric)", color: '#9A9A9A', fontWeight: 400 }}>{label}:</span>
+              <span style={{ fontFamily: "var(--font-metric)", color, fontWeight: 600, textAlign: 'right', fontSize: '10px' }}>{value}</span>
+            </div>
+          ))}
         </div>
 
-        {/* Historical Warning Feed */}
-        <div
-          style={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '8px',
-            minHeight: 0,
-          }}
-        >
+        {/* Incident diary */}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px', minHeight: 0 }}>
           <div
             style={{
-              fontFamily: "'Orbitron', sans-serif",
-              fontSize: '11px',
-              color: 'rgba(255, 255, 255, 0.5)',
-              letterSpacing: '1px',
-              borderBottom: '1px solid rgba(255,255,255,0.1)',
-              paddingBottom: '4px',
-              marginTop: '10px',
-            }}
-          >
-            WARNING INCIDENT DIARY
-          </div>
-
-          <div
-            style={{
-              flex: 1,
-              overflowY: 'auto',
+              fontFamily: "var(--font-body)", // Sora
+              fontSize: '10px',
+              fontWeight: 600,
+              color: '#EAEAEA',
+              letterSpacing: '0.07em',
+              borderBottom: '1px solid #252525',
+              paddingBottom: '6px',
               display: 'flex',
-              flexDirection: 'column',
+              alignItems: 'center',
               gap: '6px',
             }}
           >
+            <Activity size={11} />
+            WARNING INCIDENT DIARY
+          </div>
+
+          <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '4px' }}>
             {alertIncidents.slice(0, 15).map((evt) => {
               const theme = getRiskColor(evt.band);
+              const accentColor = evt.band === 'critical' ? '#FF5A45' : (evt.band === 'danger' ? '#FF5A45' : (evt.band === 'caution' ? '#FF7360' : '#00D084'));
               const time = new Date(evt.timestamp).toLocaleTimeString();
-              const zoneName = evt.zoneId === 'zone_press_A' ? 'Press A' :
-                               evt.zoneId === 'zone_forklift_lane' ? 'Forklift' :
-                               evt.zoneId === 'zone_welding_bay' ? 'Welding C' : 'Floor';
+              const zoneName =
+                evt.zoneId === 'zone_press_A'       ? 'Press A' :
+                evt.zoneId === 'zone_forklift_lane' ? 'Forklift' :
+                evt.zoneId === 'zone_welding_bay'   ? 'Welding C' : 'Floor';
 
               return (
                 <div
                   key={evt.eventId}
                   style={{
-                    background: 'rgba(255,255,255,0.02)',
-                    border: '1px solid rgba(255,255,255,0.05)',
-                    borderLeft: `3px solid ${theme.hex}`,
-                    borderRadius: '0 3px 3px 0',
-                    padding: '8px 10px',
-                    fontSize: '10px',
+                    background: '#050505',
+                    border: '1px solid #252525',
+                    borderLeft: `2.5px solid ${accentColor}`,
+                    borderRadius: '0 2px 2px 0',
+                    padding: '6px 8px',
+                    fontSize: '9.5px',
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: '2px',
+                    gap: '1px',
                     cursor: 'pointer',
-                    transition: 'background 0.2s ease',
+                    transition: 'background-color 0.15s ease',
                   }}
-                  onMouseEnter={() => {
-                    // Injecting simulated trackId click to bind RiskReactor
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.background = '#151515'; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.background = '#050505'; }}
+                  onClick={() => {
                     const store = useEventStore.getState();
-                    store.addRiskEvent(evt);
+                    store.setSelectedTrackId(evt.trackId);
                   }}
                 >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold' }}>
-                    <span style={{ color: '#ffffff' }}>WORKER W-00{evt.trackId}</span>
-                    <span style={{ color: theme.hex }}>{theme.name} ({evt.riskScore})</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ fontFamily: "var(--font-metric)", fontWeight: 600, color: '#EAEAEA' }}>W-0{evt.trackId}</span>
+                    <span style={{ fontFamily: "var(--font-metric)", fontWeight: 600, color: accentColor }}>{theme.name.toUpperCase()} ({evt.riskScore})</span>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', color: 'rgba(255,255,255,0.5)' }}>
-                    <span>LOC: {zoneName}</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: "var(--font-metric)", color: '#9A9A9A', opacity: 0.85 }}>
+                    <span>{zoneName}</span>
                     <span>{time}</span>
                   </div>
                 </div>
               );
             })}
             {alertIncidents.length === 0 && (
-              <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', fontStyle: 'italic', padding: '10px 0' }}>
+              <span style={{ fontFamily: "var(--font-body)", fontSize: '11px', color: '#9A9A9A', fontStyle: 'italic', padding: '10px 0', opacity: 0.6 }}>
                 No hazard triggers recorded in shift database.
               </span>
             )}
@@ -170,94 +224,115 @@ export const RiskPanel: React.FC = () => {
         </div>
       </div>
 
-      {/* Main Core Area: The Risk Reactor */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: '16px', minHeight: 0 }}>
-        {/* The Reactor Component */}
+      {/* Main area: Risk Reactor & Contributor list */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '12px', minHeight: 0 }}>
+        {/* Center: The Reactor Console */}
         <div style={{ minHeight: 0 }}>
           <RiskReactor />
         </div>
 
-        {/* Explainable AI parameter guidelines description card */}
+        {/* Right: Contributor Panel */}
         <div
-          className="hud-panel tech-corners"
+          className="hud-panel"
           style={{
-            background: 'rgba(4, 5, 12, 0.85)',
-            border: '1px solid rgba(0, 243, 255, 0.2)',
-            padding: '20px',
+            background: '#101010', // Panel background: charcoal
+            border: '1px solid #252525', // Border: charcoal
+            padding: '16px',
             display: 'flex',
             flexDirection: 'column',
-            gap: '16px',
-            fontFamily: "'Inter', sans-serif",
-            fontSize: '12px',
+            gap: '12px',
+            overflowY: 'auto',
           }}
         >
           <div
             style={{
-              fontFamily: "'Orbitron', sans-serif",
-              fontSize: '13px',
-              color: '#00f3ff',
-              fontWeight: 'bold',
-              letterSpacing: '1px',
-              borderBottom: '1px solid rgba(0,243,255,0.2)',
+              fontFamily: "var(--font-body)", // Sora SemiBold
+              fontSize: '11px',
+              fontWeight: 600,
+              color: '#EAEAEA',
+              letterSpacing: '0.06em',
+              borderBottom: '1px solid #252525',
               paddingBottom: '8px',
               display: 'flex',
               alignItems: 'center',
               gap: '8px',
+              marginBottom: '4px',
             }}
           >
-            <Cpu size={15} style={{ color: '#b026ff' }} />
-            <span>AI RISK LOGIC MANUAL</span>
+            <Cpu size={13} style={{ color: '#5ACDD9' }} />
+            RISK CONTRIBUTOR EXPLORER
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', overflowY: 'auto' }}>
-            <ParameterDesc
-              title="PPE Compliance violation (Max +40)"
-              description="Evaluated frame-by-frame by edge models detecting hardhats and safety vests. Deducts up to 40 safety units for zero protection in active danger areas."
-              color="#ff003c"
-            />
-            <ParameterDesc
-              title="Hazard Zone Proximity (Max +30)"
-              description="Evaluates worker coordinates mapping against dynamic vector boundaries. High scores represent immediate boundary crossings or prolonged dwell times."
-              color="#ffaa00"
-            />
-            <ParameterDesc
-              title="Velocity Vector Head-On (Max +20)"
-              description="Drawn from SORT tracker velocity telemetry. Identifies workers heading directly towards critical danger cores (e.g. Press Machine, active rails) at elevated speeds."
-              color="#0066ff"
-            />
-            <ParameterDesc
-              title="Posture & Ergonomics (Max +10)"
-              description="Computes joints angles (shoulder-spine-hip) using MediaPipe skeletons. Flags potential lifting strain, bending overages, or prolonged awkward postures."
-              color="#b026ff"
-            />
-            <ParameterDesc
-              title="Biometric Fall Detection (+30 Boost)"
-              description="An instant binary safety override triggered by rapid negative Y-velocity vectors and skeleton vertical collapse. Immediately issues level-1 emergency command sweeps."
-              color="#ff003c"
-            />
+          {selectedTrackId ? (
+            <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+              <div 
+                style={{ 
+                  fontFamily: "var(--font-body)", 
+                  fontSize: '9.5px', 
+                  color: '#9A9A9A', 
+                  marginBottom: '12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '5px'
+                }}
+              >
+                <Info size={11} style={{ color: '#5ACDD9' }} />
+                Showing dynamic weights for Target W-0{selectedTrackId}
+              </div>
+              
+              <ContributorBar label="PPE Compliance Check" value={breakdown.ppeViolation} max={40} isActive={true} />
+              <ContributorBar label="Hazard Zone Proximity" value={breakdown.proximityToZone} max={30} isActive={true} />
+              <ContributorBar label="Velocity Vector Analysis" value={breakdown.velocityToward} max={20} isActive={true} />
+              <ContributorBar label="Posture & Ergonomics" value={breakdown.posture} max={10} isActive={true} />
+              <ContributorBar label="Biometric Fall Override" value={breakdown.fallDetected} max={30} isActive={breakdown.fallDetected > 0} />
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+              <div 
+                style={{ 
+                  fontFamily: "var(--font-body)", 
+                  fontSize: '9.5px', 
+                  color: '#9A9A9A', 
+                  marginBottom: '12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '5px'
+                }}
+              >
+                <Info size={11} style={{ color: '#EAEAEA' }} />
+                Baseline System Rule Weights
+              </div>
+              
+              <ContributorBar label="PPE Compliance Check" value={40} max={40} isActive={false} />
+              <ContributorBar label="Hazard Zone Proximity" value={30} max={30} isActive={false} />
+              <ContributorBar label="Velocity Vector Analysis" value={20} max={20} isActive={false} />
+              <ContributorBar label="Posture & Ergonomics" value={10} max={10} isActive={false} />
+              <ContributorBar label="Biometric Fall Override" value={30} max={30} isActive={false} />
+            </div>
+          )}
+
+          {/* Core Legend Details */}
+          <div
+            style={{
+              marginTop: 'auto',
+              background: '#050505', // Inner console background
+              border: '1px solid #252525',
+              borderRadius: '2px',
+              padding: '10px 12px',
+              fontSize: '10px',
+              fontFamily: "var(--font-body)",
+              color: '#9A9A9A',
+              lineHeight: '1.4'
+            }}
+          >
+            <div style={{ fontWeight: 600, color: '#EAEAEA', marginBottom: '3px', fontFamily: "var(--font-body)" }}>
+              Decision Core Legend
+            </div>
+            Values represent raw safety penalties mapped dynamically. Active metrics highlight in <span style={{ color: '#FF5A45', fontWeight: 600 }}>Critical (Coral)</span> and caution indicators render in <span style={{ color: '#FF7360', fontWeight: 600 }}>Warning (Peach)</span>, while safe parameters display in <span style={{ color: '#00D084', fontWeight: 600 }}>Safe (Green)</span>.
           </div>
+
         </div>
       </div>
-    </div>
-  );
-};
-
-interface ParameterDescProps {
-  title: string;
-  description: string;
-  color: string;
-}
-
-const ParameterDesc: React.FC<ParameterDescProps> = ({ title, description, color }) => {
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 'bold' }}>
-        <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: color }} />
-        <span style={{ color: '#ffffff' }}>{title}</span>
-      </div>
-      <p style={{ color: 'rgba(255, 255, 255, 0.65)', lineHeight: '1.4', paddingLeft: '12px' }}>
-        {description}
-      </p>
     </div>
   );
 };

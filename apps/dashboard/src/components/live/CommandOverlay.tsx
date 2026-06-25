@@ -1,220 +1,162 @@
 import React, { useState, useEffect } from 'react';
 import { useEventStore } from '../../lib/event-store';
-import { Shield, Radio, Volume2, VolumeX, BarChart2, Map, ShieldAlert } from 'lucide-react';
+import { Radio, Volume2, VolumeX, BarChart2, Map, ShieldAlert } from 'lucide-react';
+import { VigilEdgeLogo } from '../VigilEdgeLogo';
 
 export const CommandOverlay: React.FC = () => {
   const activeView = useEventStore((state) => state.activeView);
   const setView = useEventStore((state) => state.setView);
-  const websocketStatus = useEventStore((state) => state.websocketStatus);
   const soundMuted = useEventStore((state) => state.soundMuted);
   const toggleSound = useEventStore((state) => state.toggleSound);
   const siteSafetyScore = useEventStore((state) => state.siteSafetyScore);
 
   const [timeStr, setTimeStr] = useState('');
 
-  // Clock telemetry
   useEffect(() => {
     const updateTime = () => {
       const d = new Date();
-      const formatNumber = (n: number) => String(n).padStart(2, '0');
-
-      const yr = d.getFullYear();
-      const mo = formatNumber(d.getMonth() + 1);
-      const dy = formatNumber(d.getDate());
-      const hr = formatNumber(d.getHours());
-      const mn = formatNumber(d.getMinutes());
-      const sc = formatNumber(d.getSeconds());
-
-      setTimeStr(`${yr}-${mo}-${dy} | T-SYS: ${hr}:${mn}:${sc}`);
+      const pad = (n: number) => String(n).padStart(2, '0');
+      setTimeStr(`${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())} IST`);
     };
-
     updateTime();
     const interval = setInterval(updateTime, 1000);
     return () => clearInterval(interval);
   }, []);
 
-  // Web socket indicator styles
-  const wsColors = {
-    CONNECTED: { color: '#00ff66', glow: '0 0 10px #00ff66', text: 'CONNECTED' },
-    RECONNECTING: { color: '#ffaa00', glow: '0 0 10px #ffaa00', text: 'RECONNECTING' },
-    OFFLINE: { color: '#ff003c', glow: '0 0 12px #ff003c', text: 'OFFLINE' }
-  };
-
-  const wsStyle = wsColors[websocketStatus] || wsColors.OFFLINE;
-
   return (
     <div
       style={{
         width: '100%',
-        background: 'rgba(5, 7, 20, 0.95)',
-        borderBottom: '1px solid rgba(0, 243, 255, 0.3)',
-        padding: '10px 20px',
+        background: '#0D0D0D', // Matte-black secondary surface
+        borderBottom: '1px solid #252525', // Border color
+        padding: '0 20px',
+        height: '52px',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
         zIndex: 1000,
-        boxShadow: '0 4px 25px rgba(0, 0, 0, 0.7)',
-        fontFamily: "'Orbitron', sans-serif",
+        flexShrink: 0,
       }}
     >
-      {/* Brand & Tagline */}
+      {/* Brand */}
       <div
         style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}
         onClick={() => setView('BOOT')}
       >
-        <div
-          style={{
-            background: 'linear-gradient(135deg, #00f3ff 0%, #b026ff 100%)',
-            padding: '6px',
-            borderRadius: '4px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 0 15px rgba(0, 243, 255, 0.4)',
-          }}
-        >
-          <Shield size={20} style={{ color: '#030307' }} />
-        </div>
+        <VigilEdgeLogo size={36} staticMode={true} />
         <div>
           <div
             style={{
-              fontSize: '15px',
-              fontWeight: 900,
-              letterSpacing: '2px',
-              color: '#ffffff',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              textShadow: '0 0 10px rgba(0, 243, 255, 0.5)',
+              fontFamily: "var(--font-logo)",
+              fontSize: '17.5px',
+              fontWeight: 700,
+              letterSpacing: '0.18em',
+              textTransform: 'uppercase',
+              color: 'var(--color-silver)',
+              lineHeight: 1.05,
             }}
           >
-            SURAKSHA AI <span style={{ fontSize: '9px', background: 'rgba(176, 38, 255, 0.25)', border: '1px solid #b026ff', color: '#e2d0ff', padding: '1px 4px', borderRadius: '2px', letterSpacing: '0' }}>PROTOTYPE v2.6</span>
+            VIGIL EDGE
           </div>
           <div
             style={{
-              fontSize: '9px',
-              color: 'rgba(0, 243, 255, 0.75)',
-              letterSpacing: '1px',
-              fontWeight: 500,
+              fontFamily: "var(--font-header)",
+              fontSize: '8px',
+              fontWeight: 600,
+              color: 'var(--color-neutral)',
+              letterSpacing: '0.1em',
+              marginTop: '2px',
             }}
           >
-            PREDICTIVE SAFETY COMMAND CENTER
+            PREDICTIVE INDUSTRIAL SAFETY OS
           </div>
         </div>
       </div>
 
-      {/* Futuristic Menu Navigation Tabs */}
+      {/* Navigation */}
       {activeView !== 'BOOT' && (
-        <div style={{ display: 'flex', gap: '8px' }}>
-          <NavButton
-            active={activeView === 'LIVE'}
-            onClick={() => setView('LIVE')}
-            icon={<Radio size={13} />}
-            label="LIVE OPERATIONS"
-          />
-          <NavButton
-            active={activeView === 'RISK'}
-            onClick={() => setView('RISK')}
-            icon={<ShieldAlert size={13} />}
-            label="AI RISK REACTOR"
-          />
-          <NavButton
-            active={activeView === 'HEATMAP'}
-            onClick={() => setView('HEATMAP')}
-            icon={<Map size={13} />}
-            label="HAZARD HEATMAP"
-          />
-          <NavButton
-            active={activeView === 'EXECUTIVE'}
-            onClick={() => setView('EXECUTIVE')}
-            icon={<BarChart2 size={13} />}
-            label="EXECUTIVE WAR ROOM"
-          />
+        <div style={{ display: 'flex', gap: '4px' }}>
+          <NavButton active={activeView === 'LIVE'}      onClick={() => setView('LIVE')}      icon={<Radio size={13} />}       label="Live Ops"       />
+          <NavButton active={activeView === 'RISK'}      onClick={() => setView('RISK')}      icon={<ShieldAlert size={13} />} label="Risk Reactor"   />
+          <NavButton active={activeView === 'HEATMAP'}   onClick={() => setView('HEATMAP')}   icon={<Map size={13} />}         label="Hazard Heatmap" />
+          <NavButton active={activeView === 'EXECUTIVE'} onClick={() => setView('EXECUTIVE')} icon={<BarChart2 size={13} />}   label="Executive View" />
         </div>
       )}
 
-      {/* Telemetry and Controls */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-        {/* Site Safety Quick Telemetry */}
+      {/* Right telemetry strip */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+
+        {/* Safety score */}
         {activeView !== 'BOOT' && (
           <div
             style={{
-              background: 'rgba(0, 255, 102, 0.05)',
-              border: '1px solid rgba(0, 255, 102, 0.2)',
-              borderRadius: '4px',
-              padding: '4px 10px',
               display: 'flex',
               alignItems: 'center',
-              gap: '8px',
+              gap: '6px',
+              background: 'transparent',
+              padding: '4px 0',
             }}
           >
-            <span style={{ fontSize: '9px', color: 'rgba(0,255,102,0.6)' }}>SAFETY SCORE:</span>
-            <span style={{ fontSize: '13px', fontWeight: 'bold', color: '#00ff66', textShadow: '0 0 5px rgba(0,255,102,0.4)' }}>
-              {siteSafetyScore}/100
+            <span style={{ fontFamily: "var(--font-label)", fontSize: '10px', color: '#9A9A9A', fontWeight: 500, letterSpacing: '0.05em' }}>
+              SAFETY INDEX
+            </span>
+            <span style={{ fontFamily: "var(--font-metric)", fontSize: '14px', fontWeight: 700, color: '#EAEAEA' }}>
+              {siteSafetyScore}
             </span>
           </div>
         )}
 
-        {/* WebSocket Signal Status */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        {/* System status */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           <div
+            className="active-indicator-pulse"
             style={{
-              width: '8px',
-              height: '8px',
+              width: '6px',
+              height: '6px',
               borderRadius: '50%',
-              background: wsStyle.color,
-              boxShadow: wsStyle.glow,
-              animation: websocketStatus === 'RECONNECTING' ? 'ws-blink 0.5s infinite alternate' : 'none',
+              background: '#5ACDD9', // Nominal Turquoise
             }}
           />
-          <div style={{ fontSize: '9.5px', color: 'rgba(255,255,255,0.7)', fontWeight: 'bold' }}>
-            EDGE:{' '}
-            <span style={{ color: wsStyle.color, textShadow: `0 0 5px ${wsStyle.color}44` }}>
-              {wsStyle.text}
-            </span>
-          </div>
+          <span style={{ fontFamily: "var(--font-label)", fontSize: '9.5px', color: '#9A9A9A', fontWeight: 500, letterSpacing: '0.05em' }}>
+            SYSTEM: <span style={{ color: '#5ACDD9', fontWeight: 600 }}>ONLINE</span>
+          </span>
         </div>
 
-        {/* System Time and Date */}
-        <div
+        {/* Clock - secondary and smaller */}
+        <span
           style={{
-            fontSize: '11px',
-            color: 'rgba(255, 255, 255, 0.4)',
-            letterSpacing: '0.5px',
-            fontFamily: "'Courier New', Courier, monospace",
+            fontFamily: "var(--font-body)",
+            fontSize: '9.5px',
+            fontWeight: 400,
+            color: '#9A9A9A',
+            opacity: 0.8,
+            letterSpacing: '0.04em',
           }}
         >
           {timeStr}
-        </div>
+        </span>
 
-        {/* Audio Mute controller */}
+        {/* Sound toggle */}
         <button
           onClick={toggleSound}
           style={{
-            background: 'rgba(255, 255, 255, 0.05)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            borderRadius: '4px',
-            width: '30px',
-            height: '30px',
+            background: 'transparent',
+            border: '1px solid #252525',
+            borderRadius: '3px',
+            width: '28px',
+            height: '28px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: soundMuted ? '#ff003c' : '#00f3ff',
+            color: soundMuted ? '#FF5A45' : '#9A9A9A', // Critical coral peach for mute warning
             cursor: 'pointer',
-            transition: 'all 0.2s ease',
+            transition: 'all 0.15s ease',
           }}
-          title={soundMuted ? 'Unmute tactical alarms' : 'Mute tactical alarms'}
+          title={soundMuted ? 'Unmute alarms' : 'Mute alarms'}
         >
-          {soundMuted ? <VolumeX size={15} /> : <Volume2 size={15} />}
+          {soundMuted ? <VolumeX size={12} /> : <Volume2 size={12} />}
         </button>
       </div>
-
-      <style>{`
-        @keyframes ws-blink {
-          0% { opacity: 0.3; }
-          100% { opacity: 1; }
-        }
-      `}</style>
     </div>
   );
 };
@@ -226,30 +168,44 @@ interface NavButtonProps {
   label: string;
 }
 
-const NavButton: React.FC<NavButtonProps> = ({ active, onClick, icon, label }) => {
-  return (
-    <button
-      onClick={onClick}
-      style={{
-        background: active ? 'rgba(0, 243, 255, 0.12)' : 'transparent',
-        border: active ? '1px solid #00f3ff' : '1px solid transparent',
-        color: active ? '#ffffff' : 'rgba(255, 255, 255, 0.65)',
-        boxShadow: active ? '0 0 10px rgba(0, 243, 255, 0.2)' : 'none',
-        borderRadius: '4px',
-        padding: '6px 14px',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '8px',
-        fontFamily: "'Orbitron', sans-serif",
-        fontSize: '11px',
-        fontWeight: 'bold',
-        letterSpacing: '1px',
-        cursor: 'pointer',
-        transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
-      }}
-    >
-      <span style={{ color: active ? '#00f3ff' : 'inherit' }}>{icon}</span>
-      <span>{label}</span>
-    </button>
-  );
-};
+const NavButton: React.FC<NavButtonProps> = ({ active, onClick, icon, label }) => (
+  <button
+    onClick={onClick}
+    style={{
+      background: active ? '#101010' : 'transparent',
+      border: 'none',
+      borderBottom: active ? '2px solid #5ACDD9' : '2px solid transparent',
+      borderTop: '2px solid transparent',
+      color: active ? '#EAEAEA' : '#9A9A9A',
+      borderRadius: 0,
+      padding: '0 14px',
+      height: '52px',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '7px',
+      fontFamily: "var(--font-header)", // Osiris
+      fontSize: '11px',
+      fontWeight: 500,
+      letterSpacing: '-0.03em',
+      cursor: 'pointer',
+      transition: 'all 0.15s ease',
+      whiteSpace: 'nowrap',
+      boxShadow: active ? '0 1px 6px rgba(90, 205, 217, 0.15)' : 'none',
+    }}
+    onMouseEnter={(e) => {
+      if (!active) {
+        (e.currentTarget as HTMLButtonElement).style.color = '#EAEAEA';
+        (e.currentTarget as HTMLButtonElement).style.background = '#151515';
+      }
+    }}
+    onMouseLeave={(e) => {
+      if (!active) {
+        (e.currentTarget as HTMLButtonElement).style.color = '#9A9A9A';
+        (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
+      }
+    }}
+  >
+    <span style={{ color: active ? '#5ACDD9' : '#9A9A9A' }}>{icon}</span>
+    <span>{label}</span>
+  </button>
+);

@@ -24,17 +24,19 @@ export interface EventState {
   zones: Zone[];
   shiftSummary: CopilotContext['shiftSummary'];
   siteSafetyScore: number;
-  activeView: 'LANDING' | 'BOOT' | 'LIVE' | 'RISK' | 'HEATMAP' | 'EXECUTIVE';
+  activeView: 'BOOT' | 'LIVE' | 'RISK' | 'HEATMAP' | 'EXECUTIVE';
   soundMuted: boolean;
   alertVolume: number;
   lastHeartbeat: number;
+  selectedTrackId: number | null;
+  setSelectedTrackId: (id: number | null) => void;
 
   // Actions
   setWebsocketStatus: (status: 'CONNECTED' | 'RECONNECTING' | 'OFFLINE') => void;
   addRiskEvent: (event: RiskEvent) => void;
   updateShiftSummary: (summary: CopilotContext['shiftSummary']) => void;
   updateZone: (zone: Zone) => void;
-  setView: (view: 'LANDING' | 'BOOT' | 'LIVE' | 'RISK' | 'HEATMAP' | 'EXECUTIVE') => void;
+  setView: (view: 'BOOT' | 'LIVE' | 'RISK' | 'HEATMAP' | 'EXECUTIVE') => void;
   toggleSound: () => void;
   setAlertVolume: (vol: number) => void;
   setHeartbeat: (ts: number) => void;
@@ -81,10 +83,12 @@ export const useEventStore = create<EventState>((set) => ({
   zones: INITIAL_ZONES,
   shiftSummary: INITIAL_SHIFT,
   siteSafetyScore: 88,
-  activeView: 'LANDING',
-  soundMuted: false,
+  activeView: 'BOOT',
+  soundMuted: true,
   alertVolume: 0.2,
   lastHeartbeat: Date.now(),
+  selectedTrackId: null,
+  setSelectedTrackId: (id) => set({ selectedTrackId: id }),
 
   setWebsocketStatus: (status) => set({ websocketStatus: status }),
 
