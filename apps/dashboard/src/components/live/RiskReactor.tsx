@@ -6,7 +6,7 @@ import { Cpu } from 'lucide-react';
 const VerticalRiskGauge: React.FC<{ score: number; band: string }> = ({ score, band }) => {
   const numSegments = 10;
   const activeSegments = Math.round((score / 100) * numSegments);
-  
+
   const isSafe = band.toLowerCase() === 'safe';
   const isDanger = band.toLowerCase() === 'critical' || band.toLowerCase() === 'danger' || score >= 60;
   const fillColor = isSafe ? '#00D084' : (isDanger ? '#FF5A45' : '#FF7360');
@@ -17,8 +17,8 @@ const VerticalRiskGauge: React.FC<{ score: number; band: string }> = ({ score, b
         style={{
           width: '28px',
           height: '210px',
-          background: '#000000',
-          border: '1px solid var(--border-color)',
+          background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.005), rgba(0, 0, 0, 0.4))',
+          border: '1px solid rgba(255, 255, 255, 0.02)',
           borderRadius: '2px',
           padding: '2px',
           display: 'flex',
@@ -105,7 +105,7 @@ export const RiskReactor: React.FC = () => {
   // Dynamic AI Explanation (Hero Text)
   const getAIReasoningText = () => {
     if (!selectedTrackId) return 'Awaiting telemetry feed acquisition...';
-    
+
     if (breakdown.fallDetected > 0) {
       return `CRITICAL EXPOSURE OVERRIDE: 3D skeletal vectors registered instant Z-axis drop of W-0${selectedTrackId}. Z-velocity boundary checks triggered automated emergency dispatcher. SMS broadcast dispatched to onsite responders.`;
     }
@@ -124,8 +124,8 @@ export const RiskReactor: React.FC = () => {
     return `Inference engine identifies safety index degradation for W-0${selectedTrackId}. Core triggers calculated: ${factorsText || 'aberrant trajectory coordinates'}. System dispatcher recommends warning transmission to target receiver.`;
   };
 
-  const lastUpdatedStr = latestEventForWorker 
-    ? new Date(latestEventForWorker.timestamp).toLocaleTimeString() 
+  const lastUpdatedStr = latestEventForWorker
+    ? new Date(latestEventForWorker.timestamp).toLocaleTimeString()
     : new Date().toLocaleTimeString();
 
   return (
@@ -134,16 +134,27 @@ export const RiskReactor: React.FC = () => {
       style={{
         width: '100%',
         height: '100%',
-        background: 'var(--color-bg-card)', // #101010
-        border: '1px solid var(--border-color)', // #252525
-        padding: '12px', // Compacted padding
+        background: 'linear-gradient(135deg, rgba(90, 205, 217, 0.025), rgba(54, 106, 224, 0.02), transparent), rgba(16, 16, 16, 0.85)',
+        backdropFilter: 'blur(16px)',
+        border: '1px solid rgba(255, 255, 255, 0.02)',
+        boxShadow: '0 25px 50px -12px rgba(54, 106, 224, 0.02), 0 0 35px 0 rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.03)',
+        padding: '12px',
         display: 'flex',
         flexDirection: 'column',
-        gap: '12px', // Compacted spacing
+        gap: '12px',
       }}
     >
       {/* 1. Worker Channels Selector */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '8px',
+          background: 'linear-gradient(180deg, rgba(62, 106, 224, 0.03), transparent 60%)',
+          padding: '10px 12px',
+          borderRadius: '4px',
+        }}
+      >
         <div
           style={{
             fontFamily: "var(--font-header)", // Osiris
@@ -156,7 +167,7 @@ export const RiskReactor: React.FC = () => {
         >
           SELECT ACTIVE WORKER
         </div>
-        
+
         {/* Horizontal Worker Cards */}
         <div 
           style={{ 
@@ -164,7 +175,8 @@ export const RiskReactor: React.FC = () => {
             gap: '10px', 
             overflowX: 'auto', 
             paddingBottom: '4px',
-            scrollBehavior: 'smooth' 
+            scrollBehavior: 'smooth',
+            padding: '4px 0px',
           }}
         >
           {workers.map((w) => {
@@ -173,14 +185,32 @@ export const RiskReactor: React.FC = () => {
             const wStatusColor = wIsSafe ? '#00D084' : (wIsDanger ? '#FF5A45' : '#FF7360');
             const wSelected = selectedTrackId === w.trackId;
 
+            let cardBackground = '';
+            let cardBoxShadow = '';
+            
+            if (wSelected) {
+              cardBackground = 'linear-gradient(135deg, rgba(62, 106, 224, 0.12), rgba(62, 106, 224, 0.03))';
+              cardBoxShadow = '0 0 20px rgba(62, 106, 224, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.02)';
+            } else if (wIsSafe) {
+              cardBackground = 'linear-gradient(135deg, rgba(90, 205, 217, 0.12), rgba(0, 255, 150, 0.04))';
+              cardBoxShadow = 'inset 0 1px 0 rgba(255, 255, 255, 0.01)';
+            } else if (wIsDanger) {
+              cardBackground = 'linear-gradient(135deg, rgba(255, 115, 96, 0.08), rgba(255, 115, 96, 0.02))';
+              cardBoxShadow = '0 4px 12px rgba(255, 115, 96, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.01)';
+            } else {
+              cardBackground = 'linear-gradient(135deg, rgba(255, 115, 96, 0.06), rgba(255, 115, 96, 0.02))';
+              cardBoxShadow = 'inset 0 1px 0 rgba(255, 255, 255, 0.01)';
+            }
+
             return (
               <div
                 key={w.trackId}
                 onClick={() => setSelectedTrackId(w.trackId)}
                 style={{
                   minWidth: '105px',
-                  background: wSelected ? 'var(--color-bg-elevated)' : '#000000',
-                  border: wSelected ? `1.5px solid ${wStatusColor}` : '1px solid var(--border-color)',
+                  background: cardBackground,
+                  backdropFilter: 'blur(8px)',
+                  border: wSelected ? '1px solid #3E6AE0' : '1px solid rgba(255, 255, 255, 0.02)',
                   borderRadius: '2px',
                   padding: '8px 12px',
                   cursor: 'pointer',
@@ -188,6 +218,7 @@ export const RiskReactor: React.FC = () => {
                   flexDirection: 'column',
                   gap: '4px',
                   transition: 'all 0.15s ease',
+                  boxShadow: cardBoxShadow,
                 }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -223,21 +254,21 @@ export const RiskReactor: React.FC = () => {
       </div>
 
       {/* 2. Workspace Layout */}
-      <div 
-        style={{ 
-          display: 'grid', 
-          gridTemplateColumns: '110px 1fr', 
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: '110px 1fr',
           gap: '16px',
-          flex: 1, 
+          flex: 1,
           minHeight: 0,
-          borderTop: '1px solid var(--border-color)',
+          borderTop: '1px solid rgba(255, 255, 255, 0.02)',
           paddingTop: '16px'
         }}
       >
         {/* Column 1: Vertical Risk Gauge */}
         <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
           <VerticalRiskGauge score={riskScore} band={band} />
-          
+
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', paddingTop: '4px' }}>
             <div>
               <div style={{ fontFamily: "var(--font-label)", fontSize: '8px', color: 'var(--color-neutral)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Risk Score</div>
@@ -268,8 +299,17 @@ export const RiskReactor: React.FC = () => {
           style={{ 
             display: 'flex', 
             flexDirection: 'column', 
-            background: '#000000', // Pure black diagnostics area
-            border: '1px solid var(--border-color)',
+            background: `
+              linear-gradient(180deg, rgba(62, 106, 224, 0.05) 0%, transparent 25%),
+              linear-gradient(135deg, rgba(62, 106, 224, 0.06) 0%, rgba(90, 205, 217, 0.025) 35%, rgba(255, 255, 255, 0.01) 100%),
+              rgba(16, 16, 16, 0.85)
+            `,
+            backdropFilter: 'blur(8px)',
+            borderLeft: '1px solid rgba(255, 255, 255, 0.015)',
+            borderRight: '1px solid rgba(255, 255, 255, 0.015)',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.015)',
+            borderTop: '2px solid #3E6AE0',
+            boxShadow: '0 25px 50px -12px rgba(54, 106, 224, 0.04), 0 0 35px 0 rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.03)',
             borderRadius: '2px',
             padding: '14px 16px',
             minHeight: 0
@@ -282,9 +322,10 @@ export const RiskReactor: React.FC = () => {
               fontSize: '11px',
               fontWeight: 600,
               color: 'var(--color-silver)',
-              borderBottom: '1px solid var(--border-color)',
-              paddingBottom: '8px',
-              marginBottom: '10px',
+              background: 'linear-gradient(90deg, rgba(62, 106, 224, 0.05), transparent)',
+              padding: '10px 16px',
+              margin: '-14px -16px 10px -16px',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.03)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between'
@@ -300,11 +341,11 @@ export const RiskReactor: React.FC = () => {
             </span>
           </div>
 
-          <div 
-            style={{ 
-              display: 'grid', 
-              gridTemplateColumns: '1fr 1fr', 
-              gap: '6px 14px', 
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: '6px 14px',
               marginBottom: '10px',
               fontSize: '10px',
               fontFamily: "var(--font-metric)" // IBM Plex Mono
@@ -368,8 +409,8 @@ export const RiskReactor: React.FC = () => {
             <div
               style={{
                 flex: 1,
-                background: 'transparent',
-                border: '1px solid var(--border-color)',
+                background: 'rgba(0, 0, 0, 0.15)',
+                border: '1px solid rgba(255, 255, 255, 0.01)',
                 borderRadius: '2px',
                 padding: '8px 12px',
                 color: 'var(--color-silver)',
@@ -393,7 +434,7 @@ export const RiskReactor: React.FC = () => {
           display: 'flex',
           flexDirection: 'column',
           gap: '6px',
-          borderTop: '1px solid var(--border-color)',
+          borderTop: '1px solid rgba(255, 255, 255, 0.02)',
           paddingTop: '14px',
         }}
       >
@@ -412,11 +453,11 @@ export const RiskReactor: React.FC = () => {
           <span>WEIGHT VALUE</span>
         </div>
 
-        <BreakdownBar name="PPE Compliance Check"       value={breakdown.ppeViolation}   max={40} color={breakdown.ppeViolation > 0 ? '#FF5A45' : '#00D084'}   prefix={breakdown.ppeViolation > 0 ? `+${breakdown.ppeViolation}` : 'NOMINAL'} />
-        <BreakdownBar name="Hazard Zone Proximity"       value={breakdown.proximityToZone} max={30} color={breakdown.proximityToZone > 0 ? '#FF5A45' : '#00D084'} prefix={breakdown.proximityToZone > 0 ? `+${breakdown.proximityToZone}` : 'NOMINAL'} />
-        <BreakdownBar name="Velocity Heading Vector"      value={breakdown.velocityToward}  max={20} color={breakdown.velocityToward > 0 ? '#FF5A45' : '#00D084'}  prefix={breakdown.velocityToward > 0 ? `+${breakdown.velocityToward}` : 'NOMINAL'} />
-        <BreakdownBar name="Posture & Ergonomics check"  value={breakdown.posture}          max={10} color={breakdown.posture > 0 ? '#FF5A45' : '#00D084'}          prefix={breakdown.posture > 0 ? `+${breakdown.posture}` : 'NOMINAL'} />
-        <BreakdownBar name="Biometric Fall Detection"     value={breakdown.fallDetected}     max={30} color="#FF5A45"                                                  prefix={breakdown.fallDetected > 0 ? '⚠ EMERGENCY OVERRIDE (+30)' : 'NOMINAL'} />
+        <BreakdownBar name="PPE Compliance Check" value={breakdown.ppeViolation} max={40} color={breakdown.ppeViolation > 0 ? '#FF5A45' : '#00D084'} prefix={breakdown.ppeViolation > 0 ? `+${breakdown.ppeViolation}` : 'NOMINAL'} />
+        <BreakdownBar name="Hazard Zone Proximity" value={breakdown.proximityToZone} max={30} color={breakdown.proximityToZone > 0 ? '#FF5A45' : '#00D084'} prefix={breakdown.proximityToZone > 0 ? `+${breakdown.proximityToZone}` : 'NOMINAL'} />
+        <BreakdownBar name="Velocity Heading Vector" value={breakdown.velocityToward} max={20} color={breakdown.velocityToward > 0 ? '#FF5A45' : '#00D084'} prefix={breakdown.velocityToward > 0 ? `+${breakdown.velocityToward}` : 'NOMINAL'} />
+        <BreakdownBar name="Posture & Ergonomics check" value={breakdown.posture} max={10} color={breakdown.posture > 0 ? '#FF5A45' : '#00D084'} prefix={breakdown.posture > 0 ? `+${breakdown.posture}` : 'NOMINAL'} />
+        <BreakdownBar name="Biometric Fall Detection" value={breakdown.fallDetected} max={30} color="#FF5A45" prefix={breakdown.fallDetected > 0 ? '⚠ EMERGENCY OVERRIDE (+30)' : 'NOMINAL'} />
       </div>
     </div>
   );

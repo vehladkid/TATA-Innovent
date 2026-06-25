@@ -18,19 +18,19 @@ const ContributorBar: React.FC<ContributorBarProps> = ({ label, value, max, isAc
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '12px' }}>
-      <div 
-        style={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          fontSize: '10px', 
-          fontFamily: "var(--font-metric)" 
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          fontSize: '10px',
+          fontFamily: "var(--font-metric)"
         }}
       >
-        <span 
-          style={{ 
-            color: isActive ? '#D8D8D8' : '#D8D8D8', 
-            fontFamily: "var(--font-metric)", 
-            fontWeight: isActive ? 600 : 400 
+        <span
+          style={{
+            color: isActive ? '#D8D8D8' : '#D8D8D8',
+            fontFamily: "var(--font-metric)",
+            fontWeight: isActive ? 600 : 400
           }}
         >
           {label}
@@ -40,13 +40,13 @@ const ContributorBar: React.FC<ContributorBarProps> = ({ label, value, max, isAc
           <span style={{ fontSize: '8px', color: '#D8D8D8', fontWeight: 400 }}>/ {max}</span>
         </span>
       </div>
-      <div 
-        style={{ 
-          height: '4px', 
-          background: '#000000', 
+      <div
+        style={{
+          height: '4px',
+          background: '#000000',
           border: '1px solid rgba(255, 255, 255, 0.01)',
-          borderRadius: '2px', 
-          overflow: 'hidden' 
+          borderRadius: '2px',
+          overflow: 'hidden'
         }}
       >
         <div
@@ -89,7 +89,11 @@ export const RiskPanel: React.FC = () => {
         padding: '12px',
         overflow: 'hidden',
         height: '100%',
-        background: '#000000', // Pure Black
+        background: `
+          radial-gradient(circle at top left, rgba(90, 205, 217, 0.03), transparent 60%),
+          radial-gradient(circle at top right, rgba(54, 106, 224, 0.025), transparent 65%),
+          #050608
+        `,
       }}
     >
       {/* Left Sidebar: Diagnostics & Incident Diary */}
@@ -98,8 +102,10 @@ export const RiskPanel: React.FC = () => {
         style={{
           display: 'flex',
           flexDirection: 'column',
-          background: '#101010', // Panel background: charcoal
-          border: '1px solid #252525', // Border: charcoal
+          background: 'linear-gradient(135deg, rgba(90, 205, 217, 0.025), rgba(54, 106, 224, 0.02), transparent), rgba(16, 16, 16, 0.85)',
+          backdropFilter: 'blur(16px)',
+          border: '1px solid rgba(255, 255, 255, 0.02)',
+          boxShadow: '0 25px 50px -12px rgba(54, 106, 224, 0.03), 0 0 25px 0 rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.03)',
           padding: '14px',
           gap: '14px',
           minHeight: 0,
@@ -113,7 +119,7 @@ export const RiskPanel: React.FC = () => {
             fontWeight: 600,
             color: '#EAEAEA',
             letterSpacing: '0.06em',
-            borderBottom: '1px solid #252525',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.03)',
             paddingBottom: '8px',
             display: 'flex',
             alignItems: 'center',
@@ -131,18 +137,19 @@ export const RiskPanel: React.FC = () => {
             display: 'flex',
             flexDirection: 'column',
             gap: '8px',
-            background: '#050505', // Terminal inner dark
+            background: 'linear-gradient(135deg, rgba(90, 205, 217, 0.015), rgba(54, 106, 224, 0.01), transparent), rgba(5, 5, 5, 0.35)',
+            backdropFilter: 'blur(8px)',
             padding: '10px 12px',
             borderRadius: '2px',
-            border: '1px solid #252525',
+            border: '1px solid rgba(255, 255, 255, 0.01)',
           }}
         >
           {[
             { label: 'Architecture', value: 'YOLOv8 + SORT Tracking', color: '#EAEAEA' },
-            { label: 'Inference Delay',  value: '14.2ms',                color: '#5ACDD9' },
-            { label: 'Skeletons Check',     value: '33 Keypoints (Active)', color: '#5ACDD9' },
+            { label: 'Inference Delay', value: '14.2ms', color: '#5ACDD9' },
+            { label: 'Skeletons Check', value: '33 Keypoints (Active)', color: '#5ACDD9' },
             { label: 'Confidence Threshold', value: '0.75 Target', color: '#5ACDD9' },
-            { label: 'Action Alerts',      value: 'n8n Dispatcher Active',    color: '#EAEAEA' },
+            { label: 'Action Alerts', value: 'n8n Dispatcher Active', color: '#EAEAEA' },
           ].map(({ label, value, color }) => (
             <div key={label} style={{ display: 'flex', justifyContent: 'space-between', gap: '8px' }}>
               <span style={{ fontFamily: "var(--font-metric)", color: '#9A9A9A', fontWeight: 400 }}>{label}:</span>
@@ -160,7 +167,7 @@ export const RiskPanel: React.FC = () => {
               fontWeight: 600,
               color: '#EAEAEA',
               letterSpacing: '0.07em',
-              borderBottom: '1px solid #252525',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.03)',
               paddingBottom: '6px',
               display: 'flex',
               alignItems: 'center',
@@ -177,16 +184,18 @@ export const RiskPanel: React.FC = () => {
               const accentColor = evt.band === 'critical' ? '#FF5A45' : (evt.band === 'danger' ? '#FF5A45' : (evt.band === 'caution' ? '#FF7360' : '#00D084'));
               const time = new Date(evt.timestamp).toLocaleTimeString();
               const zoneName =
-                evt.zoneId === 'zone_press_A'       ? 'Press A' :
-                evt.zoneId === 'zone_forklift_lane' ? 'Forklift' :
-                evt.zoneId === 'zone_welding_bay'   ? 'Welding C' : 'Floor';
+                evt.zoneId === 'zone_press_A' ? 'Press A' :
+                  evt.zoneId === 'zone_forklift_lane' ? 'Forklift' :
+                    evt.zoneId === 'zone_welding_bay' ? 'Welding C' : 'Floor';
 
               return (
                 <div
                   key={evt.eventId}
                   style={{
-                    background: '#050505',
-                    border: '1px solid #252525',
+                    background: 'linear-gradient(180deg, rgba(255, 115, 96, 0.015), transparent)',
+                    borderTop: '1px solid rgba(255, 255, 255, 0.005)',
+                    borderRight: '1px solid rgba(255, 255, 255, 0.005)',
+                    borderBottom: '1px solid rgba(255, 255, 255, 0.005)',
                     borderLeft: `2.5px solid ${accentColor}`,
                     borderRadius: '0 2px 2px 0',
                     padding: '6px 8px',
@@ -195,10 +204,10 @@ export const RiskPanel: React.FC = () => {
                     flexDirection: 'column',
                     gap: '1px',
                     cursor: 'pointer',
-                    transition: 'background-color 0.15s ease',
+                    transition: 'all 0.15s ease',
                   }}
-                  onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.background = '#151515'; }}
-                  onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.background = '#050505'; }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(255, 255, 255, 0.03)'; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.background = 'linear-gradient(180deg, rgba(255, 115, 96, 0.015), transparent)'; }}
                   onClick={() => {
                     const store = useEventStore.getState();
                     store.setSelectedTrackId(evt.trackId);
@@ -235,8 +244,18 @@ export const RiskPanel: React.FC = () => {
         <div
           className="hud-panel"
           style={{
-            background: '#101010', // Panel background: charcoal
-            border: '1px solid #252525', // Border: charcoal
+            background: `
+              linear-gradient(180deg, rgba(62, 106, 224, 0.04) 0%, transparent 35%),
+              linear-gradient(135deg, rgba(54, 106, 224, 0.02), rgba(90, 205, 217, 0.015)),
+              rgba(16, 16, 16, 0.85)
+            `,
+            backdropFilter: 'blur(16px)',
+            borderLeft: '1px solid rgba(255, 255, 255, 0.015)',
+            borderRight: '1px solid rgba(255, 255, 255, 0.015)',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.015)',
+            borderTop: '2px solid #5ACDD9',
+            borderRadius: '2px',
+            boxShadow: '0 25px 55px -12px rgba(90, 205, 217, 0.04), 0 0 35px 0 rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.03)',
             padding: '16px',
             display: 'flex',
             flexDirection: 'column',
@@ -251,7 +270,7 @@ export const RiskPanel: React.FC = () => {
               fontWeight: 600,
               color: '#EAEAEA',
               letterSpacing: '0.06em',
-              borderBottom: '1px solid #252525',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.03)',
               paddingBottom: '8px',
               display: 'flex',
               alignItems: 'center',
@@ -265,11 +284,11 @@ export const RiskPanel: React.FC = () => {
 
           {selectedTrackId ? (
             <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-              <div 
-                style={{ 
-                  fontFamily: "var(--font-body)", 
-                  fontSize: '9.5px', 
-                  color: '#9A9A9A', 
+              <div
+                style={{
+                  fontFamily: "var(--font-body)",
+                  fontSize: '9.5px',
+                  color: '#9A9A9A',
                   marginBottom: '12px',
                   display: 'flex',
                   alignItems: 'center',
@@ -279,7 +298,7 @@ export const RiskPanel: React.FC = () => {
                 <Info size={11} style={{ color: '#5ACDD9' }} />
                 Showing dynamic weights for Target W-0{selectedTrackId}
               </div>
-              
+
               <ContributorBar label="PPE Compliance Check" value={breakdown.ppeViolation} max={40} isActive={true} />
               <ContributorBar label="Hazard Zone Proximity" value={breakdown.proximityToZone} max={30} isActive={true} />
               <ContributorBar label="Velocity Vector Analysis" value={breakdown.velocityToward} max={20} isActive={true} />
@@ -288,11 +307,11 @@ export const RiskPanel: React.FC = () => {
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-              <div 
-                style={{ 
-                  fontFamily: "var(--font-body)", 
-                  fontSize: '9.5px', 
-                  color: '#9A9A9A', 
+              <div
+                style={{
+                  fontFamily: "var(--font-body)",
+                  fontSize: '9.5px',
+                  color: '#9A9A9A',
                   marginBottom: '12px',
                   display: 'flex',
                   alignItems: 'center',
@@ -302,7 +321,7 @@ export const RiskPanel: React.FC = () => {
                 <Info size={11} style={{ color: '#EAEAEA' }} />
                 Baseline System Rule Weights
               </div>
-              
+
               <ContributorBar label="PPE Compliance Check" value={40} max={40} isActive={false} />
               <ContributorBar label="Hazard Zone Proximity" value={30} max={30} isActive={false} />
               <ContributorBar label="Velocity Vector Analysis" value={20} max={20} isActive={false} />
@@ -315,8 +334,8 @@ export const RiskPanel: React.FC = () => {
           <div
             style={{
               marginTop: 'auto',
-              background: '#050505', // Inner console background
-              border: '1px solid #252525',
+              background: 'linear-gradient(180deg, rgba(255, 255, 255, 0.005), rgba(0, 0, 0, 0.4))',
+              border: '1px solid rgba(255, 255, 255, 0.01)',
               borderRadius: '2px',
               padding: '10px 12px',
               fontSize: '10px',

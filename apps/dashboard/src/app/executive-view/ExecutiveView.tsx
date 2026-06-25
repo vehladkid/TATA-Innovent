@@ -144,7 +144,7 @@ export const ExecutiveView: React.FC = () => {
       <div
         className="hud-panel"
         style={{
-          background: 'var(--color-bg-card)',
+          background: '#090a0c',
           border: '1px solid var(--border-color)',
           borderRadius: '2px',
           display: 'flex',
@@ -164,21 +164,23 @@ export const ExecutiveView: React.FC = () => {
             left: 0,
             right: 0,
             height: `${fillProgress}%`,
-            background: 'linear-gradient(to top, #050505 0%, #1A1A1A 100%)',
+            background: 'linear-gradient(to top, #0A1112 0%, #090909 100%)',
             transition: 'height 1.5s cubic-bezier(0.16, 1, 0.3, 1)',
             zIndex: 1,
           }}
         >
-          {/* Active surface line */}
+          {/* Soft reflective shimmer */}
           <div
             style={{
               position: 'absolute',
-              top: 0,
+              top: '-8px',
               left: 0,
               right: 0,
-              height: '1.5px',
-              background: '#5ACDD9',
+              height: '16px',
+              background: 'radial-gradient(ellipse at center, rgba(90, 205, 217, 0.05) 0%, rgba(90, 205, 217, 0.01) 60%, transparent 100%)',
               zIndex: 3,
+              pointerEvents: 'none',
+              filter: 'blur(2.0px)',
             }}
           />
 
@@ -192,8 +194,8 @@ export const ExecutiveView: React.FC = () => {
               left: 0,
               width: '200%',
               height: '8px',
-              fill: 'rgba(90, 205, 217, 0.03)',
-              animation: 'wave-move-back 24s linear infinite',
+              fill: 'rgba(90, 205, 217, 0.01)',
+              animation: 'wave-move-back 12s linear infinite',
               zIndex: 2,
             }}
           >
@@ -208,8 +210,8 @@ export const ExecutiveView: React.FC = () => {
               left: 0,
               width: '200%',
               height: '6px',
-              fill: 'rgba(90, 205, 217, 0.07)',
-              animation: 'wave-move-front 16s linear infinite',
+              fill: 'rgba(90, 205, 217, 0.015)',
+              animation: 'wave-move-front 10s linear infinite',
               zIndex: 3,
             }}
           >
@@ -242,10 +244,10 @@ export const ExecutiveView: React.FC = () => {
                 gap: '5px',
                 fontFamily: "var(--font-label)", // Bierika
                 fontSize: '9px',
-                color: 'rgba(216, 216, 216, 0.22)',
+                color: 'rgba(216, 216, 216, 0.11)',
               }}
             >
-              <div style={{ width: '4px', height: '1px', background: 'rgba(255, 255, 255, 0.1)' }} />
+              <div style={{ width: '4px', height: '1px', background: 'rgba(255, 255, 255, 0.08)' }} />
               <span>{tick}</span>
             </div>
           ))}
@@ -269,7 +271,9 @@ export const ExecutiveView: React.FC = () => {
             top: '40%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
-            background: 'radial-gradient(rgba(255, 115, 96, 0.05), transparent 70%)',
+            background: isSafeState
+              ? 'radial-gradient(ellipse at center, rgba(90, 205, 217, 0.07) 0%, rgba(90, 205, 217, 0.01) 55%, transparent 75%)'
+              : 'radial-gradient(ellipse at center, rgba(255, 115, 96, 0.07) 0%, rgba(255, 115, 96, 0.01) 55%, transparent 75%)',
             borderRadius: '2px',
             padding: '24px 28px',
             textAlign: 'center',
@@ -296,11 +300,13 @@ export const ExecutiveView: React.FC = () => {
               fontFamily: "var(--font-body)", // Sora
               fontSize: '84px',
               fontWeight: 700,
-              color: 'var(--color-silver)',
+              color: '#FFFFFF',
               lineHeight: 1,
               margin: '6px 0',
               letterSpacing: '-1px',
-              textShadow: '0 0 20px rgba(255, 115, 96, 0.15)',
+              textShadow: isSafeState
+                ? '0 0 25px rgba(90, 205, 217, 0.15)'
+                : '0 0 25px rgba(255, 115, 96, 0.15)',
             }}
           >
             {siteSafetyScore}
